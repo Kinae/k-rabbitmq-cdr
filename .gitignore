@@ -30,6 +30,7 @@ out/
 # Build
 tmp/**
 */target/**
+build/**
 
 # Gradle
 .gradle/**
