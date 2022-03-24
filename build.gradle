@@ -1,0 +1,23 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'eu.kinae.k_rabbitmq_cdr.Application'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+}
+
+jar {
+    archiveBaseName.set('k-rabbitmq-cdr')
+    archiveVersion.set('0.0.1-SNAPSHOT')
+}
+
