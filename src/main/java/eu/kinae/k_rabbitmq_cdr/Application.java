@@ -1,8 +1,10 @@
 package eu.kinae.k_rabbitmq_cdr;
 
-public class Application {
+import org.apache.camel.main.Main;
 
-    public static void main(String[] args) {
+public final class Application {
 
+    public static void main(String[] args) throws Exception {
+        Main.main(args);
     }
 }

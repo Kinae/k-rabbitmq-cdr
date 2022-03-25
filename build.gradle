@@ -22,20 +22,12 @@ repositories {
     mavenCentral()
 }
 
-dependencyManagement {
-    dependencies {
-        dependencySet(group: 'org.apache.camel', version: '3.15.0') {
-            entry 'camel-core'
-        }
-        dependencySet(group:'org.slf4j', version: '1.7.36') {
-            entry 'slf4j-api'
-            entry 'slf4j-simple'
-        }
-    }
-}
+def org_apache_camel_version = '3.15.0'
+def org_slf4j_version = '1.7.36'
 
 dependencies {
-    implementation 'org.slf4j:slf4j-api'
-    implementation 'org.slf4j:slf4j-simple'
-    implementation 'org.apache.camel:camel-core'
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: org_slf4j_version
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: org_slf4j_version
+    implementation group: 'org.apache.camel', name: 'camel-core', version: org_apache_camel_version
+    implementation group: 'org.apache.camel', name: 'camel-main', version: org_apache_camel_version
 }
