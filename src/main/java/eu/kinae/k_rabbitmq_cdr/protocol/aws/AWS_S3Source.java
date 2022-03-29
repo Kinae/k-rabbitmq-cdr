@@ -2,9 +2,9 @@ package eu.kinae.k_rabbitmq_cdr.protocol.aws;
 
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 
-public class AWSS3Source implements Source {
+public class AWS_S3Source extends AWS_S3Component implements Source {
 
-    public AWSS3Source() {
+    public AWS_S3Source() {
     }
 
     @Override
