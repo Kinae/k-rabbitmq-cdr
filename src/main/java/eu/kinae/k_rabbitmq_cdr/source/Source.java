@@ -1,4 +1,4 @@
-package eu.kinae.k_rabbitmq_cdr.from;
+package eu.kinae.k_rabbitmq_cdr.source;
 
 
 public interface Source {

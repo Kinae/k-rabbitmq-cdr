@@ -1,10 +1,13 @@
-package eu.kinae.k_rabbitmq_cdr.from;
+package eu.kinae.k_rabbitmq_cdr.source;
 
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import com.rabbitmq.client.AMQP;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -12,19 +15,20 @@ import com.rabbitmq.client.GetResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FromAMQP implements Source {
+public class AMQPSource implements Source {
 
     private final String queue;
     private final ConnectionFactory factory;
-    private final Logger logger = LoggerFactory.getLogger(FromAMQP.class);
+    private final ObjectMapper om = new ObjectMapper();
+    private final Logger logger = LoggerFactory.getLogger(AMQPSource.class);
 
-    public FromAMQP(String uri, String queue) {
-        logger.info("connection setup ...");
+    public AMQPSource(String uri, String queue) {
+        logger.info("connection validation ...");
         this.queue = queue;
         this.factory = new ConnectionFactory();
         try {
             this.factory.setUri(uri);
-            logger.info("connection setup ok");
+            logger.info("connection validated");
         } catch (URISyntaxException e) {
             logger.error("Error URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
             throw new RuntimeException("Error AMQP URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
@@ -32,6 +36,8 @@ public class FromAMQP implements Source {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
         }
+
+        om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     }
 
 
@@ -45,30 +51,38 @@ public class FromAMQP implements Source {
                      Username : {}
                    """, factory.getHost(), factory.getPort(), factory.getVirtualHost(), factory.getUsername());
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
-            logger.info("connection and channel ok");
+            logger.info("connected and channel created");
+
+            long current = System.currentTimeMillis();
+            String prefix = current + "_" + queue + "_";
+            logger.info("prefixing message with '{}'", prefix);
+
             logger.info("retrieving message from '{}' ...", queue);
-            int count = getMessage(channel, 0);
-            logger.info("message retrieved : {}", count);
+            int count = getMessage(channel, prefix, 0);
+            long end = System.currentTimeMillis();
+            logger.info("message retrieved : {} in {}ms", count, (end - current));
+
             return count > 0;
         }
 
     }
 
-    private int getMessage(Channel channel, int count) throws IOException, InterruptedException {
+    private int getMessage(Channel channel, String prefix, int count) throws IOException {
         GetResponse response = channel.basicGet(queue, false);
         if (response == null) {
             logger.info("no more message to get");
             return count;
         } else {
-            AMQP.BasicProperties props = response.getProps();
-            byte[] body = response.getBody();
-            long deliveryTag = response.getEnvelope().getDeliveryTag();
-            logger.info("Props: " + props);
-            logger.info("Body: " + new String(body));
-            logger.info("deliveryTag: " + deliveryTag);
+            if(count == 0) logger.info("estimate number of messages : {}", (response.getMessageCount() + 1));
+
+            String filename = prefix + response.getEnvelope().getDeliveryTag();
+            try(FileWriter fw = new FileWriter(filename)) {
+                fw.write(new String(response.getBody()));
+            }
+            om.writeValue(new File(filename + "_props.json"), response.getProps());
         }
 
-        return getMessage(channel, count + 1);
+        return getMessage(channel, prefix, count + 1);
     }
 
 }

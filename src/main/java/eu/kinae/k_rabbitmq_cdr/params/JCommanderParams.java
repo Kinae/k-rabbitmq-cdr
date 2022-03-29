@@ -10,16 +10,22 @@ public class JCommanderParams {
     @Parameter(names = { "-v", "-verbose" }, description = "Level of verbosity", order = 1)
     public Integer verbose = 1;
 
-    @Parameter(names = { "--from-type" }, description = "Type of the source", required = true, order = 2)
-    public SupportedType fromType;
+    @Parameter(names = { "-st", "--source-type" }, description = "Type of the source", required = true, order = 2)
+    public SupportedType sourceType;
 
-    @Parameter(names = { "--from-uri" }, description = "URI of the source", required = true, password = true, order = 3)
-    public String fromURI;
+    @Parameter(names = { "-s-uri", "--source-uri" }, description = "URI of the source", required = true, password = true, order = 3)
+    public String sourceURI;
 
-    @Parameter(names = { "--to-type" }, description = "Type of the target", required = true, order = 4)
-    public SupportedType toType;
+    @Parameter(names = { "-sq", "--source-queue" }, description = "Queue of the source", order = 4)
+    public String sourceQueue;
 
-    @Parameter(names = { "--to-uri" }, description = "URI of the target", required = true, password = true, order = 5)
-    public Integer toURI;
+    @Parameter(names = { "-tt", "--target-type" }, description = "Type of the target", required = true, order = 5)
+    public SupportedType targetType;
+
+    @Parameter(names = { "-t-uri","--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
+    public Integer targetURI;
+
+    @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 7)
+    public String targetQueue;
 
 }

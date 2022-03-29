@@ -22,11 +22,13 @@ repositories {
 }
 
 def com_beust_jcommander_version = '1.82'
+def com_fasterxml_jackson_version = '2.13.2'
 def com_rabbitmq_version= '5.14.2'
 def org_slf4j_version = '1.7.36'
 
 dependencies {
     implementation group: 'com.beust', name: 'jcommander', version: com_beust_jcommander_version
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: com_fasterxml_jackson_version
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: com_rabbitmq_version
     implementation group: 'org.slf4j', name: 'slf4j-api', version: org_slf4j_version
     implementation group: 'org.slf4j', name: 'slf4j-simple', version: org_slf4j_version

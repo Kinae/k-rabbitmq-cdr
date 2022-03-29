@@ -1,13 +1,12 @@
 package eu.kinae.k_rabbitmq_cdr;
 
-
 import com.beust.jcommander.JCommander;
-import eu.kinae.k_rabbitmq_cdr.from.FromAMQP;
-import eu.kinae.k_rabbitmq_cdr.from.FromAWSS3;
-import eu.kinae.k_rabbitmq_cdr.from.FromFile;
-import eu.kinae.k_rabbitmq_cdr.from.Source;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
+import eu.kinae.k_rabbitmq_cdr.source.AMQPSource;
+import eu.kinae.k_rabbitmq_cdr.source.AWSS3Source;
+import eu.kinae.k_rabbitmq_cdr.source.FileSource;
+import eu.kinae.k_rabbitmq_cdr.source.Source;
 
 public final class Application {
 
@@ -25,19 +24,15 @@ public final class Application {
             return;
         }
 
-        System.out.println("Verbose: " + params.verbose);
-        System.out.println("toUri: " + params.toURI);
-        System.out.println("fromUri: " + params.fromURI);
-
-        Source source = from(params.fromType, params.fromURI, "notification-dlx");
+        Source source = from(params.sourceType, params.sourceURI, params.sourceQueue);
         source.run();
     }
 
     private static Source from(SupportedType supportedType, String uri, String queue) {
         return switch(supportedType) {
-            case FILE -> new FromFile();
-            case AWS_S3 -> new FromAWSS3();
-            case AMQP -> new FromAMQP(uri, queue);
+            case FILE -> new FileSource();
+            case AWS_S3 -> new AWSS3Source();
+            case AMQP -> new AMQPSource(uri, queue);
             default -> throw new IllegalStateException("Unexpected value: " + supportedType);
         };
     }
