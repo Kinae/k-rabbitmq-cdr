@@ -1,17 +1,17 @@
 package eu.kinae.k_rabbitmq_cdr;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import com.beust.jcommander.JCommander;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.source.AMQPSource;
-import eu.kinae.k_rabbitmq_cdr.source.AWSS3Source;
-import eu.kinae.k_rabbitmq_cdr.source.FileSource;
-import eu.kinae.k_rabbitmq_cdr.source.Source;
-import eu.kinae.k_rabbitmq_cdr.target.AMQPTarget;
-import eu.kinae.k_rabbitmq_cdr.target.Target;
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.Target;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSource;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPTarget;
+import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWSS3Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.file.FileSource;
+import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 
 public final class Application {
 
@@ -28,29 +28,27 @@ public final class Application {
             return;
         }
 
-        var timestamp = System.currentTimeMillis();
-        String tmp = System.getProperty("java.io.tmpdir");
-        Path dir = Files.createDirectory(Path.of(tmp + "/k-rabbitmq-cdr_" + timestamp));
-//        dir.toFile().deleteOnExit();
-        Source source = source(params.sourceType, params.sourceURI, params.sourceQueue, dir);
+        System.out.println("ts = " + Constant.TIMESTAMP);
+        Files.createDirectory(Constant.PROJECT_TMPDIR).toFile().deleteOnExit();
+        Source source = source(params.sourceType, params.sourceURI, params.sourceQueue);
         source.run();
 
-        Target target = target(params.targetType, params.targetURI, params.targetQueue, dir);
+        Target target = target(params.targetType, params.targetURI, params.targetQueue);
         target.run();
     }
 
-    private static Source source(SupportedType supportedType, String uri, String queue, Path dir) {
+    private static Source source(SupportedType supportedType, String uri, String queue) {
         return switch(supportedType) {
             case FILE -> new FileSource();
             case AWS_S3 -> new AWSS3Source();
-            case AMQP -> new AMQPSource(dir, uri, queue);
+            case AMQP -> new AMQPSource(uri, queue);
             default -> throw new IllegalStateException("Unexpected value: " + supportedType);
         };
     }
 
-    private static Target target(SupportedType supportedType, String uri, String queue, Path dir) {
+    private static Target target(SupportedType supportedType, String uri, String queue) {
         return switch(supportedType) {
-            case AMQP -> new AMQPTarget(dir, uri, queue);
+            case AMQP -> new AMQPTarget(uri, queue);
             default -> throw new IllegalStateException("Unexpected value: " + supportedType);
         };
     }

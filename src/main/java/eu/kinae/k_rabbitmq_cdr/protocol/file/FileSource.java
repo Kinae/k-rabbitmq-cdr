@@ -1,4 +1,6 @@
-package eu.kinae.k_rabbitmq_cdr.source;
+package eu.kinae.k_rabbitmq_cdr.protocol.file;
+
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 
 public class FileSource implements Source {
 

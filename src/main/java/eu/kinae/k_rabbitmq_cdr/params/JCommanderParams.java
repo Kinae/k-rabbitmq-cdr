@@ -22,7 +22,7 @@ public class JCommanderParams {
     @Parameter(names = { "-tt", "--target-type" }, description = "Type of the target", required = true, order = 5)
     public SupportedType targetType;
 
-    @Parameter(names = { "-t-uri","--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
+    @Parameter(names = { "-t-uri", "--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
     public String targetURI;
 
     @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 7)
