@@ -1,28 +1,35 @@
 package eu.kinae.k_rabbitmq_cdr.source;
 
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
+import com.rabbitmq.client.LongString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AMQPSource implements Source {
 
+    private final Path tmpdir;
     private final String queue;
     private final ConnectionFactory factory;
     private final ObjectMapper om = new ObjectMapper();
     private final Logger logger = LoggerFactory.getLogger(AMQPSource.class);
 
-    public AMQPSource(String uri, String queue) {
+    public AMQPSource(Path tmpdir, String uri, String queue) {
         logger.info("connection validation ...");
         this.queue = queue;
         this.factory = new ConnectionFactory();
@@ -37,9 +44,22 @@ public class AMQPSource implements Source {
             throw new RuntimeException("Unknown error, please report it", e);
         }
 
-        om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        this.tmpdir = tmpdir;
+        this.om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+        SimpleModule amqpModule = new SimpleModule("AMQPModule");
+        amqpModule.addSerializer(LongString.class, new ObjectIdSerializer());
+        om.registerModule(amqpModule);
+
     }
 
+    private static class ObjectIdSerializer extends JsonSerializer<LongString> {
+
+        @Override
+        public void serialize(LongString value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(new String(value.getBytes()));
+        }
+    }
 
     @Override
     public boolean run() throws Exception {
@@ -53,14 +73,14 @@ public class AMQPSource implements Source {
         try (Connection connection = factory.newConnection(); Channel channel = connection.createChannel()) {
             logger.info("connected and channel created");
 
-            long current = System.currentTimeMillis();
-            String prefix = current + "_" + queue + "_";
-            logger.info("prefixing message with '{}'", prefix);
+            String prefix = queue + "_";
+            logger.debug("prefixing message with '{}'", prefix);
 
             logger.info("retrieving message from '{}' ...", queue);
+            long start = System.currentTimeMillis();
             int count = getMessage(channel, prefix, 0);
             long end = System.currentTimeMillis();
-            logger.info("message retrieved : {} in {}ms", count, (end - current));
+            logger.info("message retrieved : {} in {}ms", count, (end - start));
 
             return count > 0;
         }
@@ -70,16 +90,20 @@ public class AMQPSource implements Source {
     private int getMessage(Channel channel, String prefix, int count) throws IOException {
         GetResponse response = channel.basicGet(queue, false);
         if (response == null) {
-            logger.info("no more message to get");
+            logger.debug("no more message to get");
             return count;
         } else {
             if(count == 0) logger.info("estimate number of messages : {}", (response.getMessageCount() + 1));
 
-            String filename = prefix + response.getEnvelope().getDeliveryTag();
-            try(FileWriter fw = new FileWriter(filename)) {
-                fw.write(new String(response.getBody()));
-            }
-            om.writeValue(new File(filename + "_props.json"), response.getProps());
+            String lPrefix = "/" + prefix + response.getEnvelope().getDeliveryTag();
+            Path papath = Path.of(tmpdir + lPrefix);
+            Path path = Files.createFile(papath);
+//            path.toFile().deleteOnExit();
+            Files.writeString(path, new String(response.getBody()), StandardOpenOption.TRUNCATE_EXISTING);
+
+            path = Files.createFile(Path.of(tmpdir + lPrefix + "_props.json"));
+//            path.toFile().deleteOnExit();
+            om.writeValue(path.toFile(), response.getProps());
         }
 
         return getMessage(channel, prefix, count + 1);

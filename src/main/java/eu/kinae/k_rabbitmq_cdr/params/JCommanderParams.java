@@ -23,7 +23,7 @@ public class JCommanderParams {
     public SupportedType targetType;
 
     @Parameter(names = { "-t-uri","--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
-    public Integer targetURI;
+    public String targetURI;
 
     @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 7)
     public String targetQueue;
