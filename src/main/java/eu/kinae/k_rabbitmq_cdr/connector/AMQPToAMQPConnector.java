@@ -1,6 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
+import eu.kinae.k_rabbitmq_cdr.params.TransferType;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPTarget;
 import org.slf4j.Logger;
@@ -17,12 +19,17 @@ public class AMQPToAMQPConnector implements Connector {
     public void run(JCommanderParams params) {
         AMQPSource source = new AMQPSource(params.sourceURI, params.sourceQueue);
         AMQPTarget target = new AMQPTarget(params.targetURI, params.targetQueue);
-        try {
-            source.run();
-            target.run();
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
+
+        if(params.transferType == TransferType.FILE) {
+            if(params.processType == ProcessType.SEQUENTIAL) {
+                try {
+                    source.run();
+                    target.run();
+                } catch(Exception e) {
+                    logger.error("Unknown error, please report it", e);
+                    throw new RuntimeException("Unknown error, please report it", e);
+                }
+            }
         }
     }
 }

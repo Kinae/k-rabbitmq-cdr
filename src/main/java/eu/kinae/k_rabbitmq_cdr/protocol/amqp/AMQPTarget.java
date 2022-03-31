@@ -1,40 +1,23 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.regex.Pattern;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AMQPTarget extends AMQPComponent implements Target {
 
     private final String queue;
-    private final ConnectionFactory factory;
-    private final Logger logger = LoggerFactory.getLogger(AMQPTarget.class);
 
     public AMQPTarget(String uri, String queue) {
-        logger.info("connection validation ...");
+        super(uri);
         this.queue = queue;
-        this.factory = new ConnectionFactory();
-        try {
-            this.factory.setUri(uri);
-            logger.info("connection validated");
-        } catch(URISyntaxException e) {
-            logger.error("Error URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
-            throw new RuntimeException("Error AMQP URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
-        }
     }
 
     @Override

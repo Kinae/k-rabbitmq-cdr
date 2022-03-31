@@ -28,4 +28,10 @@ public class JCommanderParams {
     @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 7)
     public String targetQueue;
 
+    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 8)
+    public TransferType transferType = TransferType.FILE;
+
+    @Parameter(names = { "--process-type" }, description = "Type of process", order = 9)
+    public ProcessType processType = ProcessType.SEQUENTIAL;
+
 }
