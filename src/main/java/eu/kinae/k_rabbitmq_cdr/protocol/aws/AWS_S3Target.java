@@ -8,7 +8,7 @@ public class AWS_S3Target extends AWS_S3Component implements Target {
     }
 
     @Override
-    public boolean run() {
+    public boolean publish() {
         return false;
     }
 

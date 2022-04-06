@@ -8,7 +8,7 @@ public class FileTarget extends FileComponent implements Target {
     }
 
     @Override
-    public boolean run() throws Exception {
+    public boolean publish() throws Exception {
         return false;
     }
 }

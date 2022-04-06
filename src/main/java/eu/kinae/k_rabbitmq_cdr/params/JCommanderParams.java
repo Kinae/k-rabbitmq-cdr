@@ -29,9 +29,9 @@ public class JCommanderParams {
     public String targetQueue;
 
     @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 8)
-    public TransferType transferType = TransferType.FILE;
+    public TransferType transferType = TransferType.BUFFER;
 
     @Parameter(names = { "--process-type" }, description = "Type of process", order = 9)
-    public ProcessType processType = ProcessType.SEQUENTIAL;
+    public ProcessType processType = ProcessType.PARALLEL;
 
 }

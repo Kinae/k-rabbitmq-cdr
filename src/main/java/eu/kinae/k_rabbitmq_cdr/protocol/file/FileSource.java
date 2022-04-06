@@ -7,8 +7,8 @@ public class FileSource extends FileComponent implements Source {
     public FileSource() {
     }
 
-    @Override
-    public boolean run() throws Exception {
-        return false;
-    }
+    //    @Override
+    //    public boolean consume() throws Exception {
+    //        return false;
+    //    }
 }

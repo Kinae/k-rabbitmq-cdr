@@ -7,9 +7,9 @@ public class AWS_S3Source extends AWS_S3Component implements Source {
     public AWS_S3Source() {
     }
 
-    @Override
-    public boolean run() {
-        return false;
-    }
-
+    //    @Override
+    //    public boolean consume() {
+    //        return false;
+    //    }
+    //
 }
