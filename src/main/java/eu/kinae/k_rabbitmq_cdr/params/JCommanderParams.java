@@ -34,4 +34,7 @@ public class JCommanderParams {
     @Parameter(names = { "--process-type" }, description = "Type of process", order = 9)
     public ProcessType processType = ProcessType.PARALLEL;
 
+    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 10)
+    public int maxMessage = 0;
+
 }

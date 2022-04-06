@@ -37,7 +37,7 @@ public class AMQPSequentialSource extends AMQPComponentSource {
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
                 sharedBuffer.push(response);
             }
-        } while(++count < parameters.getTotalMessage() || parameters.getTotalMessage() == -1); // add message numbers (range, specific number)
+        } while(++count < parameters.getMaxMessage() || parameters.getMaxMessage() == 0); // add message numbers (range, specific number)
         return count;
     }
 

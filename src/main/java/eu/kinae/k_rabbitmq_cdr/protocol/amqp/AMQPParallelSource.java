@@ -41,7 +41,7 @@ public class AMQPParallelSource extends AMQPComponentSource {
 
                 sharedBuffer.push(response);
             }
-        } while(++count < parameters.getTotalMessage() || parameters.getTotalMessage() == -1); // add maximum message from params
+        } while(++count < parameters.getMaxMessage() || parameters.getMaxMessage() == 0); // add maximum message from params
         return count;
     }
 }
