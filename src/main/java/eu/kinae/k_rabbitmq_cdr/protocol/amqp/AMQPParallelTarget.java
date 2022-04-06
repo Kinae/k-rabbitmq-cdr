@@ -5,7 +5,7 @@ import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public class AMQPParallelTarget extends AMQPComponentTarget {
+public class AMQPParallelTarget extends AMQPComponentTarget implements Runnable {
 
     public AMQPParallelTarget(JCommanderParams params, SharedBuffer sharedBuffer, SharedStatus sharedStatus) throws Exception {
         super(sharedBuffer, sharedStatus, params.targetURI, params.targetQueue);
@@ -15,7 +15,7 @@ public class AMQPParallelTarget extends AMQPComponentTarget {
     public void run() {
         try {
             long start = System.currentTimeMillis();
-            long count = publish();
+            long count = publishToTarget();
             long end = System.currentTimeMillis();
             logger.info("messages published : {} in {}ms", count, (end - start));
         } catch(Exception e) {
@@ -26,7 +26,7 @@ public class AMQPParallelTarget extends AMQPComponentTarget {
         }
     }
 
-    private long publish() throws Exception {
+    private long publishToTarget() throws Exception {
         long count = 0;
         GetResponse response;
         do {

@@ -11,11 +11,10 @@ public class AMQPSequentialSource extends AMQPComponentSource {
         super(sharedBuffer, parameters, params.sourceURI, params.sourceQueue);
     }
 
-    @Override
     public void run() {
         try {
             long start = System.currentTimeMillis();
-            long count = consumeNProduceInfoBuffer();
+            long count = consumeFromSource();
             long end = System.currentTimeMillis();
             logger.info("messages retrieved : {} in {}ms", count, (end - start));
         } catch(Exception e) {
@@ -25,7 +24,7 @@ public class AMQPSequentialSource extends AMQPComponentSource {
         }
     }
 
-    private long consumeNProduceInfoBuffer() throws Exception {
+    private long consumeFromSource() throws Exception {
         long count = 0;
         do {
             GetResponse response = channel.basicGet(queue, false);

@@ -7,14 +7,13 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 public class AMQPSequentialTarget extends AMQPComponentTarget {
 
     public AMQPSequentialTarget(JCommanderParams params, SharedBuffer sharedBuffer) throws Exception {
-        super(sharedBuffer, params.sourceURI, params.sourceQueue);
+        super(sharedBuffer, params.targetURI, params.targetQueue);
     }
 
-    @Override
     public void run() {
         try {
             long start = System.currentTimeMillis();
-            long count = publish();
+            long count = publishToTarget();
             long end = System.currentTimeMillis();
             logger.info("messages published : {} in {}ms", count, (end - start));
         } catch(Exception e) {
@@ -24,7 +23,7 @@ public class AMQPSequentialTarget extends AMQPComponentTarget {
         }
     }
 
-    private long publish() throws Exception {
+    private long publishToTarget() throws Exception {
         long count = 0;
         do {
             GetResponse response = sharedBuffer.pop();

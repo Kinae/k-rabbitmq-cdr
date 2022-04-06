@@ -3,6 +3,7 @@ package eu.kinae.k_rabbitmq_cdr.connector;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.params.TransferType;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPDirectTransfer;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
@@ -23,25 +24,21 @@ public class AMQPToAMQPConnector implements Connector {
 
     @Override
     public void run(JCommanderParams params) {
-        //        AMQPSource source = new AMQPSequentialSource(params, );
-        //        AMQPTarget target = new AMQPTarget(params.targetURI, params.targetQueue);
-
         if(params.transferType == TransferType.DIRECT) {
-            if(params.processType == ProcessType.SEQUENTIAL) {
-                try {
-                    //                    source.run();
-                    //                    target.run();
-                } catch(Exception e) {
-                    logger.error("Unknown error, please report it", e);
-                    throw new RuntimeException("Unknown error, please report it", e);
-                }
+            SourceParams sourceParams = new SourceParams(params.maxMessage);
+            try {
+                AMQPDirectTransfer directTransfer = new AMQPDirectTransfer(params, sourceParams);
+                directTransfer.run();
+            } catch(Exception e) {
+                logger.error("Unknown error, please report it", e);
+                throw new RuntimeException("Unknown error, please report it", e);
             }
         }
 
         if(params.transferType == TransferType.BUFFER) {
             if(params.processType == ProcessType.SEQUENTIAL) {
                 SharedBuffer list = SharedBuffer.getInstance(ProcessType.SEQUENTIAL);
-                SourceParams sourceParams = new SourceParams();
+                SourceParams sourceParams = new SourceParams(params.maxMessage);
 
                 try {
                     AMQPSequentialSource source = new AMQPSequentialSource(params, list, sourceParams);
@@ -54,10 +51,10 @@ public class AMQPToAMQPConnector implements Connector {
                     throw new RuntimeException("Unknown error, please report it", e);
                 }
             } else if(params.processType == ProcessType.PARALLEL) {
-
                 SharedBuffer sharedBuffer = SharedBuffer.getInstance(ProcessType.PARALLEL);
                 SharedStatus sharedStatus = SharedStatus.getInstance();
-                SourceParams sourceParams = new SourceParams();
+                SourceParams sourceParams = new SourceParams(params.maxMessage);
+
                 try {
                     Thread producerThread = new Thread(new AMQPParallelSource(params, sharedBuffer, sharedStatus, sourceParams));
                     producerThread.start();

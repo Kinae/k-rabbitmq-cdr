@@ -29,9 +29,9 @@ public class JCommanderParams {
     public String targetQueue;
 
     @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 8)
-    public TransferType transferType = TransferType.BUFFER;
+    public TransferType transferType = TransferType.DIRECT;
 
-    @Parameter(names = { "--process-type" }, description = "Type of process", order = 9)
+    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 9)
     public ProcessType processType = ProcessType.PARALLEL;
 
     @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 10)

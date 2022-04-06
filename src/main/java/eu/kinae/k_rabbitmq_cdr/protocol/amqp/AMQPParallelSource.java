@@ -6,7 +6,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import eu.kinae.k_rabbitmq_cdr.utils.SourceParams;
 
-public class AMQPParallelSource extends AMQPComponentSource {
+public class AMQPParallelSource extends AMQPComponentSource implements Runnable {
 
     public AMQPParallelSource(JCommanderParams params, SharedBuffer sharedBuffer, SharedStatus sharedStatus, SourceParams parameters) throws Exception {
         super(sharedBuffer, sharedStatus, parameters, params.sourceURI, params.sourceQueue);
@@ -16,7 +16,7 @@ public class AMQPParallelSource extends AMQPComponentSource {
     public void run() {
         try {
             long start = System.currentTimeMillis();
-            long count = consumeNProduceInfoBuffer();
+            long count = consumeFromSource();
             long end = System.currentTimeMillis();
             logger.info("messages retrieved : {} in {}ms", count, (end - start));
         } catch(Exception e) {
@@ -28,7 +28,7 @@ public class AMQPParallelSource extends AMQPComponentSource {
         }
     }
 
-    private long consumeNProduceInfoBuffer() throws Exception {
+    private long consumeFromSource() throws Exception {
         long count = 0;
         do {
             GetResponse response = channel.basicGet(queue, false);

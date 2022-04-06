@@ -5,7 +5,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import eu.kinae.k_rabbitmq_cdr.utils.SourceParams;
 
-abstract class AMQPComponentSource extends AMQPComponent implements Source {
+public class AMQPComponentSource extends AMQPComponent implements Source {
 
     protected final String queue;
     protected final SharedBuffer sharedBuffer;

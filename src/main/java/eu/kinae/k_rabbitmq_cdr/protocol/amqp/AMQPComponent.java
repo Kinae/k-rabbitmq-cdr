@@ -10,7 +10,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AMQPComponent implements Component, Runnable {
+abstract class AMQPComponent implements Component {
 
     protected final Connection connection;
     protected final Channel channel;
