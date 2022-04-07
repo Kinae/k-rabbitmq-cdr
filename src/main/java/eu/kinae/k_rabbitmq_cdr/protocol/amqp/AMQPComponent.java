@@ -1,10 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import java.net.URISyntaxException;
+import java.io.IOException;
 
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.Component;
 import org.slf4j.Logger;
@@ -12,29 +10,13 @@ import org.slf4j.LoggerFactory;
 
 abstract class AMQPComponent implements Component {
 
-    protected final Connection connection;
-    protected final Channel channel;
+    private final AMQPConnection connection;
+    private final String queue;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected AMQPComponent(String uri) throws Exception {
-        ConnectionFactory factory = new ConnectionFactory();
-        try {
-            factory.setUri(uri);
-            logger.info("connection validated");
-        } catch(URISyntaxException e) {
-            logger.error("Error URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
-            throw new RuntimeException("Error AMQP URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
-        }
-
-        logger.info("starting connection on {} ...", factory);
-        connection = factory.newConnection();
-        logger.info("connection successful {}", connection);
-        logger.info("creating channel ...");
-        channel = connection.createChannel();
-        logger.info("channel created {} ", channel);
+    protected AMQPComponent(String uri, String queue) throws Exception {
+        this.connection = new AMQPConnection(uri);
+        this.queue = queue;
     }
 
     @Override
@@ -42,19 +24,18 @@ abstract class AMQPComponent implements Component {
         return SupportedType.AMQP;
     }
 
-    protected void close() {
-        try {
-            if(channel.isOpen())
-                channel.close();
-        } catch(Exception e) {
-            logger.warn("Cannot close channel", e);
-        }
+    protected abstract void start();
 
-        try {
-            if(connection.isOpen())
-                connection.close();
-        } catch(Exception e) {
-            logger.warn("Cannot close connection");
-        }
+    protected void close() {
+        connection.close();
     }
+
+    public GetResponse basicGet() throws IOException {
+        return connection.basicGet(queue);
+    }
+
+    public void basicPublish(GetResponse response) throws IOException {
+        connection.basicPublish(queue, response);
+    }
+
 }

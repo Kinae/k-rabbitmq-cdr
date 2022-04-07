@@ -2,19 +2,32 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
+import eu.kinae.k_rabbitmq_cdr.protocol.Component;
 import eu.kinae.k_rabbitmq_cdr.utils.SourceParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AMQPDirectTransfer {
+public class AMQPComponentDirectLinked implements Component {
 
-    private final AMQPSequentialSource source;
-    private final AMQPSequentialTarget target;
+    private final AMQPConnection source;
+    private final AMQPConnection target;
+    private final String sourceQueue;
+    private final String targetQueue;
+    private final SourceParams sourceParams;
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public AMQPDirectTransfer(JCommanderParams params, SourceParams sourceParams) throws Exception {
-        this.source = new AMQPSequentialSource(params, null, sourceParams);
-        this.target = new AMQPSequentialTarget(params, null);
+    public AMQPComponentDirectLinked(JCommanderParams params, SourceParams sourceParams) throws Exception {
+        this.source = new AMQPConnection(params.sourceURI);
+        this.target = new AMQPConnection(params.targetURI);
+        this.sourceQueue = params.sourceQueue;
+        this.targetQueue = params.targetQueue;
+        this.sourceParams = sourceParams;
+    }
+
+    @Override
+    public SupportedType getSupportedType() {
+        return SupportedType.AMQP;
     }
 
     public void run() {
@@ -35,16 +48,16 @@ public class AMQPDirectTransfer {
     private long consumeNProduce() throws Exception {
         long count = 0;
         do {
-            GetResponse response = source.channel.basicGet(source.queue, false);
+            GetResponse response = source.basicGet(sourceQueue);
             if(response == null) {
                 logger.debug("no more message to get");
                 break;
             } else {
                 if(count == 0)
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
-                target.channel.basicPublish("", target.queue, false, false, response.getProps(), response.getBody());
+                target.basicPublish(targetQueue, response);
             }
-        } while(++count < source.parameters.getMaxMessage() || source.parameters.getMaxMessage() == 0); // add message numbers (range, specific number)
+        } while(++count < sourceParams.getMaxMessage() || sourceParams.getMaxMessage() == 0); // add message numbers (range, specific number)
         return count;
     }
 

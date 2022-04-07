@@ -3,7 +3,7 @@ package eu.kinae.k_rabbitmq_cdr.connector;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.params.TransferType;
-import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPDirectTransfer;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPComponentDirectLinked;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
@@ -27,7 +27,7 @@ public class AMQPToAMQPConnector implements Connector {
         if(params.transferType == TransferType.DIRECT) {
             SourceParams sourceParams = new SourceParams(params.maxMessage);
             try {
-                AMQPDirectTransfer directTransfer = new AMQPDirectTransfer(params, sourceParams);
+                AMQPComponentDirectLinked directTransfer = new AMQPComponentDirectLinked(params, sourceParams);
                 directTransfer.run();
             } catch(Exception e) {
                 logger.error("Unknown error, please report it", e);
@@ -44,8 +44,8 @@ public class AMQPToAMQPConnector implements Connector {
                     AMQPSequentialSource source = new AMQPSequentialSource(params, list, sourceParams);
                     AMQPSequentialTarget target = new AMQPSequentialTarget(params, list);
 
-                    source.run();
-                    target.run();
+                    source.start();
+                    target.start();
                 } catch(Exception e) {
                     logger.error("Unknown error, please report it", e);
                     throw new RuntimeException("Unknown error, please report it", e);
