@@ -6,7 +6,7 @@ import com.beust.jcommander.JCommander;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
-import eu.kinae.k_rabbitmq_cdr.utils.SourceParams;
+import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public final class Application {
             return;
         }
 
-        SourceParams parameters = new SourceParams(params.maxMessage);
+        KOptions parameters = new KOptions(params.maxMessage);
 
         Files.createDirectory(Constant.PROJECT_TMPDIR).toFile().deleteOnExit();
         ConnectorFactory.newConnector(params.sourceType, params.targetType)

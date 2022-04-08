@@ -8,9 +8,9 @@ import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialTarget;
+import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
-import eu.kinae.k_rabbitmq_cdr.utils.SourceParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,10 +25,10 @@ public class AMQPToAMQPConnector implements Connector {
     @Override
     public void run(JCommanderParams params) {
         if(params.transferType == TransferType.DIRECT) {
-            SourceParams sourceParams = new SourceParams(params.maxMessage);
+            KOptions sourceParams = new KOptions(params.maxMessage);
             try {
                 AMQPComponentDirectLinked directTransfer = new AMQPComponentDirectLinked(params, sourceParams);
-                directTransfer.run();
+                directTransfer.start();
             } catch(Exception e) {
                 logger.error("Unknown error, please report it", e);
                 throw new RuntimeException("Unknown error, please report it", e);
@@ -38,7 +38,7 @@ public class AMQPToAMQPConnector implements Connector {
         if(params.transferType == TransferType.BUFFER) {
             if(params.processType == ProcessType.SEQUENTIAL) {
                 SharedBuffer list = SharedBuffer.getInstance(ProcessType.SEQUENTIAL);
-                SourceParams sourceParams = new SourceParams(params.maxMessage);
+                KOptions sourceParams = new KOptions(params.maxMessage);
 
                 try {
                     AMQPSequentialSource source = new AMQPSequentialSource(params, list, sourceParams);
@@ -53,7 +53,7 @@ public class AMQPToAMQPConnector implements Connector {
             } else if(params.processType == ProcessType.PARALLEL) {
                 SharedBuffer sharedBuffer = SharedBuffer.getInstance(ProcessType.PARALLEL);
                 SharedStatus sharedStatus = SharedStatus.getInstance();
-                SourceParams sourceParams = new SourceParams(params.maxMessage);
+                KOptions sourceParams = new KOptions(params.maxMessage);
 
                 try {
                     Thread producerThread = new Thread(new AMQPParallelSource(params, sharedBuffer, sharedStatus, sourceParams));

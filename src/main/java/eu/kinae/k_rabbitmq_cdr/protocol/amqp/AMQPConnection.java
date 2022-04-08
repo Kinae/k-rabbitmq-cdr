@@ -14,9 +14,10 @@ class AMQPConnection {
 
     private final Connection connection;
     private final Channel channel;
+    private final String queue;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public AMQPConnection(String uri) throws Exception {
+    public AMQPConnection(String uri, String queue) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         try {
             factory.setUri(uri);
@@ -29,6 +30,7 @@ class AMQPConnection {
             throw new RuntimeException("Unknown error, please report it", e);
         }
 
+        this.queue = queue;
         logger.info("starting connection on {} ...", factory);
         connection = factory.newConnection();
         logger.info("connection successful {}", connection);
@@ -53,11 +55,11 @@ class AMQPConnection {
         }
     }
 
-    public GetResponse basicGet(String queue) throws IOException {
+    public GetResponse basicGet() throws IOException {
         return channel.basicGet(queue, false);
     }
 
-    public void basicPublish(String queue, GetResponse response) throws IOException {
+    public void basicPublish(GetResponse response) throws IOException {
         channel.basicPublish("", queue, false, false, response.getProps(), response.getBody());
     }
 }
