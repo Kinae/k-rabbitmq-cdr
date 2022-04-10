@@ -14,4 +14,9 @@ public class AMQPParallelTarget extends AMQPComponentTarget implements Runnable 
     public void run() {
         start();
     }
+
+    @Override
+    protected boolean breakIfResponseIsNull() {
+        return !sharedStatus.isConsumerAlive();
+    }
 }

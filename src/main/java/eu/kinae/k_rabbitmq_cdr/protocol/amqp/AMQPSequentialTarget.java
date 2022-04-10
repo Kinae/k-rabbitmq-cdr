@@ -9,4 +9,8 @@ public class AMQPSequentialTarget extends AMQPComponentTarget {
         super(params.targetURI, params.targetQueue, sharedBuffer);
     }
 
+    @Override
+    protected boolean breakIfResponseIsNull() {
+        return true;
+    }
 }

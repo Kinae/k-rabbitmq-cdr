@@ -43,7 +43,6 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
 
     @Override
     protected void onFinally() {
-
     }
 
     @Override

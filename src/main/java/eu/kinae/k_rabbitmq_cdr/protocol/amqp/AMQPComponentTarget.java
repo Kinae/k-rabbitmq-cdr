@@ -5,7 +5,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-class AMQPComponentTarget extends AMQPComponent implements Target {
+abstract class AMQPComponentTarget extends AMQPComponent implements Target {
 
     protected final SharedBuffer sharedBuffer;
     protected final SharedStatus sharedStatus;
@@ -32,7 +32,7 @@ class AMQPComponentTarget extends AMQPComponent implements Target {
             GetResponse response = sharedBuffer.pop();
             if(response == null) {
                 logger.debug("Waiting for message ...");
-                if(!sharedStatus.isConsumerAlive())
+                if(breakIfResponseIsNull())
                     break;
             } else {
                 count++;
@@ -41,4 +41,7 @@ class AMQPComponentTarget extends AMQPComponent implements Target {
         } while(true);
         return count;
     }
+
+    protected abstract boolean breakIfResponseIsNull();
+
 }
