@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.params.TransferType;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPComponentDirectLinked;
@@ -8,7 +9,6 @@ import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialTarget;
-import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;

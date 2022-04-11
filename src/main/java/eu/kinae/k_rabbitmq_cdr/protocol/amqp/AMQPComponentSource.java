@@ -1,8 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import com.rabbitmq.client.GetResponse;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
-import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
@@ -41,7 +41,7 @@ abstract class AMQPComponentSource extends AMQPComponent implements Source {
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
                 sharedQueue.push(response);
             }
-        } while(++count < options.getMaxMessage() || options.getMaxMessage() == 0); // add maximum message from params
+        } while(++count < options.maxMessage() || options.maxMessage() == 0); // add maximum message from params
         return count;
     }
 

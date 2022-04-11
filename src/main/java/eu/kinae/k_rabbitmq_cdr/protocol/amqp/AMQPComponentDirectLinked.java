@@ -2,10 +2,10 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.Component;
 import eu.kinae.k_rabbitmq_cdr.protocol.Engine;
-import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
 
 public class AMQPComponentDirectLinked extends Engine implements Component {
 
@@ -37,7 +37,7 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
                 target.basicPublish(response);
             }
-        } while(++count < options.getMaxMessage() || options.getMaxMessage() == 0); // add message numbers (range, specific number)
+        } while(++count < options.maxMessage() || options.maxMessage() == 0); // add message numbers (range, specific number)
         return count;
     }
 
