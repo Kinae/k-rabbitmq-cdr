@@ -3,22 +3,22 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
-import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 abstract class AMQPComponentSource extends AMQPComponent implements Source {
 
-    protected final SharedBuffer sharedBuffer;
+    protected final SharedQueue sharedQueue;
     protected final SharedStatus sharedStatus;
     protected final KOptions options;
 
-    protected AMQPComponentSource(String uri, String queue, SharedBuffer sharedBuffer, KOptions options) throws Exception {
-        this(uri, queue, sharedBuffer, null, options);
+    protected AMQPComponentSource(String uri, String queue, SharedQueue sharedQueue, KOptions options) throws Exception {
+        this(uri, queue, sharedQueue, null, options);
     }
 
-    protected AMQPComponentSource(String uri, String queue, SharedBuffer sharedBuffer, SharedStatus sharedStatus, KOptions options) throws Exception {
+    protected AMQPComponentSource(String uri, String queue, SharedQueue sharedQueue, SharedStatus sharedStatus, KOptions options) throws Exception {
         super(uri, queue);
-        this.sharedBuffer = sharedBuffer;
+        this.sharedQueue = sharedQueue;
         this.sharedStatus = sharedStatus;
         this.options = options;
     }
@@ -39,7 +39,7 @@ abstract class AMQPComponentSource extends AMQPComponent implements Source {
             } else {
                 if(count == 0)
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
-                sharedBuffer.push(response);
+                sharedQueue.push(response);
             }
         } while(++count < options.getMaxMessage() || options.getMaxMessage() == 0); // add maximum message from params
         return count;

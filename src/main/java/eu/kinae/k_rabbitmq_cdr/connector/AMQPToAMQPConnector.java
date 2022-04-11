@@ -9,7 +9,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.utils.KOptions;
-import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class AMQPToAMQPConnector implements Connector {
 
         if(params.transferType == TransferType.BUFFER) {
             if(params.processType == ProcessType.SEQUENTIAL) {
-                SharedBuffer list = SharedBuffer.getInstance(ProcessType.SEQUENTIAL);
+                SharedQueue list = new SharedQueue(ProcessType.SEQUENTIAL);
                 KOptions sourceParams = new KOptions(params.maxMessage);
 
                 try {
@@ -51,16 +51,16 @@ public class AMQPToAMQPConnector implements Connector {
                     throw new RuntimeException("Unknown error, please report it", e);
                 }
             } else if(params.processType == ProcessType.PARALLEL) {
-                SharedBuffer sharedBuffer = SharedBuffer.getInstance(ProcessType.PARALLEL);
-                SharedStatus sharedStatus = SharedStatus.getInstance();
+                SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
+                SharedStatus sharedStatus = new SharedStatus();
                 KOptions sourceParams = new KOptions(params.maxMessage);
 
                 try {
-                    Thread producerThread = new Thread(new AMQPParallelSource(params, sharedBuffer, sharedStatus, sourceParams));
+                    Thread producerThread = new Thread(new AMQPParallelSource(params, sharedQueue, sharedStatus, sourceParams));
                     producerThread.start();
 
                     for(int i = 0; i < 3; i++) {
-                        Thread consumerThread = new Thread(new AMQPParallelTarget(params, sharedBuffer, sharedStatus));
+                        Thread consumerThread = new Thread(new AMQPParallelTarget(params, sharedQueue, sharedStatus));
                         consumerThread.start();
                     }
 

@@ -1,12 +1,12 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
-import eu.kinae.k_rabbitmq_cdr.utils.SharedBuffer;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
 public class AMQPSequentialTarget extends AMQPComponentTarget {
 
-    public AMQPSequentialTarget(JCommanderParams params, SharedBuffer sharedBuffer) throws Exception {
-        super(params.targetURI, params.targetQueue, sharedBuffer);
+    public AMQPSequentialTarget(JCommanderParams params, SharedQueue sharedQueue) throws Exception {
+        super(params.targetURI, params.targetQueue, sharedQueue);
     }
 
     @Override

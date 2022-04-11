@@ -9,26 +9,27 @@ import java.util.concurrent.TimeUnit;
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 
-public class SharedBuffer {
+public class SharedQueue {
 
-    private static SharedBuffer instance = null;
     private final Queue<GetResponse> buffer;
 
-    private SharedBuffer(Queue<GetResponse> buffer) {
-        this.buffer = buffer;
+    public SharedQueue(ProcessType processType) {
+        this(processType, null);
     }
 
-    public static SharedBuffer getInstance(ProcessType processType) {
-        return getInstance(processType, null);
+    public SharedQueue(ProcessType processType, Integer capacity) {
+        this.buffer = queueByProcessType(processType, capacity);
     }
 
-    public static SharedBuffer getInstance(ProcessType processType, Integer capacity) {
-        if(instance == null)
-            instance = new SharedBuffer(type(processType, capacity));
-        return instance;
+    public Class<? extends Queue> getBufferType() {
+        return buffer.getClass();
     }
 
-    private static Queue<GetResponse> type(ProcessType type, Integer capacity) {
+    public int size() {
+        return this.buffer.size();
+    }
+
+    private static Queue<GetResponse> queueByProcessType(ProcessType type, Integer capacity) {
         return switch(type) {
             case SEQUENTIAL -> new LinkedList<>();
             case PARALLEL -> capacity != null ? new LinkedBlockingQueue<>(capacity) : new LinkedBlockingQueue<>();
