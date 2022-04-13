@@ -1,8 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.utils;
 
-import java.util.AbstractSequentialList;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
 
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
@@ -10,16 +8,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class SharedQueueTest {
-
-    @Test
-    public void testSequentialQueueIsAnInstanceOfSequentialList() {
-        Assertions.assertThat(new SharedQueue(ProcessType.SEQUENTIAL).getBufferType()).isInstanceOf(AbstractSequentialList.class);
-    }
-
-    @Test
-    public void testParallelQueueIsAnInstanceOfBlockingQueue() {
-        Assertions.assertThat(new SharedQueue(ProcessType.PARALLEL).getBufferType()).isInstanceOf(BlockingQueue.class);
-    }
 
     @Test
     public void testPushNPopFromSequentialQueue() throws InterruptedException {
