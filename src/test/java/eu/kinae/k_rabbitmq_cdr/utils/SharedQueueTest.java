@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 public class SharedQueueTest {
 
     @Test
-    public void testPushNPopFromSequentialQueue() throws InterruptedException {
+    public void Sequential_queue_push_and_pop_messages() throws InterruptedException {
         List<GetResponse> responses = List.of(wrapResponse(2), wrapResponse(1), wrapResponse(0));
         SharedQueue queue = new SharedQueue(ProcessType.SEQUENTIAL);
         for(GetResponse response : responses) {
@@ -26,7 +26,7 @@ public class SharedQueueTest {
     }
 
     @Test
-    public void testPushNPopFromParallelQueue() throws InterruptedException {
+    public void Parallel_queue_push_and_pop_messages() throws InterruptedException {
         List<GetResponse> responses = List.of(wrapResponse(2), wrapResponse(1), wrapResponse(0));
         SharedQueue queue = new SharedQueue(ProcessType.PARALLEL);
         for(GetResponse response : responses) {
