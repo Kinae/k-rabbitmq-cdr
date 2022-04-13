@@ -1,9 +1,10 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
-import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 
 public interface Connector {
 
-    void run(JCommanderParams params);
+    void start(KParameters parameters, KOptions options);
 
 }

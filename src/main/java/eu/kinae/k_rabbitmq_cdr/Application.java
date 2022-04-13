@@ -6,6 +6,7 @@ import com.beust.jcommander.JCommander;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,11 +28,12 @@ public final class Application {
             return;
         }
 
-        KOptions parameters = new KOptions(params.maxMessage);
+        KOptions options = new KOptions(params.maxMessage);
+        KParameters parameters = new KParameters(params.sourceType, params.sourceURI, params.sourceQueue, params.targetType, params.targetURI, params.targetQueue);
 
         Files.createDirectory(Constant.PROJECT_TMPDIR).toFile().deleteOnExit();
         ConnectorFactory.newConnector(params.sourceType, params.targetType)
-                .ifPresentOrElse(it -> it.run(params), () -> logger.error("No connector found for {} => {}", params.sourceType, params.targetType));
+                .ifPresentOrElse(it -> it.start(parameters, options), () -> logger.error("No connector found for {} => {}", params.sourceType, params.targetType));
     }
 
 }

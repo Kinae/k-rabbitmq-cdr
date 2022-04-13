@@ -9,4 +9,9 @@ public abstract class AWS_S3Component implements Component {
     public SupportedType getSupportedType() {
         return SupportedType.AWS_S3;
     }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }

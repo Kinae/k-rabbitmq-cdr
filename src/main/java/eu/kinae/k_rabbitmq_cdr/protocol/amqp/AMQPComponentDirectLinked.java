@@ -1,8 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import com.rabbitmq.client.GetResponse;
-import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.Component;
 import eu.kinae.k_rabbitmq_cdr.protocol.Engine;
@@ -13,9 +13,9 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
     private final AMQPConnection target;
     private final KOptions options;
 
-    public AMQPComponentDirectLinked(JCommanderParams params, KOptions options) throws Exception {
-        this.source = new AMQPConnection(params.sourceURI, params.sourceQueue);
-        this.target = new AMQPConnection(params.targetURI, params.targetQueue);
+    public AMQPComponentDirectLinked(KParameters parameters, KOptions options) throws Exception {
+        this.source = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue());
+        this.target = new AMQPConnection(parameters.targetURI(), parameters.targetQueue());
         this.options = options;
     }
 
@@ -35,7 +35,7 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
             } else {
                 if(count == 0)
                     logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
-                target.basicPublish(response);
+                target.basicPublish(response.getProps(), response.getBody());
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0); // add message numbers (range, specific number)
         return count;
@@ -46,9 +46,8 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
     }
 
     @Override
-    protected void close() {
+    public void close() {
         source.close();
         target.close();
     }
-
 }

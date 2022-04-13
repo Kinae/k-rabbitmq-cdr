@@ -5,6 +5,10 @@ import java.util.Set;
 
 public record KOptions(long maxMessage, Set<Integer> specificMessagesToGet) {
 
+    public KOptions() {
+        this(0, Collections.emptySet());
+    }
+
     public KOptions(long maxMessage) {
         this(maxMessage, Collections.emptySet());
     }

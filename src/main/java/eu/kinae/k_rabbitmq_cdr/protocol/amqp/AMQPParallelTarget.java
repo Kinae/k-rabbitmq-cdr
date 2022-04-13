@@ -1,13 +1,13 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPParallelTarget extends AMQPComponentTarget implements Runnable {
 
-    public AMQPParallelTarget(JCommanderParams params, SharedQueue sharedQueue, SharedStatus sharedStatus) throws Exception {
-        super(params.targetURI, params.targetQueue, sharedQueue, sharedStatus);
+    public AMQPParallelTarget(KParameters parameters, SharedQueue sharedQueue, SharedStatus sharedStatus) throws Exception {
+        super(parameters.targetURI(), parameters.targetQueue(), sharedQueue, sharedStatus);
     }
 
     @Override

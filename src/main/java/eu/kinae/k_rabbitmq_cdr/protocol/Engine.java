@@ -15,16 +15,14 @@ public abstract class Engine {
             logger.info("messages consumed and produced : {} in {}ms", count, (end - start));
         } catch(Exception e) {
             logger.error("Error : ", e);
+            throw new RuntimeException(e);
         } finally {
             onFinally();
-            close();
         }
     }
 
     protected abstract long consumeNProduce() throws Exception;
 
     protected abstract void onFinally();
-
-    protected abstract void close();
 
 }

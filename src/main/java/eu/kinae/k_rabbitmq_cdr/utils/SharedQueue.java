@@ -21,10 +21,6 @@ public class SharedQueue {
         this.buffer = queueByProcessType(processType, capacity);
     }
 
-    public Class<? extends Queue> getBufferType() {
-        return buffer.getClass();
-    }
-
     public int size() {
         return this.buffer.size();
     }

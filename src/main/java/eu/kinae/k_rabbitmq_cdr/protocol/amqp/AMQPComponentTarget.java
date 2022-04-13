@@ -36,7 +36,7 @@ abstract class AMQPComponentTarget extends AMQPComponent implements Target {
                     break;
             } else {
                 count++;
-                basicPublish(response);
+                basicPublish(response.getProps(), response.getBody());
             }
         } while(true);
         return count;

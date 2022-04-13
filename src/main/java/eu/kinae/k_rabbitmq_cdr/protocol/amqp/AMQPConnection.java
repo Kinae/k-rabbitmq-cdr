@@ -3,6 +3,7 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -10,7 +11,7 @@ import com.rabbitmq.client.GetResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AMQPConnection {
+class AMQPConnection implements AutoCloseable {
 
     private final Connection connection;
     private final Channel channel;
@@ -31,25 +32,31 @@ class AMQPConnection {
         }
 
         this.queue = queue;
-        logger.info("starting connection on {} ...", factory);
+        logger.info("starting connection on {}", factory);
         connection = factory.newConnection();
         logger.info("connection successful {}", connection);
-        logger.info("creating channel ...");
+        logger.info("creating channel");
         channel = connection.createChannel();
         logger.info("channel created {} ", channel);
     }
 
     public void close() {
         try {
-            if(channel.isOpen())
+            logger.info("closing channel if open");
+            if(channel.isOpen()) {
+                logger.info("channel closed");
                 channel.close();
+            }
         } catch(Exception e) {
             logger.warn("Cannot close channel", e);
         }
 
         try {
-            if(connection.isOpen())
+            logger.info("closing connection if open");
+            if(connection.isOpen()) {
+                logger.info("connection closed");
                 connection.close();
+            }
         } catch(Exception e) {
             logger.warn("Cannot close connection");
         }
@@ -59,7 +66,7 @@ class AMQPConnection {
         return channel.basicGet(queue, false);
     }
 
-    public void basicPublish(GetResponse response) throws IOException {
-        channel.basicPublish("", queue, false, false, response.getProps(), response.getBody());
+    public void basicPublish(AMQP.BasicProperties properties, byte[] body) throws IOException {
+        channel.basicPublish("", queue, false, false, properties, body);
     }
 }

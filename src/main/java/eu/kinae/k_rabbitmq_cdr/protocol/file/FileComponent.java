@@ -9,4 +9,9 @@ public abstract class FileComponent implements Component {
     public SupportedType getSupportedType() {
         return SupportedType.FILE;
     }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }
