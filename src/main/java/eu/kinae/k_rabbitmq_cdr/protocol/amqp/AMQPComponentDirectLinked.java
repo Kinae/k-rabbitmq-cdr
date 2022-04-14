@@ -1,21 +1,21 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
-import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.protocol.Component;
-import eu.kinae.k_rabbitmq_cdr.protocol.Engine;
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.Target;
+import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
-public class AMQPComponentDirectLinked extends Engine implements Component {
+public class AMQPComponentDirectLinked extends AMQPComponent {
 
-    private final AMQPConnection source;
-    private final AMQPConnection target;
     private final KOptions options;
 
-    public AMQPComponentDirectLinked(KParameters parameters, KOptions options) throws Exception {
-        this.source = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue());
-        this.target = new AMQPConnection(parameters.targetURI(), parameters.targetQueue());
+    public AMQPComponentDirectLinked(Source source, Target target) {
+        this(source, target, KOptions.DEFAULT);
+    }
+
+    public AMQPComponentDirectLinked(Source source, Target target, KOptions options) {
+        super(source, target);
         this.options = options;
     }
 
@@ -25,17 +25,17 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
     }
 
     @Override
-    protected long consumeNProduce() throws Exception {
+    public long consumeNProduce() throws Exception {
         long count = 0;
         do {
-            GetResponse response = source.basicGet();
-            if(response == null) {
+            KMessage message = pop();
+            if(message == null) {
                 logger.debug("no more message to get");
                 break;
             } else {
                 if(count == 0)
-                    logger.info("estimate total number of messages : {}", (response.getMessageCount() + 1));
-                target.basicPublish(response.getProps(), response.getBody());
+                    logger.info("estimate total number of messages : {}", (message.messageCount() + 1));
+                push(message);
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0); // add message numbers (range, specific number)
         return count;
@@ -43,11 +43,5 @@ public class AMQPComponentDirectLinked extends Engine implements Component {
 
     @Override
     protected void onFinally() {
-    }
-
-    @Override
-    public void close() {
-        source.close();
-        target.close();
     }
 }

@@ -5,6 +5,6 @@ import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 
 public interface Connector {
 
-    void start(KParameters parameters, KOptions options);
+    void start(KParameters params, KOptions options);
 
 }

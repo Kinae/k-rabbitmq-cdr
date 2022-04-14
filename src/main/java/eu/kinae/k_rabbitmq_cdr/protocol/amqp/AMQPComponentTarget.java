@@ -1,22 +1,19 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import com.rabbitmq.client.GetResponse;
-import eu.kinae.k_rabbitmq_cdr.protocol.Target;
+import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-abstract class AMQPComponentTarget extends AMQPComponent implements Target {
+abstract class AMQPComponentTarget extends AMQPComponent {
 
-    protected final SharedQueue sharedQueue;
     protected final SharedStatus sharedStatus;
 
-    protected AMQPComponentTarget(String uri, String queue, SharedQueue sharedQueue) throws Exception {
-        this(uri, queue, sharedQueue, null);
+    protected AMQPComponentTarget(AMQPConnection connection, SharedQueue sharedQueue) {
+        this(connection, sharedQueue, null);
     }
 
-    protected AMQPComponentTarget(String uri, String queue, SharedQueue sharedQueue, SharedStatus sharedStatus) throws Exception {
-        super(uri, queue);
-        this.sharedQueue = sharedQueue;
+    protected AMQPComponentTarget(AMQPConnection connection, SharedQueue sharedQueue, SharedStatus sharedStatus) {
+        super(sharedQueue, connection);
         this.sharedStatus = sharedStatus;
     }
 
@@ -26,22 +23,22 @@ abstract class AMQPComponentTarget extends AMQPComponent implements Target {
     }
 
     @Override
-    protected long consumeNProduce() throws Exception {
+    public long consumeNProduce() throws Exception {
         long count = 0;
         do {
-            GetResponse response = sharedQueue.pop();
-            if(response == null) {
+            KMessage message = pop();
+            if(message == null) {
                 logger.debug("Waiting for message ...");
-                if(breakIfResponseIsNull())
+                if(stopConsumingIfResponseIsNull())
                     break;
             } else {
                 count++;
-                basicPublish(response.getProps(), response.getBody());
+                push(message);
             }
         } while(true);
         return count;
     }
 
-    protected abstract boolean breakIfResponseIsNull();
+    protected abstract boolean stopConsumingIfResponseIsNull();
 
 }

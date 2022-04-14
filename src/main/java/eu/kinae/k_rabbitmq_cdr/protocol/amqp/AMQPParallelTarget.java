@@ -1,13 +1,12 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPParallelTarget extends AMQPComponentTarget implements Runnable {
 
-    public AMQPParallelTarget(KParameters parameters, SharedQueue sharedQueue, SharedStatus sharedStatus) throws Exception {
-        super(parameters.targetURI(), parameters.targetQueue(), sharedQueue, sharedStatus);
+    public AMQPParallelTarget(AMQPConnection connection, SharedQueue sharedQueue, SharedStatus sharedStatus) {
+        super(connection, sharedQueue, sharedStatus);
     }
 
     @Override
@@ -16,7 +15,7 @@ public class AMQPParallelTarget extends AMQPComponentTarget implements Runnable 
     }
 
     @Override
-    protected boolean breakIfResponseIsNull() {
+    protected boolean stopConsumingIfResponseIsNull() {
         return !sharedStatus.isConsumerAlive();
     }
 }

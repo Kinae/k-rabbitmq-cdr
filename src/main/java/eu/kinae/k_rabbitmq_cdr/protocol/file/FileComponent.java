@@ -10,8 +10,4 @@ public abstract class FileComponent implements Component {
         return SupportedType.FILE;
     }
 
-    @Override
-    public void close() throws Exception {
-
-    }
 }

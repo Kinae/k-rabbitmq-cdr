@@ -21,7 +21,7 @@ public abstract class Engine {
         }
     }
 
-    protected abstract long consumeNProduce() throws Exception;
+    public abstract long consumeNProduce() throws Exception;
 
     protected abstract void onFinally();
 

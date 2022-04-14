@@ -19,21 +19,21 @@ public final class Application {
     }
 
     public static void main(String[] args) throws Exception {
-        JCommanderParams params = new JCommanderParams();
-        JCommander jct = JCommander.newBuilder().addObject(params).build();
+        JCommanderParams jParams = new JCommanderParams();
+        JCommander jct = JCommander.newBuilder().addObject(jParams).build();
         jct.parse(args);
 
-        if(params.help) {
+        if(jParams.help) {
             jct.usage();
             return;
         }
 
-        KOptions options = new KOptions(params.maxMessage);
-        KParameters parameters = new KParameters(params.sourceType, params.sourceURI, params.sourceQueue, params.targetType, params.targetURI, params.targetQueue);
+        KOptions options = new KOptions(jParams.maxMessage);
+        KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue, jParams.targetType, jParams.targetURI, jParams.targetQueue);
 
         Files.createDirectory(Constant.PROJECT_TMPDIR).toFile().deleteOnExit();
-        ConnectorFactory.newConnector(params.sourceType, params.targetType)
-                .ifPresentOrElse(it -> it.start(parameters, options), () -> logger.error("No connector found for {} => {}", params.sourceType, params.targetType));
+        ConnectorFactory.newConnector(params.sourceType(), params.targetType())
+                .ifPresentOrElse(it -> it.start(params, options), () -> logger.error("No connector found for {} => {}", params.sourceType(), params.targetType()));
     }
 
 }

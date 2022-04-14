@@ -5,6 +5,8 @@ import java.util.Set;
 
 public record KOptions(long maxMessage, Set<Integer> specificMessagesToGet) {
 
+    public static final KOptions DEFAULT = new KOptions();
+
     public KOptions() {
         this(0, Collections.emptySet());
     }

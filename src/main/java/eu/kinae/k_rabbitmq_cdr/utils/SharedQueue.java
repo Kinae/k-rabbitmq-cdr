@@ -6,12 +6,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 
-public class SharedQueue {
+public class SharedQueue implements Source, Target {
 
-    private final Queue<GetResponse> buffer;
+    private final Queue<KMessage> buffer;
 
     public SharedQueue(ProcessType processType) {
         this(processType, null);
@@ -25,23 +26,23 @@ public class SharedQueue {
         return this.buffer.size();
     }
 
-    private static Queue<GetResponse> queueByProcessType(ProcessType type, Integer capacity) {
+    private static Queue<KMessage> queueByProcessType(ProcessType type, Integer capacity) {
         return switch(type) {
             case SEQUENTIAL -> new LinkedList<>();
             case PARALLEL -> capacity != null ? new LinkedBlockingQueue<>(capacity) : new LinkedBlockingQueue<>();
         };
     }
 
-    public void push(GetResponse response) throws InterruptedException {
-        if(buffer instanceof BlockingQueue<GetResponse> bq) {
+    public void push(KMessage response) throws Exception {
+        if(buffer instanceof BlockingQueue<KMessage> bq) {
             bq.put(response);
         } else {
             buffer.add(response);
         }
     }
 
-    public GetResponse pop() throws InterruptedException {
-        if(buffer instanceof BlockingQueue<GetResponse> bq) {
+    public KMessage pop() throws Exception {
+        if(buffer instanceof BlockingQueue<KMessage> bq) {
             return bq.poll(500, TimeUnit.MILLISECONDS);
         } else {
             return buffer.poll();

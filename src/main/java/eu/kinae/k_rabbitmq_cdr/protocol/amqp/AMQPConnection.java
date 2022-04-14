@@ -3,15 +3,17 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.GetResponse;
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.Target;
+import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class AMQPConnection implements AutoCloseable {
+public class AMQPConnection implements AutoCloseable, Source, Target {
 
     private final Connection connection;
     private final Channel channel;
@@ -62,11 +64,16 @@ class AMQPConnection implements AutoCloseable {
         }
     }
 
-    public GetResponse basicGet() throws IOException {
-        return channel.basicGet(queue, false);
+    @Override
+    public KMessage pop() throws IOException {
+        GetResponse response = channel.basicGet(queue, false);
+        if(response == null)
+            return null;
+        return new KMessage(response.getProps(), response.getBody(), response.getMessageCount());
     }
 
-    public void basicPublish(AMQP.BasicProperties properties, byte[] body) throws IOException {
-        channel.basicPublish("", queue, false, false, properties, body);
+    @Override
+    public void push(KMessage message) throws IOException {
+        channel.basicPublish("", queue, false, false, message.properties(), message.body());
     }
 }
