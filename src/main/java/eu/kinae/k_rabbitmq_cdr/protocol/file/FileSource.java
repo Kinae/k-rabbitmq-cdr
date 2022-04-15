@@ -12,6 +12,10 @@ public class FileSource extends FileComponent implements Source {
         return null;
     }
 
+    @Override public void close() throws Exception {
+
+    }
+
     //    @Override
     //    public boolean consume() throws Exception {
     //        return false;

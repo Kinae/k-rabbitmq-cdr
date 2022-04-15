@@ -8,8 +8,12 @@ public class FileTarget extends FileComponent implements Target {
     public FileTarget() {
     }
 
-    @Override public void push(KMessage message) throws Exception {
+    @Override
+    public void push(KMessage message) throws Exception {
 
     }
 
+    @Override public void close() throws Exception {
+
+    }
 }

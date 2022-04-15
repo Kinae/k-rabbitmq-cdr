@@ -7,7 +7,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
-public abstract class AMQPComponent extends Engine implements Component, Source, Target {
+public abstract class AMQPComponent extends Engine implements AutoCloseable, Component, Source, Target {
 
     private final Source source;
     private final Target target;
@@ -30,5 +30,19 @@ public abstract class AMQPComponent extends Engine implements Component, Source,
     @Override
     public void push(KMessage message) throws Exception {
         target.push(message);
+    }
+
+    @Override
+    public void close() throws Exception {
+        source.close();
+        target.close();
+    }
+
+    public Source getSource() {
+        return source;
+    }
+
+    public Target getTarget() {
+        return target;
     }
 }

@@ -49,4 +49,8 @@ public class SharedQueue implements Source, Target {
         }
     }
 
+    @Override
+    public void close() {
+
+    }
 }
