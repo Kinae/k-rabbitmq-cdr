@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class AMQPConnection implements AutoCloseable, Source, Target {
 
     private final Connection connection;
-    private final Channel channel;
+    private Channel channel;
     private final String queue;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -36,16 +36,17 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
         this.queue = queue;
         logger.info("starting connection on {}", factory);
         connection = factory.newConnection();
-        logger.info("connection successful {}", connection);
+    }
+
+    Channel createChannel() throws IOException {
         logger.info("creating channel");
-        channel = connection.createChannel();
-        logger.info("channel created {} ", channel);
+        return connection.createChannel();
     }
 
     public void close() {
         try {
             logger.info("closing channel if open");
-            if(channel.isOpen()) {
+            if(channel != null && channel.isOpen()) {
                 logger.info("channel closed");
                 channel.close();
             }
@@ -66,6 +67,8 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
 
     @Override
     public KMessage pop() throws IOException {
+        if(channel == null)
+            channel = createChannel();
         GetResponse response = channel.basicGet(queue, false);
         if(response == null)
             return null;
@@ -74,6 +77,13 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
 
     @Override
     public void push(KMessage message) throws IOException {
+        if(channel == null)
+            channel = createChannel();
         channel.basicPublish("", queue, false, false, message.properties(), message.body());
     }
+
+    protected void push(KMessage message, Channel channel) throws IOException {
+        channel.basicPublish("", queue, false, false, message.properties(), message.body());
+    }
+
 }

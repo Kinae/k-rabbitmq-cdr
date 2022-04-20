@@ -2,7 +2,7 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.verify;
 public class AMQPSequentialTargetTest {
 
     public static final String TARGET_Q = "target-q";
-    public static final List<KMessage> MESSAGES = Stream.of(new Integer[] { 0, 1, 2, 3, 4 }).map(it -> new KMessage("TEST_" + it)).collect(Collectors.toList());
+    public static final List<KMessage> MESSAGES = IntStream.range(0, 2000).boxed().map(it -> new KMessage("TEST_" + it)).collect(Collectors.toList());
 
     @Container
     public static final RabbitMQContainer rabbitmq = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3-management"))

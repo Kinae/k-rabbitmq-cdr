@@ -7,18 +7,21 @@ public abstract class Engine {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    public void start() {
+    public long start() {
+        long count;
+        long start = System.currentTimeMillis();
         try {
-            long start = System.currentTimeMillis();
-            long count = consumeNProduce();
-            long end = System.currentTimeMillis();
-            logger.info("messages consumed and produced : {} in {}ms", count, (end - start));
+            count = consumeNProduce();
         } catch(Exception e) {
             logger.error("Error : ", e);
             throw new RuntimeException(e);
         } finally {
             onFinally();
         }
+
+        long end = System.currentTimeMillis();
+        logger.info("messages consumed and produced : {} in {}ms", count, (end - start));
+        return count;
     }
 
     public abstract long consumeNProduce() throws Exception;

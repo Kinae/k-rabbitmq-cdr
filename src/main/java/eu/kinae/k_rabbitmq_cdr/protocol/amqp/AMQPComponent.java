@@ -9,8 +9,8 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
 public abstract class AMQPComponent extends Engine implements AutoCloseable, Component, Source, Target {
 
-    private final Source source;
-    private final Target target;
+    protected final Source source;
+    protected final Target target;
 
     protected AMQPComponent(Source source, Target target) {
         this.source = source;
