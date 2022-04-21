@@ -1,11 +1,21 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.params.TransferType;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPComponentDirectLinked;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPConnection;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -59,14 +69,14 @@ public class AMQPToAMQPConnector implements Connector {
                 try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
                     AMQPConnection tConnection = new AMQPConnection(params.targetURI(), params.targetQueue())) {
 
-                    //                    Thread producerThread = new Thread(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, sourceParams));
-                    //                    producerThread.start();
+                    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(4);
+                    List<Callable<Long>> callables = IntStream.range(0, 3)
+                            .mapToObj(integer -> new AMQPParallelTarget(tConnection, sharedQueue, sharedStatus))
+                            .collect(Collectors.toCollection(ArrayList::new));
+                    callables.add(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, sourceParams));
+                    fixedThreadPool.invokeAll(callables);
 
-                    for(int i = 0; i < 3; i++) {
-                        //                        Thread consumerThread =  new Thread(new AMQPParallelTarget(tConnection, sharedQueue, sharedStatus));
-                        //                        consumerThread.start();
-                    }
-
+                    fixedThreadPool.shutdown();
                 } catch(Exception e) {
                     logger.error("Unknown error, please report it", e);
                     throw new RuntimeException("Unknown error, please report it", e);

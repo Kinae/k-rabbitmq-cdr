@@ -47,11 +47,11 @@ public class AMQPParallelTargetTest {
         var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
         try(var connection = mock(AMQPConnection.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
-
             var callables = IntStream.range(0, CONSUMERS)
                     .mapToObj(integer -> new AMQPParallelTarget(connection, emptyQueue, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
+
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
             assertThat(futures.stream().mapToLong(it -> {
                 try {
@@ -77,12 +77,11 @@ public class AMQPParallelTargetTest {
 
         try(var connection = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
-
             var callables = IntStream.range(0, CONSUMERS)
                     .mapToObj(integer -> new AMQPParallelTarget(connection, sharedQueue, status))
                     .collect(Collectors.toCollection(ArrayList::new));
-
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
+
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
             assertThat(futures.stream().mapToLong(it -> {
                 try {
