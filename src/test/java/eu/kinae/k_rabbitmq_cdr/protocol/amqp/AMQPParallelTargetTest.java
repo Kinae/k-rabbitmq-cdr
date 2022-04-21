@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,6 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -33,8 +31,9 @@ import static org.mockito.Mockito.when;
 @Testcontainers
 public class AMQPParallelTargetTest {
 
-    public static final String TARGET_Q = "target-q";
-    public static final List<KMessage> MESSAGES = IntStream.range(0, 2000).boxed().map(it -> new KMessage("TEST_" + it)).collect(Collectors.toList());
+    private static final int CONSUMERS = 3;
+    private static final String TARGET_Q = "target-q";
+    private static final List<KMessage> MESSAGES = IntStream.range(0, 2000).boxed().map(it -> new KMessage("TEST_" + it)).collect(Collectors.toList());
 
     @Container
     public static final RabbitMQContainer rabbitmq = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3-management"))
@@ -45,18 +44,16 @@ public class AMQPParallelTargetTest {
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        SharedQueue emptyQueue = new SharedQueue(ProcessType.PARALLEL);
-        try(var target = mock(AMQPConnection.class)) {
-            var executor = Executors.newFixedThreadPool(3);
+        var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
+        try(var connection = mock(AMQPConnection.class)) {
+            var executor = Executors.newFixedThreadPool(CONSUMERS);
 
-            var callables = new ArrayList<Callable<Long>>();
-            callables.add(new AMQPParallelTarget(target, emptyQueue, status));
-            callables.add(new AMQPParallelTarget(target, emptyQueue, status));
-            callables.add(new AMQPParallelTarget(target, emptyQueue, status));
-
+            var callables = IntStream.range(0, CONSUMERS)
+                    .mapToObj(integer -> new AMQPParallelTarget(connection, emptyQueue, status))
+                    .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
-            Assertions.assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(3L);
-            Assertions.assertThat(futures.stream().mapToLong(it -> {
+            assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
+            assertThat(futures.stream().mapToLong(it -> {
                 try {
                     return it.get();
                 } catch(Exception ex) {
@@ -64,36 +61,30 @@ public class AMQPParallelTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            assertThat(target.pop()).isNull();
-            verify(target, times(0)).push(any());
-
-            //            Future<?> future = Executors.newFixedThreadPool(3).submit(component);
-            //            Awaitility.await().atMost(10, TimeUnit.SECONDS).until(future::isDone);
-
+            assertThat(connection.pop()).isNull();
+            verify(connection, times(0)).push(any());
         }
     }
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
+        var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         for(KMessage message : MESSAGES)
             sharedQueue.push(message);
 
         try(var connection = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            var executor = Executors.newFixedThreadPool(3);
+            var executor = Executors.newFixedThreadPool(CONSUMERS);
 
-            var callables = new ArrayList<Callable<Long>>();
-            callables.add(new AMQPParallelTarget(connection, sharedQueue, status));
-            callables.add(new AMQPParallelTarget(connection, sharedQueue, status));
-            callables.add(new AMQPParallelTarget(connection, sharedQueue, status));
+            var callables = IntStream.range(0, CONSUMERS)
+                    .mapToObj(integer -> new AMQPParallelTarget(connection, sharedQueue, status))
+                    .collect(Collectors.toCollection(ArrayList::new));
 
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
-            Assertions.assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(3L);
-            Assertions.assertThat(futures.stream().mapToLong(it -> {
+            assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
+            assertThat(futures.stream().mapToLong(it -> {
                 try {
                     return it.get();
                 } catch(Exception ex) {

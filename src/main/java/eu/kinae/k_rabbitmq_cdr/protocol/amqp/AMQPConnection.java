@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 public class AMQPConnection implements AutoCloseable, Source, Target {
 
     private final Connection connection;
-    private Channel channel;
     private final String queue;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private Channel channel;
 
     public AMQPConnection(String uri, String queue) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();

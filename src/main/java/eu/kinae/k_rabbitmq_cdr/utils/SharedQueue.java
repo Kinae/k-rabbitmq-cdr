@@ -22,15 +22,15 @@ public class SharedQueue implements Source, Target {
         this.buffer = queueByProcessType(processType, capacity);
     }
 
-    public int size() {
-        return this.buffer.size();
-    }
-
     private static Queue<KMessage> queueByProcessType(ProcessType type, Integer capacity) {
         return switch(type) {
             case SEQUENTIAL -> new LinkedList<>();
             case PARALLEL -> capacity != null ? new LinkedBlockingQueue<>(capacity) : new LinkedBlockingQueue<>();
         };
+    }
+
+    public int size() {
+        return this.buffer.size();
     }
 
     public void push(KMessage response) throws Exception {
