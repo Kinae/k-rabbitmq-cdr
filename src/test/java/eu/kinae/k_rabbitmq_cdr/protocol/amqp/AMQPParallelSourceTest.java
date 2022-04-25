@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -26,7 +27,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
     }
 
     @Override
-    protected AMQPComponent getComponent(String queue, Target target, KOptions options) throws Exception {
+    protected AbstractComponentSource getComponent(String queue, Target target, KOptions options) throws Exception {
         return new AMQPSequentialSource(new AMQPConnection(buildAMQPURI(rabbitmq), queue), (SharedQueue) target, options);
     }
 

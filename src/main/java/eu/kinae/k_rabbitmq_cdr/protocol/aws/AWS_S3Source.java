@@ -16,6 +16,10 @@ public class AWS_S3Source extends AWS_S3Component implements Source {
 
     }
 
+    @Override public long consumeNProduce() throws Exception {
+        return 0;
+    }
+
     //    @Override
     //    public boolean consume() {
     //        return false;

@@ -11,9 +11,9 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileWriterTarget implements Target {
+public class FileWriter implements Target {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileWriterTarget.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileWriter.class);
 
     @Override
     public void push(KMessage message) throws Exception {

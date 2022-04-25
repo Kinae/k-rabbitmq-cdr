@@ -1,10 +1,11 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
-import eu.kinae.k_rabbitmq_cdr.protocol.Source;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
-public class FileSequentialTarget extends FileComponentTarget {
+public class FileSequentialTarget extends AbstractComponentTarget implements FileComponent {
 
-    public FileSequentialTarget(Source source, FileWriterTarget target) {
+    public FileSequentialTarget(SharedQueue source, FileWriter target) {
         super(source, target);
     }
 

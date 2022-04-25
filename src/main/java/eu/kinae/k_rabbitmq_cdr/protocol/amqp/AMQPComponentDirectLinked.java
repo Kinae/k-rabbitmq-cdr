@@ -1,10 +1,10 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
-import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
-public class AMQPComponentDirectLinked extends AMQPComponent {
+public class AMQPComponentDirectLinked extends AbstractComponent implements AMQPComponent {
 
     private final KOptions options;
 
@@ -18,8 +18,7 @@ public class AMQPComponentDirectLinked extends AMQPComponent {
     }
 
     @Override
-    public SupportedType getSupportedType() {
-        return SupportedType.AMQP;
+    protected void onFinally() {
     }
 
     @Override
@@ -39,7 +38,4 @@ public class AMQPComponentDirectLinked extends AMQPComponent {
         return count;
     }
 
-    @Override
-    protected void onFinally() {
-    }
 }

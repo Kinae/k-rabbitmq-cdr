@@ -1,28 +1,20 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.file;
+package eu.kinae.k_rabbitmq_cdr.protocol;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
-import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-abstract class FileComponentSource extends FileComponent {
+public abstract class AbstractComponentSource extends AbstractComponent {
 
-    protected final SharedStatus sharedStatus;
     protected final KOptions options;
 
-    protected FileComponentSource(FileReaderSource source, SharedQueue target, KOptions options) {
-        this(source, target, null, options);
-    }
-
-    protected FileComponentSource(FileReaderSource source, SharedQueue target, SharedStatus sharedStatus, KOptions options) {
+    protected AbstractComponentSource(Source source, SharedQueue target, KOptions options) {
         super(source, target);
-        this.sharedStatus = sharedStatus;
         this.options = options;
     }
 
     @Override
     protected void onFinally() {
-        sharedStatus.notifySourceConsumerIsDone();
     }
 
     @Override
@@ -41,4 +33,5 @@ abstract class FileComponentSource extends FileComponent {
         } while(count < options.maxMessage() || options.maxMessage() == 0); // add maximum message from params
         return count;
     }
+
 }

@@ -1,26 +1,16 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.file;
+package eu.kinae.k_rabbitmq_cdr.protocol;
 
-import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
-abstract class FileComponentTarget extends FileComponent {
+public abstract class AbstractComponentTarget extends AbstractComponent {
 
-    public FileComponentTarget(Source source, FileWriterTarget target) {
+    protected AbstractComponentTarget(SharedQueue source, Target target) {
         super(source, target);
     }
 
     @Override
-    public void push(KMessage message) throws Exception {
-    }
-
-    @Override
-    public void close() throws Exception {
-
-    }
-
-    @Override
     protected void onFinally() {
-
     }
 
     @Override

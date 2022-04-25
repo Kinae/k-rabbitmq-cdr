@@ -14,13 +14,13 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FileReaderSource implements Source {
+public class FileReader implements Source {
 
-    private static final Logger logger = LoggerFactory.getLogger(FileReaderSource.class);
+    private static final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
     private final Iterator<File> it;
 
-    public FileReaderSource() {
+    public FileReader() {
         logger.info("listing files ...");
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = Constant.PROJECT_TMPDIR.toFile().listFiles(it -> p.matcher(it.getName()).matches());

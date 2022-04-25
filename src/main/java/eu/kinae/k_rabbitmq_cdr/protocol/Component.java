@@ -6,4 +6,5 @@ public interface Component {
 
     SupportedType getSupportedType();
 
+    long consumeNProduce() throws Exception;
 }

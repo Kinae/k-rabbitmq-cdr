@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,7 @@ public class AMQPComponentDirectLinkedTest extends AMQPAbstractComponentSourceTe
     }
 
     @Override
-    protected AMQPComponent getComponent(String queue, Target target, KOptions options) throws Exception {
+    protected AbstractComponent getComponent(String queue, Target target, KOptions options) throws Exception {
         return new AMQPComponentDirectLinked(new AMQPConnection(buildAMQPURI(rabbitmq), queue), (AMQPConnection) target, options);
     }
 

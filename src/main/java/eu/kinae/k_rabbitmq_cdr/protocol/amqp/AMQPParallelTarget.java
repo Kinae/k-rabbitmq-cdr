@@ -3,11 +3,12 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 import java.util.concurrent.Callable;
 
 import com.rabbitmq.client.Channel;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public class AMQPParallelTarget extends AMQPComponentTarget implements Callable<Long> {
+public class AMQPParallelTarget extends AbstractComponentTarget implements Callable<Long>, AMQPComponent {
 
     private Channel channel;
     private final SharedStatus sharedStatus;

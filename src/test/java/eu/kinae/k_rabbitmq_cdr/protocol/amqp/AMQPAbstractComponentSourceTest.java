@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.junit.jupiter.api.BeforeAll;
@@ -45,7 +46,7 @@ public abstract class AMQPAbstractComponentSourceTest {
 
     protected abstract Target getTarget();
 
-    protected abstract AMQPComponent getComponent(String queue, Target target, KOptions options) throws Exception;
+    protected abstract AbstractComponent getComponent(String queue, Target target, KOptions options) throws Exception;
 
     @Test
     public void Use_options_to_transfer_one_messages_2() throws Exception {
