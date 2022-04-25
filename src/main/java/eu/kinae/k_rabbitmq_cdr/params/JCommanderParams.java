@@ -19,22 +19,28 @@ public class JCommanderParams {
     @Parameter(names = { "-sq", "--source-queue" }, description = "Queue of the source", order = 4)
     public String sourceQueue;
 
-    @Parameter(names = { "-tt", "--target-type" }, description = "Type of the target", required = true, order = 5)
+    @Parameter(names = { "-i", "--input" }, description = "Directory files input", order = 5)
+    public String input;
+
+    @Parameter(names = { "-tt", "--target-type" }, description = "Type of the target", required = true, order = 6)
     public SupportedType targetType;
 
-    @Parameter(names = { "-t-uri", "--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
+    @Parameter(names = { "-t-uri", "--to-uri" }, description = "URI of the target", required = true, password = true, order = 7)
     public String targetURI;
 
-    @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 7)
+    @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 8)
     public String targetQueue;
 
-    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 8)
+    @Parameter(names = { "-o", "--output" }, description = "Directory files output", order = 9)
+    public String output;
+
+    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 10)
     public TransferType transferType = TransferType.DIRECT;
 
-    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 9)
+    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 11)
     public ProcessType processType = ProcessType.PARALLEL;
 
-    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 10)
+    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 12)
     public int maxMessage = 0;
 
 }

@@ -8,8 +8,8 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPParallelSource extends AMQPComponentSource implements Callable<Long> {
 
-    public AMQPParallelSource(AMQPConnection connection, SharedQueue sharedQueue, SharedStatus sharedStatus, KOptions options) {
-        super(connection, sharedQueue, sharedStatus, options);
+    public AMQPParallelSource(AMQPConnection source, SharedQueue target, SharedStatus sharedStatus, KOptions options) {
+        super(source, target, sharedStatus, options);
     }
 
     @Override

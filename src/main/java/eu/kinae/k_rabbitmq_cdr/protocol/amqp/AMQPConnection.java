@@ -72,7 +72,7 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
         GetResponse response = channel.basicGet(queue, false);
         if(response == null)
             return null;
-        return new KMessage(response.getProps(), response.getBody(), response.getMessageCount());
+        return new KMessage(response.getProps(), response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
     }
 
     @Override

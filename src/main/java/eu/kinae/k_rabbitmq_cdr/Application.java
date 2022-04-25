@@ -29,7 +29,8 @@ public final class Application {
         }
 
         KOptions options = new KOptions(jParams.maxMessage);
-        KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue, jParams.targetType, jParams.targetURI, jParams.targetQueue);
+        KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue, jParams.input,
+                                             jParams.targetType, jParams.targetURI, jParams.targetQueue, jParams.output);
 
         Files.createDirectory(Constant.PROJECT_TMPDIR).toFile().deleteOnExit();
         ConnectorFactory.newConnector(params.sourceType(), params.targetType())

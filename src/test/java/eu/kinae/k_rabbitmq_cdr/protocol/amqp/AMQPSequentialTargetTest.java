@@ -34,7 +34,7 @@ public class AMQPSequentialTargetTest {
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
         SharedQueue emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(var target = mock(AMQPConnection.class);
-            var component = new AMQPSequentialTarget(target, emptyQueue)) {
+            var component = new AMQPSequentialTarget(emptyQueue, target)) {
 
             long actual = component.consumeNProduce();
 
@@ -50,7 +50,7 @@ public class AMQPSequentialTargetTest {
         for(KMessage message : MESSAGES)
             sharedQueue.push(message);
 
-        try(var component = new AMQPSequentialTarget(new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q), sharedQueue)) {
+        try(var component = new AMQPSequentialTarget(sharedQueue, new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q))) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());

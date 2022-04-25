@@ -5,14 +5,18 @@ import java.util.Arrays;
 
 import com.rabbitmq.client.AMQP;
 
-public record KMessage(AMQP.BasicProperties properties, byte[] body, long messageCount) implements Serializable {
+public record KMessage(AMQP.BasicProperties properties, byte[] body, long messageCount, long deliveryTag) implements Serializable {
 
     public KMessage(String body) {
-        this(null, body.getBytes(), 0);
+        this(null, body.getBytes(), 0, 0);
     }
 
     public KMessage(byte[] body) {
-        this(null, body, 0);
+        this(null, body, 0, 0);
+    }
+
+    public KMessage(AMQP.BasicProperties properties, byte[] body) {
+        this(properties, body, 0, 0);
     }
 
     @Override

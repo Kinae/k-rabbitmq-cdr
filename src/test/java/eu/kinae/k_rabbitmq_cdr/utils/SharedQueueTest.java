@@ -41,7 +41,7 @@ public class SharedQueueTest {
     }
 
     private KMessage wrapResponse(int i) {
-        return new KMessage(null, null, i);
+        return new KMessage(null, null, i, i);
     }
 
 }

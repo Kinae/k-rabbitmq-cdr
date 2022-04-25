@@ -1,20 +1,20 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-abstract class AMQPComponentSource extends AMQPComponent {
+abstract class FileComponentSource extends FileComponent {
 
     protected final SharedStatus sharedStatus;
     protected final KOptions options;
 
-    protected AMQPComponentSource(AMQPConnection source, SharedQueue target, KOptions options) {
+    protected FileComponentSource(FileReaderSource source, SharedQueue target, KOptions options) {
         this(source, target, null, options);
     }
 
-    protected AMQPComponentSource(AMQPConnection source, SharedQueue target, SharedStatus sharedStatus, KOptions options) {
+    protected FileComponentSource(FileReaderSource source, SharedQueue target, SharedStatus sharedStatus, KOptions options) {
         super(source, target);
         this.sharedStatus = sharedStatus;
         this.options = options;

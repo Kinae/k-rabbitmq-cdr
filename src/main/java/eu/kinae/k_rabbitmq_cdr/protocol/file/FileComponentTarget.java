@@ -1,12 +1,21 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
+import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
-import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
-abstract class AMQPComponentTarget extends AMQPComponent {
+abstract class FileComponentTarget extends FileComponent {
 
-    protected AMQPComponentTarget(SharedQueue source, AMQPConnection target) {
+    public FileComponentTarget(Source source, FileWriterTarget target) {
         super(source, target);
+    }
+
+    @Override
+    public void push(KMessage message) throws Exception {
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 
     @Override

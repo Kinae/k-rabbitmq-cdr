@@ -46,14 +46,13 @@ public class AMQPToAMQPConnector implements Connector {
 
         if(params.transferType() == TransferType.BUFFER) {
             if(params.processType() == ProcessType.SEQUENTIAL) {
-                SharedQueue list = new SharedQueue(ProcessType.SEQUENTIAL);
-                KOptions sourceParams = new KOptions(options.maxMessage());
+                SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
 
                 try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
                     AMQPConnection tConnection = new AMQPConnection(params.targetURI(), params.targetQueue())) {
 
-                    AMQPSequentialSource source = new AMQPSequentialSource(sConnection, list, sourceParams);
-                    AMQPSequentialTarget target = new AMQPSequentialTarget(tConnection, list);
+                    AMQPSequentialSource source = new AMQPSequentialSource(sConnection, sharedQueue, options);
+                    AMQPSequentialTarget target = new AMQPSequentialTarget(sharedQueue, tConnection);
 
                     source.start();
                     target.start();
@@ -64,16 +63,15 @@ public class AMQPToAMQPConnector implements Connector {
             } else if(params.processType() == ProcessType.PARALLEL) {
                 SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
                 SharedStatus sharedStatus = new SharedStatus();
-                KOptions sourceParams = new KOptions(options.maxMessage());
 
                 try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
                     AMQPConnection tConnection = new AMQPConnection(params.targetURI(), params.targetQueue())) {
 
                     ExecutorService fixedThreadPool = Executors.newFixedThreadPool(4);
                     List<Callable<Long>> callables = IntStream.range(0, 3)
-                            .mapToObj(integer -> new AMQPParallelTarget(tConnection, sharedQueue, sharedStatus))
+                            .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, tConnection, sharedStatus))
                             .collect(Collectors.toCollection(ArrayList::new));
-                    callables.add(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, sourceParams));
+                    callables.add(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, options));
                     fixedThreadPool.invokeAll(callables);
 
                     fixedThreadPool.shutdown();

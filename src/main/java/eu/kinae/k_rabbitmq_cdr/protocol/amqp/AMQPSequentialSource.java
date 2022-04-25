@@ -5,12 +5,12 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
 public class AMQPSequentialSource extends AMQPComponentSource {
 
-    public AMQPSequentialSource(AMQPConnection connection, SharedQueue sharedQueue) {
-        this(connection, sharedQueue, KOptions.DEFAULT);
+    public AMQPSequentialSource(AMQPConnection source, SharedQueue target) {
+        this(source, target, KOptions.DEFAULT);
     }
 
-    public AMQPSequentialSource(AMQPConnection connection, SharedQueue sharedQueue, KOptions options) {
-        super(connection, sharedQueue, options);
+    public AMQPSequentialSource(AMQPConnection source, SharedQueue target, KOptions options) {
+        super(source, target, options);
     }
 
 }

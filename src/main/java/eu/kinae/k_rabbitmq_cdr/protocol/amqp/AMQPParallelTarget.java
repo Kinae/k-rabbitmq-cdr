@@ -10,9 +10,11 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 public class AMQPParallelTarget extends AMQPComponentTarget implements Callable<Long> {
 
     private Channel channel;
+    private final SharedStatus sharedStatus;
 
-    public AMQPParallelTarget(AMQPConnection connection, SharedQueue sharedQueue, SharedStatus sharedStatus) {
-        super(connection, sharedQueue, sharedStatus);
+    public AMQPParallelTarget(SharedQueue source, AMQPConnection target, SharedStatus sharedStatus) {
+        super(source, target);
+        this.sharedStatus = sharedStatus;
     }
 
     @Override
