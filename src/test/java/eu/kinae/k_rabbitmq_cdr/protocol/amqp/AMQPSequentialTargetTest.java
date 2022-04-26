@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.rabbitmq.client.AMQP;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -24,7 +25,9 @@ import static org.mockito.Mockito.verify;
 public class AMQPSequentialTargetTest {
 
     public static final String TARGET_Q = "target-q";
-    public static final List<KMessage> MESSAGES = IntStream.range(0, 2000).boxed().map(it -> new KMessage("TEST_" + it)).collect(Collectors.toList());
+    public static final List<KMessage> MESSAGES = IntStream.range(0, 2000).boxed()
+            .map(it -> new KMessage(new AMQP.BasicProperties().builder().appId("APPID_" + it).build(), "TEST_" + it))
+            .collect(Collectors.toList());
 
     @Container
     public static final RabbitMQContainer rabbitmq = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3-management"))
@@ -59,7 +62,7 @@ public class AMQPSequentialTargetTest {
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(AMQPConnection targetConnection = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
             for(KMessage message : MESSAGES) {
-                assertThat(targetConnection.pop().body()).isEqualTo(message.body());
+                assertThat(targetConnection.pop()).isEqualTo(message);
             }
         }
     }

@@ -33,7 +33,7 @@ public class AMQPComponentDirectLinkedTest extends AMQPAbstractComponentSourceTe
 
             assertThat(actual).isEqualTo(MESSAGES.size());
             for(KMessage message : MESSAGES) {
-                assertThat(target.pop().body()).isEqualTo(message.body());
+                assertThat(target.pop()).isEqualTo(message);
             }
         }
     }

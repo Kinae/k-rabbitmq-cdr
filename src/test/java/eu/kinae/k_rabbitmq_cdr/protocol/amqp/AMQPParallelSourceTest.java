@@ -40,7 +40,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
 
             assertThat(actual).isEqualTo(MESSAGES.size());
             for(KMessage message : MESSAGES) {
-                assertThat(target.pop().body()).isEqualTo(message.body());
+                assertThat(target.pop()).isEqualTo(message);
             }
         }
     }
@@ -59,7 +59,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
             Mockito.verify(status, Mockito.times(1)).notifySourceConsumerIsDone();
             for(KMessage message : MESSAGES) {
                 KMessage actual = target.pop();
-                assertThat(actual.body()).isEqualTo(message.body());
+                assertThat(actual).isEqualTo(message);
             }
         }
 
