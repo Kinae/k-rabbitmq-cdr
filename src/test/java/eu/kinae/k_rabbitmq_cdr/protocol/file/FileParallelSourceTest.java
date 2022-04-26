@@ -1,4 +1,4 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -16,20 +16,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
-import static eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPUtils.buildAMQPURI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
+public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
 
     @Override
-    protected SharedQueue getMockTarget() {
-        return mock(SharedQueue.class);
-    }
-
-    @Override
-    protected AbstractComponentSource getComponent(Source source, Target target, KOptions options) {
-        return new AMQPParallelSource((AMQPConnection) source, (SharedQueue) target, new SharedStatus(), options);
+    protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
+        return new FileParallelSource((FileReader) source, (SharedQueue) target, new SharedStatus(), options);
     }
 
     @Test
@@ -50,7 +44,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
     public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
         var status = mock(SharedStatus.class);
         try(var target = new SharedQueue(ProcessType.PARALLEL);
-            var component = new AMQPParallelSource(new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q), target, status, KOptions.DEFAULT)) {
+            var component = new FileParallelSource(getSource(), target, status, KOptions.DEFAULT)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
             Awaitility.await().atMost(60, TimeUnit.SECONDS).until(future::isDone);

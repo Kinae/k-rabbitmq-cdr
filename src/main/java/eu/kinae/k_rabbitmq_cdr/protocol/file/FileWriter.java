@@ -15,13 +15,19 @@ public class FileWriter implements Target {
 
     private static final Logger logger = LoggerFactory.getLogger(FileWriter.class);
 
+    private final Path path;
+
+    public FileWriter(Path path) {
+        this.path = path;
+    }
+
     @Override
     public void push(KMessage message) throws Exception {
-        String filename = Constant.FILE_PROPERTIES_PREFIX + message.deliveryTag();
-        Path path = Files.createFile(Path.of(Constant.PROJECT_TMPDIR.toString(), filename));
+        String filename = Constant.FILE_PREFIX + message.deliveryTag();
+        Path fileCreatedPath = Files.createFile(Path.of(path.toString(), filename));
 
-        Files.writeString(path, new String(message.body()), StandardOpenOption.TRUNCATE_EXISTING);
-        CustomObjectMapper.om.writeValue(path.toFile(), message.properties());
+        Files.writeString(fileCreatedPath, new String(message.body()), StandardOpenOption.TRUNCATE_EXISTING);
+        CustomObjectMapper.om.writeValue((Path.of(fileCreatedPath + Constant.FILE_PROPERTIES_SUFFIX)).toFile(), message.properties());
     }
 
     @Override

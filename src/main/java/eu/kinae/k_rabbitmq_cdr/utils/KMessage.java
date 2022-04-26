@@ -16,6 +16,10 @@ public record KMessage(AMQP.BasicProperties properties, byte[] body, long messag
         this(properties, body.getBytes(), 0, 0);
     }
 
+    public KMessage(AMQP.BasicProperties properties, String body, long deliveryTag) {
+        this(properties, body.getBytes(), 0, deliveryTag);
+    }
+
     @Override
     public boolean equals(Object o) {
         if(this == o)

@@ -2,7 +2,9 @@ package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.regex.Pattern;
 
@@ -20,16 +22,18 @@ public class FileReader implements Source {
 
     private final Iterator<File> it;
 
-    public FileReader() {
+    public FileReader(Path path) {
         logger.info("listing files ...");
         Pattern p = Pattern.compile(".*[^.json]$");
-        File[] files = Constant.PROJECT_TMPDIR.toFile().listFiles(it -> p.matcher(it.getName()).matches());
+        File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
+        //        File[] files = Constant.PROJECT_TMPDIR.toFile().listFiles(it -> p.matcher(it.getName()).matches());
         if(files == null) {
             throw new RuntimeException("pathname does not denote a directory");
         }
 
+        ;
         logger.info("number of files listed : {}", files.length);
-        it = Arrays.stream(files).iterator();
+        it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
     }
 
     @Override
