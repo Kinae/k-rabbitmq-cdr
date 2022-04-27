@@ -54,7 +54,7 @@ public abstract class AbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(options.maxMessage());
-            verify(component.getTarget(), times((int) options.maxMessage())).push(any());
+            verify(target, times((int) options.maxMessage())).push(any());
         }
     }
 
@@ -66,7 +66,7 @@ public abstract class AbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            verify(component.getTarget(), times(MESSAGES.size())).push(any());
+            verify(target, times(MESSAGES.size())).push(any());
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(0);
-            verify(component.getTarget(), times(0)).push(any());
+            verify(target, times(0)).push(any());
         }
     }
 

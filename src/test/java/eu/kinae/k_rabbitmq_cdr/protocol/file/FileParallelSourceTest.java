@@ -26,18 +26,9 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
         return new FileParallelSource((FileReader) source, (SharedQueue) target, new SharedStatus(), options);
     }
 
-    @Test
-    public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-        try(var target = new SharedQueue(ProcessType.PARALLEL);
-            var component = getComponent(getSource(), target)) {
-
-            long actual = component.consumeNProduce();
-
-            assertThat(actual).isEqualTo(MESSAGES.size());
-            for(KMessage message : MESSAGES) {
-                assertThat(target.pop()).isEqualTo(message);
-            }
-        }
+    @Override
+    protected SharedQueue getSharedQueue() {
+        return new SharedQueue(ProcessType.PARALLEL);
     }
 
     @Test

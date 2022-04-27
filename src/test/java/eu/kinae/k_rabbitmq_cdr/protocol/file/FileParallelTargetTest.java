@@ -1,5 +1,6 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,12 +11,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTargetTest;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
-import static eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPUtils.buildAMQPURI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
@@ -23,9 +25,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
+public class FileParallelTargetTest extends AbstractComponentTargetTest {
 
     private static final int CONSUMERS = 3;
+
+    @TempDir
+    protected static Path tempDir;
 
     @Test
     @Override
@@ -34,10 +39,10 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         when(status.isConsumerAlive()).thenReturn(false);
 
         var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
-        try(var target = mock(AMQPConnection.class)) {
+        try(var target = mock(FileWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AMQPParallelTarget(emptyQueue, target, status))
+                    .mapToObj(integer -> new FileParallelTarget(emptyQueue, target, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -50,7 +55,6 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            assertThat(target.pop()).isNull();
             verify(target, times(0)).push(any());
         }
     }
@@ -65,10 +69,10 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         for(KMessage message : MESSAGES)
             sharedQueue.push(message);
 
-        try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(var target = new FileWriter(tempDir)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, target, status))
+                    .mapToObj(integer -> new FileParallelTarget(sharedQueue, target, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -83,7 +87,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(FileReader target = new FileReader(tempDir)) {
             Set<KMessage> set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();
