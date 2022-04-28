@@ -3,19 +3,11 @@ package eu.kinae.k_rabbitmq_cdr.params;
 import java.util.Collections;
 import java.util.Set;
 
-public record KOptions(long maxMessage, Set<Integer> specificMessagesToGet) {
+public record KOptions(long maxMessage, Set<Integer> specificMessagesToGet, int threads) {
 
-    public static final KOptions DEFAULT = new KOptions();
-
-    public KOptions() {
-        this(0, Collections.emptySet());
-    }
+    public static final KOptions DEFAULT = new KOptions(0, Collections.emptySet(), 1);
 
     public KOptions(long maxMessage) {
-        this(maxMessage, Collections.emptySet());
-    }
-
-    public KOptions(Set<Integer> specificMessagesToGet) {
-        this(0, specificMessagesToGet);
+        this(maxMessage, Collections.emptySet(), 1);
     }
 }

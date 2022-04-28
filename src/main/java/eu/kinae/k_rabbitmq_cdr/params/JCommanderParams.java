@@ -43,4 +43,7 @@ public class JCommanderParams {
     @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 12)
     public int maxMessage = 0;
 
+    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 13)
+    public int threads = 1;
+
 }

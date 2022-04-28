@@ -1,4 +1,4 @@
-package eu.kinae.k_rabbitmq_cdr.connector;
+package eu.kinae.k_rabbitmq_cdr.connector.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.connector.Connector;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
@@ -67,9 +68,9 @@ public class AMQPToAMQPConnector implements Connector {
                 try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
                     AMQPConnection tConnection = new AMQPConnection(params.targetURI(), params.targetQueue())) {
 
-                    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(4);
-                    List<Callable<Long>> callables = IntStream.range(0, 3)
-                            .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, tConnection, sharedStatus))
+                    ExecutorService fixedThreadPool = Executors.newFixedThreadPool(options.threads() + 1);
+                    List<Callable<Long>> callables = IntStream.range(0, options.threads())
+                            .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, tConnection, sharedStatus))
                             .collect(Collectors.toCollection(ArrayList::new));
                     callables.add(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, options));
                     fixedThreadPool.invokeAll(callables);

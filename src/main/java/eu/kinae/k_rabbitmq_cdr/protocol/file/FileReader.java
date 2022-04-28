@@ -26,12 +26,9 @@ public class FileReader implements Source {
         logger.info("listing files ...");
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
-        //        File[] files = Constant.PROJECT_TMPDIR.toFile().listFiles(it -> p.matcher(it.getName()).matches());
         if(files == null) {
             throw new RuntimeException("pathname does not denote a directory");
         }
-
-        ;
         logger.info("number of files listed : {}", files.length);
         it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
     }
