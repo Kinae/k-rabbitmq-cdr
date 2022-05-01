@@ -1,13 +1,9 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
-import java.nio.file.Path;
-
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTargetTest;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -15,10 +11,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class FileSequentialTargetTest extends AbstractComponentTargetTest {
-
-    @TempDir
-    protected static Path tempDir;
+public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
 
     @Test
     @Override
