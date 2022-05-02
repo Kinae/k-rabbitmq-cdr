@@ -4,6 +4,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// remove AutoClosable
 public abstract class AbstractComponent implements Component, Source, Target {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
