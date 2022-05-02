@@ -81,7 +81,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) {
+        try(var target = new FileReader(tempDir, KOptions.DEFAULT)) {
             var set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();

@@ -52,7 +52,7 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(KMessage message : MESSAGES) {
+            for(var message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
         }

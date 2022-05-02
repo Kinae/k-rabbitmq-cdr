@@ -5,7 +5,6 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
 
@@ -32,7 +31,7 @@ public class AMQPSequentialSourceTest extends AMQPAbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(KMessage message : MESSAGES) {
+            for(var message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
         }

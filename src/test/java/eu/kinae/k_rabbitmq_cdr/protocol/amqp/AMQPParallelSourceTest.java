@@ -13,11 +13,12 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
 
@@ -39,7 +40,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(KMessage message : MESSAGES) {
+            for(var message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
         }
@@ -56,8 +57,8 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
 
             assertThat(target.size()).isEqualTo(MESSAGES.size());
             assertThat(status.isConsumerAlive()).isFalse();
-            Mockito.verify(status, Mockito.times(1)).notifySourceConsumerIsDone();
-            for(KMessage message : MESSAGES) {
+            verify(status, times(1)).notifySourceConsumerIsDone();
+            for(var message : MESSAGES) {
                 KMessage actual = target.pop();
                 assertThat(actual).isEqualTo(message);
             }

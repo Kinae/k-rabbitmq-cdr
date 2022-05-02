@@ -2,7 +2,6 @@ package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -10,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
@@ -62,7 +60,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         when(status.isConsumerAlive()).thenReturn(false);
 
         var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
-        for(KMessage message : MESSAGES)
+        for(var message : MESSAGES)
             sharedQueue.push(message);
 
         try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
@@ -84,7 +82,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            Set<KMessage> set = new HashSet<>(MESSAGES);
+            var set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();
             while(kMessage != null) {

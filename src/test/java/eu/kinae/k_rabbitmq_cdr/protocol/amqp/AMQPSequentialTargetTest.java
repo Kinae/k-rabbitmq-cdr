@@ -1,7 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +15,7 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
 
     @Test
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
-        SharedQueue emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        var emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(var target = mock(AMQPConnection.class);
             var component = new AMQPSequentialTarget(emptyQueue, target)) {
 
@@ -30,8 +29,8 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-        SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        for(KMessage message : MESSAGES)
+        var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        for(var message : MESSAGES)
             sharedQueue.push(message);
 
         try(var component = new AMQPSequentialTarget(sharedQueue, new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q))) {
@@ -42,7 +41,7 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            for(KMessage message : MESSAGES) {
+            for(var message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
         }

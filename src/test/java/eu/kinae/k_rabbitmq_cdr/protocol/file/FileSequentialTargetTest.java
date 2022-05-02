@@ -34,7 +34,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
     @Test
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-        SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         for(KMessage message : MESSAGES)
             sharedQueue.push(message);
 
@@ -45,7 +45,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) {
+        try(var target = new FileReader(tempDir, KOptions.DEFAULT)) {
             for(KMessage message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
@@ -54,8 +54,8 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
 
     @Test
     public void Produced_messages_are_equal_to_consumed_sorted_messages() throws Exception {
-        SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        for(KMessage message : MESSAGES)
+        var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        for(var message : MESSAGES)
             sharedQueue.push(message);
 
         try(var component = new FileSequentialTarget(sharedQueue, new FileWriter(tempDir))) {
@@ -65,8 +65,8 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        KOptions options = new KOptions(0, Collections.emptySet(), 1, true);
-        try(FileReader target = new FileReader(tempDir, options)) {
+        var options = new KOptions(0, Collections.emptySet(), 1, true);
+        try(var target = new FileReader(tempDir, options)) {
             var set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();

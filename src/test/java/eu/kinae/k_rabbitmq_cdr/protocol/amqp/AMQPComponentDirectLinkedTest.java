@@ -4,7 +4,6 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.junit.jupiter.api.Test;
 
 import static eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPUtils.buildAMQPURI;
@@ -31,7 +30,7 @@ public class AMQPComponentDirectLinkedTest extends AMQPAbstractComponentSourceTe
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(KMessage message : MESSAGES) {
+            for(var message : MESSAGES) {
                 assertThat(target.pop()).isEqualTo(message);
             }
         }
