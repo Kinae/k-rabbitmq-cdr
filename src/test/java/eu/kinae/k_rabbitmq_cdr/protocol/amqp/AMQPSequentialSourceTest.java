@@ -31,9 +31,7 @@ public class AMQPSequentialSourceTest extends AMQPAbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(var message : MESSAGES) {
-                assertThat(target.pop()).isEqualTo(message);
-            }
+            assertThatSourceContainsAllMessagesSorted(target);
         }
     }
 

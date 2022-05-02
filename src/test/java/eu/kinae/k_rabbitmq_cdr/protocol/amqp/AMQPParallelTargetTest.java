@@ -1,7 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -82,13 +81,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            var set = new HashSet<>(MESSAGES);
-
-            var kMessage = target.pop();
-            while(kMessage != null) {
-                assertThat(set.contains(kMessage)).isTrue();
-                kMessage = target.pop();
-            }
+            assertThatSourceContainsAllMessages(target);
         }
     }
 }

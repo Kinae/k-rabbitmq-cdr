@@ -9,7 +9,6 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
     @Test
     public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
         var status = mock(SharedStatus.class);
-        try(var target = new SharedQueue(ProcessType.PARALLEL);
+        try(var target = getSharedQueue();
             var component = new FileParallelSource(getSource(), target, status, KOptions.DEFAULT)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
@@ -44,10 +43,7 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
             assertThat(target.size()).isEqualTo(MESSAGES.size());
             assertThat(status.isConsumerAlive()).isFalse();
             verify(status, times(1)).notifySourceConsumerIsDone();
-            for(KMessage message : MESSAGES) {
-                KMessage actual = target.pop();
-                assertThat(actual).isEqualTo(message);
-            }
+            assertThatSourceContainsAllMessagesSorted(target);
         }
     }
 }

@@ -9,7 +9,6 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
@@ -40,9 +39,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            for(var message : MESSAGES) {
-                assertThat(target.pop()).isEqualTo(message);
-            }
+            assertThatSourceContainsAllMessagesSorted(target);
         }
     }
 
@@ -58,10 +55,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
             assertThat(target.size()).isEqualTo(MESSAGES.size());
             assertThat(status.isConsumerAlive()).isFalse();
             verify(status, times(1)).notifySourceConsumerIsDone();
-            for(var message : MESSAGES) {
-                KMessage actual = target.pop();
-                assertThat(actual).isEqualTo(message);
-            }
+            assertThatSourceContainsAllMessagesSorted(target);
         }
     }
 }
