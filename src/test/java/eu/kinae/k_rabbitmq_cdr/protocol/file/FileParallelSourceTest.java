@@ -43,7 +43,7 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
             assertThat(target.size()).isEqualTo(MESSAGES.size());
             assertThat(status.isConsumerAlive()).isFalse();
             verify(status, times(1)).notifySourceConsumerIsDone();
-            assertThatSourceContainsAllMessagesSorted(target);
+            assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
 }

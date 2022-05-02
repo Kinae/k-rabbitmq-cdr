@@ -6,7 +6,7 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSourceTest;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -16,13 +16,13 @@ import static org.mockito.Mockito.mock;
 public abstract class FileAbstractComponentSourceTest extends AbstractComponentSourceTest {
 
     @TempDir
-    protected static Path tempDir;
+    protected Path tempDir;
 
     @TempDir
-    protected static Path tempEmptyDir;
+    protected Path tempEmptyDir;
 
-    @BeforeAll
-    public static void beforeAll() throws Exception {
+    @BeforeEach
+    public void beforeEach() throws Exception {
         for(KMessage message : MESSAGES) {
             new FileWriter(tempDir).push(message);
         }
@@ -52,7 +52,7 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            assertThatSourceContainsAllMessagesSorted(target);
+            assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
 

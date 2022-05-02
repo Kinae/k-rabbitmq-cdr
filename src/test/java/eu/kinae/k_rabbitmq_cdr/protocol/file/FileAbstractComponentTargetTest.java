@@ -8,6 +8,6 @@ import org.junit.jupiter.api.io.TempDir;
 public abstract class FileAbstractComponentTargetTest extends AbstractComponentTargetTest {
 
     @TempDir
-    protected static Path tempDir;
+    protected Path tempDir;
 
 }

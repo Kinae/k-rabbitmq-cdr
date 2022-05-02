@@ -81,7 +81,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            assertThatSourceContainsAllMessages(target);
+            assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
 }

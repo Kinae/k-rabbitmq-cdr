@@ -4,7 +4,6 @@ import java.util.Collections;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
         var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        for(KMessage message : MESSAGES)
+        for(var message : MESSAGES)
             sharedQueue.push(message);
 
         try(var component = new FileSequentialTarget(sharedQueue, new FileWriter(tempDir))) {
@@ -45,7 +44,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new FileReader(tempDir, KOptions.DEFAULT)) {
-            assertThatSourceContainsAllMessagesSorted(target);
+            assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
 
@@ -64,7 +63,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         assertThat(sharedQueue.size()).isEqualTo(0);
         var options = new KOptions(0, Collections.emptySet(), 1, true);
         try(var target = new FileReader(tempDir, options)) {
-            assertThatSourceContainsAllMessages(target);
+            assertThatSourceContainsAllMessagesSorted(target);
         }
     }
 }

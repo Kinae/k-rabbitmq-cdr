@@ -9,7 +9,6 @@ import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
@@ -59,7 +58,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         when(status.isConsumerAlive()).thenReturn(false);
 
         var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
-        for(KMessage message : MESSAGES)
+        for(var message : MESSAGES)
             sharedQueue.push(message);
 
         try(var target = new FileWriter(tempDir)) {
@@ -81,7 +80,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var target = new FileReader(tempDir, KOptions.DEFAULT)) {
-            assertThatSourceContainsAllMessages(target);
+            assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
 }
