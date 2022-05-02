@@ -46,4 +46,8 @@ public class JCommanderParams {
     @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 13)
     public int threads = 1;
 
+    @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
+            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 14)
+    public boolean sorted;
+
 }

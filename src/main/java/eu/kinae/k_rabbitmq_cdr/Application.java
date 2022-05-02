@@ -7,6 +7,7 @@ import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
+import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,14 @@ public final class Application {
             return;
         }
 
-        KOptions options = new KOptions(jParams.maxMessage, Collections.emptySet(), jParams.threads);
+        boolean sorted;
+        if(jParams.processType == ProcessType.PARALLEL && jParams.threads > 1) {
+            sorted = false;
+        } else {
+            sorted = jParams.sorted;
+        }
+
+        KOptions options = new KOptions(jParams.maxMessage, Collections.emptySet(), jParams.threads, sorted);
         KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue, jParams.input,
                                              jParams.targetType, jParams.targetURI, jParams.targetQueue, jParams.output,
                                              jParams.transferType, jParams.processType);
