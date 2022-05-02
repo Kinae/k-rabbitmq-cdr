@@ -2,6 +2,7 @@ package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
 import java.nio.file.Path;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSourceTest;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -29,12 +30,12 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @Override
     protected FileReader getEmptySource() {
-        return new FileReader(tempEmptyDir);
+        return new FileReader(tempEmptyDir, KOptions.DEFAULT);
     }
 
     @Override
     protected FileReader getSource() {
-        return new FileReader(tempDir);
+        return new FileReader(tempDir, KOptions.DEFAULT);
     }
 
     protected SharedQueue getMockTarget() {

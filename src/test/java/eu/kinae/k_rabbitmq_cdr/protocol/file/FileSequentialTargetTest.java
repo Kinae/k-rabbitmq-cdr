@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -41,7 +42,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader fileReader = new FileReader(tempDir)) {
+        try(FileReader fileReader = new FileReader(tempDir, KOptions.DEFAULT)) { // TODO ORDER
             for(KMessage message : MESSAGES) {
                 assertThat(fileReader.pop()).isEqualTo(message);
             }

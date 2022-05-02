@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import com.rabbitmq.client.AMQP;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
@@ -22,15 +23,20 @@ public class FileReader implements Source {
 
     private final Iterator<File> it;
 
-    public FileReader(Path path) {
+    public FileReader(Path path, KOptions options) {
         logger.info("listing files ...");
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
         if(files == null) {
             throw new RuntimeException("pathname does not denote a directory");
         }
+
         logger.info("number of files listed : {}", files.length);
-        it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
+        if(options.sorted())
+            it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
+        else
+            it = Arrays.stream(files).iterator();
+
     }
 
     @Override

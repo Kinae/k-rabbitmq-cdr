@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -81,7 +82,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader target = new FileReader(tempDir)) {
+        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) { // TODO order test
             Set<KMessage> set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();
