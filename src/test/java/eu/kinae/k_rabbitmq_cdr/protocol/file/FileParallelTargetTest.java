@@ -2,7 +2,6 @@ package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -82,8 +81,8 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) { // TODO order test
-            Set<KMessage> set = new HashSet<>(MESSAGES);
+        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) {
+            var set = new HashSet<>(MESSAGES);
 
             var kMessage = target.pop();
             while(kMessage != null) {

@@ -1,5 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -42,10 +45,36 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(FileReader fileReader = new FileReader(tempDir, KOptions.DEFAULT)) { // TODO ORDER
+        try(FileReader target = new FileReader(tempDir, KOptions.DEFAULT)) {
             for(KMessage message : MESSAGES) {
-                assertThat(fileReader.pop()).isEqualTo(message);
+                assertThat(target.pop()).isEqualTo(message);
             }
+        }
+    }
+
+    @Test
+    public void Produced_messages_are_equal_to_consumed_sorted_messages() throws Exception {
+        SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        for(KMessage message : MESSAGES)
+            sharedQueue.push(message);
+
+        try(var component = new FileSequentialTarget(sharedQueue, new FileWriter(tempDir))) {
+            long actual = component.consumeNProduce();
+
+            assertThat(actual).isEqualTo(MESSAGES.size());
+        }
+
+        assertThat(sharedQueue.size()).isEqualTo(0);
+        KOptions options = new KOptions(0, Collections.emptySet(), 1, true);
+        try(FileReader target = new FileReader(tempDir, options)) {
+            var set = new HashSet<>(MESSAGES);
+
+            var kMessage = target.pop();
+            while(kMessage != null) {
+                assertThat(set.contains(kMessage)).isTrue();
+                kMessage = target.pop();
+            }
+
         }
     }
 }
