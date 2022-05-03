@@ -38,7 +38,7 @@ public final class Application {
         KOptions options = new KOptions(jParams.maxMessage, Collections.emptySet(), jParams.threads, sorted);
         KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue,
                                              jParams.targetType, jParams.targetURI, jParams.targetQueue,
-                                             jParams.directory, jParams.bucket, jParams.prefix,
+                                             jParams.directory, jParams.region, jParams.bucket, jParams.prefix,
                                              jParams.transferType, jParams.processType);
 
         ConnectorFactory.newConnector(params.sourceType(), params.targetType())

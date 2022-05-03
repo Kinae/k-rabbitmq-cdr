@@ -1,15 +1,15 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.aws;
 
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 public class AWS_S3ClientBuilder {
 
-    public static S3Client build() {
+    public static S3Client build(KParameters parameters) {
         return S3Client.builder()
                 .credentialsProvider(DefaultCredentialsProvider.create())
-                .region(Region.EU_WEST_1) // parameters
+                .region(parameters.region())
                 .build();
     }
 

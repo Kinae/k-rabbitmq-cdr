@@ -24,20 +24,20 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
 
     @Override
     public Target getDirectLinked(KParameters parameters) {
-        S3Client s3Client = AWS_S3ClientBuilder.build();
+        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         return new AWS_S3Writer(s3Client, parameters.bucket(), parameters.bucket());
     }
 
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters) {
-        S3Client s3Client = AWS_S3ClientBuilder.build();
+        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.bucket());
         return new AWS_S3SequentialTarget(sharedQueue, writer);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build();
+        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.bucket());
         return IntStream.range(0, options.threads())
                 .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, writer, sharedStatus))

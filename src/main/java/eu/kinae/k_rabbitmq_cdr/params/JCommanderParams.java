@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr.params;
 
 import com.beust.jcommander.Parameter;
+import software.amazon.awssdk.regions.Region;
 
 public class JCommanderParams {
 
@@ -31,26 +32,29 @@ public class JCommanderParams {
     @Parameter(names = { "-dir", "--directory" }, description = "Files directory", order = 8)
     public String directory;
 
-    @Parameter(names = { "--bucket" }, description = "Bucket name for AWS_S3 connector", order = 9)
+    @Parameter(names = { "--region" }, description = "Region for AWS_S3 connector", order = 9, converter = RegionConverter.class)
+    public Region region;
+
+    @Parameter(names = { "--bucket" }, description = "Bucket name for AWS_S3 connector", order = 10)
     public String bucket;
 
-    @Parameter(names = { "--prefix" }, description = "Key's prefix for AWS_S connector", order = 10)
+    @Parameter(names = { "--prefix" }, description = "Key's prefix for AWS_S3 connector", order = 11)
     public String prefix;
 
-    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 11)
+    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 12)
     public TransferType transferType = TransferType.BUFFER;
 
-    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 12)
+    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 13)
     public ProcessType processType = ProcessType.PARALLEL;
 
-    @Parameter(names = { "-max", "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 13)
+    @Parameter(names = { "-max", "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 14)
     public int maxMessage = 0;
 
-    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 14)
+    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 15)
     public int threads = 1;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
-            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 15)
+            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 16)
     public boolean sorted;
 
 }
