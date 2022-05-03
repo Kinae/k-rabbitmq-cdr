@@ -1,7 +1,5 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.aws;
 
-import java.util.Map;
-
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
@@ -20,13 +18,6 @@ public class AWS_S3Writer implements Target {
     private final String bucket;
     private final String prefix;
 
-    /*
-    S3Client.builder()
-                .credentialsProvider(DefaultCredentialsProvider.create())
-                .region(region)
-                .build();
-     */
-
     public AWS_S3Writer(S3Client s3, String bucket, String prefix) {
         this.s3 = s3;
         this.bucket = bucket;
@@ -37,12 +28,10 @@ public class AWS_S3Writer implements Target {
     public void push(KMessage message) throws Exception {
         String filename = Constant.FILE_PREFIX + message.deliveryTag();
         s3.putObject(PutObjectRequest.builder()
-                             .metadata(Map.of("deliveryTag", "0"))
                              .bucket(bucket)
                              .key(prefix + filename)
                              .build(), RequestBody.fromBytes(message.body()));
         s3.putObject(PutObjectRequest.builder()
-                             .metadata(Map.of("deliveryTag", "0"))
                              .bucket(bucket)
                              .key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX)
                              .build(), RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties())));

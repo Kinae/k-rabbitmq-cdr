@@ -15,7 +15,9 @@ public abstract class ConnectorFactory {
             Map.of(
                     new SimpleEntry<>(SupportedType.AMQP, SupportedType.AMQP), AMQPToAMQPConnector.class,
                     new SimpleEntry<>(SupportedType.AMQP, SupportedType.FILE), AMQPToFileConnector.class,
-                    new SimpleEntry<>(SupportedType.FILE, SupportedType.AMQP), FileToAMQPConnector.class
+                    new SimpleEntry<>(SupportedType.AMQP, SupportedType.AWS_S3), AMQPToFileConnector.class,
+                    new SimpleEntry<>(SupportedType.FILE, SupportedType.AMQP), FileToAMQPConnector.class,
+                    new SimpleEntry<>(SupportedType.AWS_S3, SupportedType.AMQP), FileToAMQPConnector.class
                   );
 
     private ConnectorFactory() {

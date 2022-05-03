@@ -38,7 +38,8 @@ public class FileToAMQPConnector implements Connector {
 
             try(AMQPConnection tConnection = new AMQPConnection(params.targetURI(), params.targetQueue())) {
 
-                FileSequentialSource source = new FileSequentialSource(new FileReader(Path.of(params.input()), options), sharedQueue, options);
+                FileReader reader = new FileReader(Path.of(params.input()), options);
+                FileSequentialSource source = new FileSequentialSource(reader, sharedQueue, options);
                 AMQPSequentialTarget target = new AMQPSequentialTarget(sharedQueue, tConnection);
 
                 source.start();
@@ -57,7 +58,8 @@ public class FileToAMQPConnector implements Connector {
                 List<Callable<Long>> callables = IntStream.range(0, options.threads())
                         .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, tConnection, sharedStatus))
                         .collect(Collectors.toCollection(ArrayList::new));
-                callables.add(new FileParallelSource(new FileReader(Path.of(params.input()), options), sharedQueue, sharedStatus, options));
+                FileReader reader = new FileReader(Path.of(params.input()), options);
+                callables.add(new FileParallelSource(reader, sharedQueue, sharedStatus, options));
                 fixedThreadPool.invokeAll(callables);
 
                 fixedThreadPool.shutdown();

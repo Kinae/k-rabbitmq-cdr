@@ -1,6 +1,5 @@
 package eu.kinae.k_rabbitmq_cdr.connector.impl;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -16,19 +15,21 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPConnection;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialSource;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileParallelTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileSequentialTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileWriter;
+import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3ClientBuilder;
+import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3ParallelTarget;
+import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3SequentialTarget;
+import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3Writer;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.services.s3.S3Client;
 
-public class AMQPToFileConnector implements Connector {
+public class AMQPToAWS_S3Connector implements Connector {
 
-    private static final Logger logger = LoggerFactory.getLogger(AMQPToFileConnector.class);
+    private static final Logger logger = LoggerFactory.getLogger(AMQPToAWS_S3Connector.class);
 
-    public AMQPToFileConnector() {
+    public AMQPToAWS_S3Connector() {
     }
 
     @Override
@@ -36,11 +37,12 @@ public class AMQPToFileConnector implements Connector {
         if(params.processType() == ProcessType.SEQUENTIAL) {
             SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
 
-            try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue())) {
+            try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
+                S3Client s3Client = AWS_S3ClientBuilder.build()) {
 
-                FileWriter writer = new FileWriter(Path.of(params.output()));
+                AWS_S3Writer writer = new AWS_S3Writer(s3Client, "bucket", "prefix"); // params
                 AMQPSequentialSource source = new AMQPSequentialSource(sConnection, sharedQueue, options);
-                FileSequentialTarget target = new FileSequentialTarget(sharedQueue, writer);
+                AWS_S3SequentialTarget target = new AWS_S3SequentialTarget(sharedQueue, writer);
 
                 source.start();
                 target.start();
@@ -52,12 +54,13 @@ public class AMQPToFileConnector implements Connector {
             SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
             SharedStatus sharedStatus = new SharedStatus();
 
-            try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue())) {
+            try(AMQPConnection sConnection = new AMQPConnection(params.sourceURI(), params.sourceQueue());
+                S3Client s3Client = AWS_S3ClientBuilder.build()) {
 
-                FileWriter writer = new FileWriter(Path.of(params.output()));
+                AWS_S3Writer writer = new AWS_S3Writer(s3Client, "bucket", "prefix"); // params
                 ExecutorService fixedThreadPool = Executors.newFixedThreadPool(options.threads() + 1);
                 List<Callable<Long>> callables = IntStream.range(0, options.threads())
-                        .mapToObj(ignored -> new FileParallelTarget(sharedQueue, writer, sharedStatus))
+                        .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, writer, sharedStatus))
                         .collect(Collectors.toCollection(ArrayList::new));
                 callables.add(new AMQPParallelSource(sConnection, sharedQueue, sharedStatus, options));
                 fixedThreadPool.invokeAll(callables);
