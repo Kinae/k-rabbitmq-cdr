@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers
 public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
 
-    public final static String PREFIX = "prefix";
+    public static final String PREFIX = "prefix";
     public static final String EMPTY_SOURCE_Q = "empty-source-q";
     public static final String SOURCE_Q = "source-q";
     public static final String TARGET_Q = "target-q";
@@ -93,15 +93,16 @@ public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
     public void Produced_messages_are_equal_to_consumed_messages3() throws Exception {
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+
         try(var source = new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q);
-            var target = new AWS_S3Writer(s3, bucket, "prefix")) {
+            var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
 
             var component = new ComponentDirectLinked(source, target);
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            assertThatSourceContainsAllMessagesUnsorted(new AWS_S3Reader(s3, bucket, "prefix", KOptions.DEFAULT));
+            assertThatSourceContainsAllMessagesUnsorted(new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT));
 
             // merge S3 reader and writer
         }
@@ -135,7 +136,7 @@ public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
             target2.push(message);
         }
 
-        try(var source = new AWS_S3Reader(s3, bucket, "prefix", KOptions.DEFAULT);
+        try(var source = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);
             var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
 
             var component = new ComponentDirectLinked(source, target);
