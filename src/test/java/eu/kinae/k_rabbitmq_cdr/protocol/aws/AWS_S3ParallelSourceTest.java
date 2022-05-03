@@ -23,7 +23,7 @@ public class AWS_S3ParallelSourceTest extends AWS_S3AbstractComponentSourceTest 
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new AWS_S3ParallelSource((AWS_S3Reader) source, (SharedQueue) target, new SharedStatus(), options);
+        return new AWS_S3ParallelSource((AWS_S3Reader) source, (SharedQueue) target, options, new SharedStatus());
     }
 
     @Override
@@ -35,7 +35,7 @@ public class AWS_S3ParallelSourceTest extends AWS_S3AbstractComponentSourceTest 
     public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
         var status = mock(SharedStatus.class);
         try(var target = getSharedQueue();
-            var component = new AWS_S3ParallelSource(getSource(), target, status, KOptions.DEFAULT)) {
+            var component = new AWS_S3ParallelSource(getSource(), target, KOptions.DEFAULT, status)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
             Awaitility.await().atMost(60, TimeUnit.SECONDS).until(future::isDone);

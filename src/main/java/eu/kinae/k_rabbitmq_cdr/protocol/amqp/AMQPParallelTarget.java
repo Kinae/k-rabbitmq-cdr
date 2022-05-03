@@ -1,26 +1,18 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
 
-import java.util.concurrent.Callable;
 
 import com.rabbitmq.client.Channel;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public class AMQPParallelTarget extends AbstractComponentTarget implements Callable<Long>, AMQPComponent {
+public class AMQPParallelTarget extends AbstractComponentParallelTarget {
 
     private Channel channel;
-    private final SharedStatus sharedStatus;
 
     public AMQPParallelTarget(SharedQueue source, AMQPConnection target, SharedStatus sharedStatus) {
-        super(source, target);
-        this.sharedStatus = sharedStatus;
-    }
-
-    @Override
-    protected boolean stopConsumingIfResponseIsNull() {
-        return !sharedStatus.isConsumerAlive();
+        super(source, target, sharedStatus);
     }
 
     @Override

@@ -4,7 +4,6 @@ import java.nio.file.Path;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSourceTest;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeEach
     public void beforeEach() throws Exception {
-        for(KMessage message : MESSAGES) {
+        for(var message : MESSAGES) {
             new FileWriter(tempDir).push(message);
         }
     }

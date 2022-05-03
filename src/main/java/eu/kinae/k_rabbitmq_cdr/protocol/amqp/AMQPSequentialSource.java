@@ -4,7 +4,7 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
-public class AMQPSequentialSource extends AbstractComponentSource implements AMQPComponent {
+public class AMQPSequentialSource extends AbstractComponentSource {
 
     public AMQPSequentialSource(AMQPConnection source, SharedQueue target) {
         this(source, target, KOptions.DEFAULT);

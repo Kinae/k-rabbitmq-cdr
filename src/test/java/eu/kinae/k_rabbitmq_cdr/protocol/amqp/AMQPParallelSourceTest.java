@@ -28,7 +28,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponentSource getComponent(Source source, Target target, KOptions options) {
-        return new AMQPParallelSource((AMQPConnection) source, (SharedQueue) target, new SharedStatus(), options);
+        return new AMQPParallelSource((AMQPConnection) source, (SharedQueue) target, options, new SharedStatus());
     }
 
     @Test
@@ -47,7 +47,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
     public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
         var status = mock(SharedStatus.class);
         try(var target = new SharedQueue(ProcessType.PARALLEL);
-            var component = new AMQPParallelSource(getSource(), target, status, KOptions.DEFAULT)) {
+            var component = new AMQPParallelSource(getSource(), target, KOptions.DEFAULT, status)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
             Awaitility.await().atMost(60, TimeUnit.SECONDS).until(future::isDone);

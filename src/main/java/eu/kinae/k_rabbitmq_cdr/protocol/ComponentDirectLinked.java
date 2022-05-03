@@ -1,18 +1,17 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
-public class AMQPComponentDirectLinked extends AbstractComponent implements AMQPComponent {
+public class ComponentDirectLinked extends AbstractComponent {
 
     private final KOptions options;
 
-    public AMQPComponentDirectLinked(AMQPConnection source, AMQPConnection target) {
+    public ComponentDirectLinked(Source source, Target target) {
         this(source, target, KOptions.DEFAULT);
     }
 
-    public AMQPComponentDirectLinked(AMQPConnection source, AMQPConnection target, KOptions options) {
+    public ComponentDirectLinked(Source source, Target target, KOptions options) {
         super(source, target);
         this.options = options;
     }

@@ -11,7 +11,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AbstractComponentTest {
+public abstract class AbstractComponentTest {
 
     public static final List<KMessage> MESSAGES = IntStream.range(0, 30).boxed()
             .map(it -> new KMessage(new AMQP.BasicProperties().builder().appId("APPID_" + it).build(), "TEST_" + it, it))
