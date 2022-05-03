@@ -1,4 +1,4 @@
-name: Java CI
+name: main
 
 on: [push]
 
@@ -20,3 +20,16 @@ jobs:
         uses: gradle/gradle-build-action@937999e9cc2425eddc7fd62d1053baf041147db7
         with:
           arguments: build --stacktrace --info
+      - name: Get JaCoCo coverage
+        run: >
+          echo "COVERAGE=$(gradle jacocoTestReport | grep -o -E '([0-9.]+)%')" >> $GITHUB_ENV
+      - name: Create the Badge
+        uses: schneegans/dynamic-badges-action@v1.0.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 62e2df105b51624ccc775a81ed43891e
+          filename: k-rabbitmq-cdr.json
+          label: Test Coverage
+          message: ${{ env.COVERAGE }}
+          color: green
+          namedLogo: jest

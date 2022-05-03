@@ -1,11 +1,11 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
-    id "io.spring.dependency-management" version "1.0.11.RELEASE"
+    id 'jacoco'
+    id 'org.barfuin.gradle.jacocolog' version "2.0.0"
 }
 
 apply plugin: 'java'
 apply plugin: 'application'
-apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = 'k-rabbitmq-cdr'
@@ -21,12 +21,24 @@ test {
     useJUnitPlatform()
 }
 
+jacocoTestReport {
+    reports {
+        xml.required = true
+    }
+}
+
+jacocoLogTestCoverage {
+    counters {
+        showClassCoverageOnly()
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 def com_beust_jcommander_version = '1.82'
-def com_fasterxml_jackson_version = '2.13.2'
+def com_fasterxml_jackson_version = '2.13.2.1'
 def com_rabbitmq_version= '5.14.2'
 def org_assertj_version = '3.22.0'
 def org_junit_version = '5.8.2'
