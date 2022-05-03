@@ -6,6 +6,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Testcontainers
@@ -21,6 +22,7 @@ public abstract class AWS_S3AbstractComponentTargetTest extends AbstractComponen
             .builder()
             .endpointOverride(localstack.getEndpointOverride(LocalStackContainer.Service.S3))
             .credentialsProvider(DefaultCredentialsProvider.create())
+            .region(Region.of(localstack.getRegion()))
             .build();
 
 }
