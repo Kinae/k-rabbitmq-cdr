@@ -10,44 +10,47 @@ public class JCommanderParams {
     @Parameter(names = { "-v", "-verbose" }, description = "Level of verbosity", order = 1)
     public Integer verbose = 1;
 
-    @Parameter(names = { "-st", "--source-type" }, description = "Type of the source", required = true, order = 2)
+    @Parameter(names = { "--source-type" }, description = "Type of the source", required = true, order = 2)
     public SupportedType sourceType;
 
-    @Parameter(names = { "-s-uri", "--source-uri" }, description = "URI of the source", required = true, password = true, order = 3)
+    @Parameter(names = { "--source-uri" }, description = "URI of the source", required = true, password = true, order = 3)
     public String sourceURI;
 
-    @Parameter(names = { "-sq", "--source-queue" }, description = "Queue of the source", order = 4)
+    @Parameter(names = { "--source-queue" }, description = "Queue of the source", order = 4)
     public String sourceQueue;
 
-    @Parameter(names = { "-i", "--input" }, description = "Directory files input", order = 5)
-    public String input;
-
-    @Parameter(names = { "-tt", "--target-type" }, description = "Type of the target", required = true, order = 6)
+    @Parameter(names = { "--target-type" }, description = "Type of the target", required = true, order = 5)
     public SupportedType targetType;
 
-    @Parameter(names = { "-t-uri", "--to-uri" }, description = "URI of the target", required = true, password = true, order = 7)
+    @Parameter(names = { "--to-uri" }, description = "URI of the target", required = true, password = true, order = 6)
     public String targetURI;
 
-    @Parameter(names = { "-tq", "--target-queue" }, description = "Queue of the target", order = 8)
+    @Parameter(names = { "--target-queue" }, description = "Queue of the target", order = 7)
     public String targetQueue;
 
-    @Parameter(names = { "-o", "--output" }, description = "Directory files output", order = 9)
-    public String output;
+    @Parameter(names = { "-dir", "--directory" }, description = "Files directory", order = 8)
+    public String directory;
 
-    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 10)
-    public TransferType transferType = TransferType.DIRECT;
+    @Parameter(names = { "--bucket" }, description = "Bucket name for AWS_S3 connector", order = 9)
+    public String bucket;
 
-    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 11)
+    @Parameter(names = { "--prefix" }, description = "Key's prefix for AWS_S connector", order = 10)
+    public String prefix;
+
+    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 11)
+    public TransferType transferType = TransferType.BUFFER;
+
+    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFER as transferType", order = 12)
     public ProcessType processType = ProcessType.PARALLEL;
 
-    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 12)
+    @Parameter(names = { "-max", "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 13)
     public int maxMessage = 0;
 
-    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 13)
+    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when process-type is PARALLEL", order = 14)
     public int threads = 1;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
-            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 14)
+            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 15)
     public boolean sorted;
 
 }
