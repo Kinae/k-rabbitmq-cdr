@@ -20,7 +20,7 @@ public abstract class AbstractComponentParallelSource extends AbstractComponentS
     }
 
     @Override
-    public Long call() throws Exception {
+    public Long call() {
         return start();
     }
 }

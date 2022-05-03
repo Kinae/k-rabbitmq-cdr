@@ -1,11 +1,10 @@
-package eu.kinae.k_rabbitmq_cdr.protocol.amqp;
+package eu.kinae.k_rabbitmq_cdr.protocol;
 
 import java.nio.file.Path;
 import java.util.UUID;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTest;
-import eu.kinae.k_rabbitmq_cdr.protocol.ComponentDirectLinked;
+import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPConnection;
 import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3Reader;
 import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3Writer;
 import eu.kinae.k_rabbitmq_cdr.protocol.file.FileReader;
@@ -26,7 +25,7 @@ import static eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPUtils.buildAMQPURI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
-public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
+public class ComponentDirectLinkedTest extends AbstractComponentTest {
 
     public static final String PREFIX = "prefix";
     public static final String EMPTY_SOURCE_Q = "empty-source-q";
@@ -102,16 +101,16 @@ public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            assertThatSourceContainsAllMessagesUnsorted(new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT));
-
-            // merge S3 reader and writer
+            var reader = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);
+            assertThatSourceContainsAllMessagesUnsorted(reader);
         }
     }
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages4() throws Exception {
+        var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            new FileWriter(tempDir).push(message);
+            writer.push(message);
         }
 
         try(var source = new FileReader(tempDir, KOptions.DEFAULT);
@@ -131,9 +130,9 @@ public class AMQPComponentDirectLinkedTest extends AbstractComponentTest {
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
 
-        var target2 = new AWS_S3Writer(s3, bucket, PREFIX);
+        var writer = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            target2.push(message);
+            writer.push(message);
         }
 
         try(var source = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);

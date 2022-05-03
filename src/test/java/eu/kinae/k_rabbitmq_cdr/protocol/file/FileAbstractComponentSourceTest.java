@@ -22,8 +22,9 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeEach
     public void beforeEach() throws Exception {
+        var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            new FileWriter(tempDir).push(message);
+            writer.push(message);
         }
     }
 

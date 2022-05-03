@@ -6,10 +6,6 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
 public class AWS_S3SequentialSource extends AbstractComponentSource {
 
-    public AWS_S3SequentialSource(AWS_S3Reader source, SharedQueue target) {
-        this(source, target, KOptions.DEFAULT);
-    }
-
     public AWS_S3SequentialSource(AWS_S3Reader source, SharedQueue target, KOptions options) {
         super(source, target, options);
     }

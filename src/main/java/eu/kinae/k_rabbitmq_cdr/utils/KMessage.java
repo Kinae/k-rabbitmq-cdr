@@ -42,7 +42,8 @@ public record KMessage(AMQP.BasicProperties properties, byte[] body, long messag
         return result;
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return new StringJoiner(" | ", KMessage.class.getSimpleName() + "[", "]")
                 .add("properties=" + properties)
                 .add("body=" + new String(body))

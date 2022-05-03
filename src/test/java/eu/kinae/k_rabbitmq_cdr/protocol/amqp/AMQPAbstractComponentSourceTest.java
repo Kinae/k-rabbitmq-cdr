@@ -32,12 +32,12 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
     }
 
     @Override
-    protected AMQPConnection getEmptySource() throws Exception {
+    protected AMQPConnection getEmptySource() {
         return new AMQPConnection(buildAMQPURI(rabbitmq), EMPTY_SOURCE_Q);
     }
 
     @Override
-    protected AMQPConnection getSource() throws Exception {
+    protected AMQPConnection getSource() {
         return new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q);
     }
 

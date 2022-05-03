@@ -31,6 +31,5 @@ public abstract class AbstractComponentTest {
             assertThat(MESSAGES_SET.contains(kMessage)).isTrue();
             kMessage = source.pop();
         }
-
     }
 }
