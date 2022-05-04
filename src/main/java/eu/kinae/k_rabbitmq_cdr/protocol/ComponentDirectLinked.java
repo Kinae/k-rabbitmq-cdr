@@ -33,7 +33,7 @@ public class ComponentDirectLinked extends AbstractComponent {
                     logger.info("estimate total number of messages : {}", (message.messageCount() + 1));
                 push(message);
             }
-        } while(++count < options.maxMessage() || options.maxMessage() == 0); // add message numbers (range, specific number)
+        } while(++count < options.maxMessage() || options.maxMessage() == 0);
         return count;
     }
 

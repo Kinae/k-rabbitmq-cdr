@@ -1,7 +1,5 @@
 package eu.kinae.k_rabbitmq_cdr;
 
-import java.util.Collections;
-
 import com.beust.jcommander.JCommander;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
@@ -28,21 +26,16 @@ public final class Application {
             return;
         }
 
-        boolean sorted;
         if(jParams.processType == ProcessType.PARALLEL && jParams.threads > 1) {
-            sorted = false;
-        } else {
-            sorted = jParams.sorted;
+            jParams.sorted = false;
         }
 
-        KOptions options = new KOptions(jParams.maxMessage, Collections.emptySet(), jParams.threads, sorted);
-        KParameters params = new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue,
-                                             jParams.targetType, jParams.targetURI, jParams.targetQueue,
-                                             jParams.directory, jParams.region, jParams.bucket, jParams.prefix,
-                                             jParams.transferType, jParams.processType);
+        KOptions options = KOptions.of(jParams);
+        KParameters params = KParameters.of(jParams);
 
         ConnectorFactory.newConnector(params.sourceType(), params.targetType())
-                .ifPresentOrElse(it -> it.start(params, options), () -> logger.error("No connector found for {} => {}", params.sourceType(), params.targetType()));
+                .ifPresentOrElse(it -> it.start(params, options),
+                                 () -> logger.error("No connector found for {} => {}", params.sourceType(), params.targetType()));
     }
 
 }

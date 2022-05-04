@@ -13,14 +13,14 @@ import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 
 public abstract class ConnectorFactory {
 
-    public static final Map<SupportedType, Class<? extends ConnectorSource>> connectorSources =
+    static final Map<SupportedType, Class<? extends ConnectorSource>> connectorSources =
             Map.of(
                     SupportedType.AMQP, AMQPConnectorSource.class,
                     SupportedType.FILE, FileConnectorSource.class,
                     SupportedType.AWS_S3, AWS_S3ConnectorSource.class
                   );
 
-    public static final Map<SupportedType, Class<? extends ConnectorTarget>> connectorTargets =
+    static final Map<SupportedType, Class<? extends ConnectorTarget>> connectorTargets =
             Map.of(
                     SupportedType.AMQP, AMQPConnectorTarget.class,
                     SupportedType.FILE, FileConnectorTarget.class,

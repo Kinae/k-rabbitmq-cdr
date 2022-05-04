@@ -7,4 +7,11 @@ public record KParameters(SupportedType sourceType, String sourceURI, String sou
                           String directory, Region region, String bucket, String prefix,
                           TransferType transferType, ProcessType processType) {
 
+    public static KParameters of(JCommanderParams jParams) {
+        return new KParameters(jParams.sourceType, jParams.sourceURI, jParams.sourceQueue,
+                               jParams.targetType, jParams.targetURI, jParams.targetQueue,
+                               jParams.directory, jParams.region, jParams.bucket, jParams.prefix,
+                               jParams.transferType, jParams.processType);
+    }
+
 }

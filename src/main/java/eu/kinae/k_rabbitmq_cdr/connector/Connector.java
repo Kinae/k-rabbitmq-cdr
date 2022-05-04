@@ -43,7 +43,7 @@ public class Connector {
         }
     }
 
-    protected void direct(KParameters parameters, KOptions options) {
+    private void direct(KParameters parameters, KOptions options) {
         try(Source source = connectorSource.getDirectLinked(parameters, options); Target target = connectorTarget.getDirectLinked(parameters)) {
             ComponentDirectLinked directTransfer = new ComponentDirectLinked(source, target, options);
             directTransfer.start();
@@ -53,7 +53,7 @@ public class Connector {
         }
     }
 
-    protected void bufferSequential(KParameters parameters, KOptions options) {
+    private void bufferSequential(KParameters parameters, KOptions options) {
         SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options);
             AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters)) {
@@ -66,7 +66,7 @@ public class Connector {
         }
     }
 
-    protected void bufferParallel(KParameters parameters, KOptions options) {
+    private void bufferParallel(KParameters parameters, KOptions options) {
         SharedStatus sharedStatus = new SharedStatus();
         SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         try(ParallelComponent source = connectorSource.getParallelComponent(sharedQueue, parameters, options, sharedStatus);
