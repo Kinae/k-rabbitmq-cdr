@@ -21,7 +21,6 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import static eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPUtils.buildAMQPURI;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,7 +29,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ComponentDirectLinkedTest extends AbstractComponentTest {
 
     public static final String PREFIX = "prefix";
-    public static final String EMPTY_SOURCE_Q = "empty-source-q";
     public static final String SOURCE_Q = "source-q";
     public static final String TARGET_Q = "target-q";
 
@@ -39,7 +37,6 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
 
     @Container
     public static final RabbitMQContainer rabbitmq = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3-management"))
-            .withQueue(EMPTY_SOURCE_Q)
             .withQueue(SOURCE_Q)
             .withQueue(TARGET_Q);
 
@@ -94,7 +91,7 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
     @Test
     public void Produced_messages_are_equal_to_consumed_messages3() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         try(var source = new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q);
             var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
@@ -131,7 +128,7 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
     @Test
     public void Produced_messages_are_equal_to_consumed_messages5() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         var writer = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {

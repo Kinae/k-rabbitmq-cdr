@@ -16,7 +16,6 @@ import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
 import software.amazon.awssdk.services.s3.model.S3Object;
@@ -61,14 +60,8 @@ public class AWS_S3Reader implements Source {
             return null;
 
         S3Object s3Object = it.next();
-        byte[] body = s3.getObjectAsBytes(GetObjectRequest.builder()
-                                                  .bucket(bucket)
-                                                  .key(s3Object.key())
-                                                  .build()).asByteArray();
-        byte[] properties = s3.getObjectAsBytes(GetObjectRequest.builder()
-                                                        .bucket(bucket)
-                                                        .key(s3Object.key() + Constant.FILE_PROPERTIES_SUFFIX)
-                                                        .build()).asByteArray();
+        byte[] body = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key())).asByteArray();
+        byte[] properties = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key() + Constant.FILE_PROPERTIES_SUFFIX).build()).asByteArray();
         AMQP.BasicProperties props = CustomObjectMapper.om.readValue(new ByteArrayInputStream(properties), AMQP.BasicProperties.class);
         long deliveryTag = extractDeliveryTagFromKey(s3Object.key());
         return new KMessage(props, body, deliveryTag);

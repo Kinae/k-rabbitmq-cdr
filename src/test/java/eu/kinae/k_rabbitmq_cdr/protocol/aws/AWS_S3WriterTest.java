@@ -13,7 +13,6 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 @Testcontainers
 public class AWS_S3WriterTest extends AbstractComponentTest {
@@ -34,7 +33,7 @@ public class AWS_S3WriterTest extends AbstractComponentTest {
     @Test
     public void Pushed_messages_are_equal_to_original() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         var writer = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {

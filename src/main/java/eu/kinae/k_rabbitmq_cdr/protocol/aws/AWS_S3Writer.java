@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 public class AWS_S3Writer implements Target {
 
@@ -27,14 +26,9 @@ public class AWS_S3Writer implements Target {
     @Override
     public void push(KMessage message) throws Exception {
         String filename = Constant.FILE_PREFIX + message.deliveryTag();
-        s3.putObject(PutObjectRequest.builder()
-                             .bucket(bucket)
-                             .key(prefix + filename)
-                             .build(), RequestBody.fromBytes(message.body()));
-        s3.putObject(PutObjectRequest.builder()
-                             .bucket(bucket)
-                             .key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX)
-                             .build(), RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties())));
+        s3.putObject(it -> it.bucket(bucket).key(prefix + filename), RequestBody.fromBytes(message.body()));
+        RequestBody props = RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties()));
+        s3.putObject(it -> it.bucket(bucket).key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX), props);
     }
 
     @Override

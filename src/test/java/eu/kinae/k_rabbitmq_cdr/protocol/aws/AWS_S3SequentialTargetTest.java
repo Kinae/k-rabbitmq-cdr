@@ -1,13 +1,11 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.aws;
 
-import java.util.Collections;
 import java.util.UUID;
 
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -35,7 +33,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         for(var message : MESSAGES)
@@ -56,7 +54,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
     @Test
     public void Produced_messages_are_equal_to_consumed_sorted_messages() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         for(var message : MESSAGES)
@@ -69,7 +67,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        var options = new KOptions(0, Collections.emptySet(), 1, true);
+        var options = new KOptions(0, 1, true);
         try(var target = new AWS_S3Reader(s3, bucket, PREFIX, options)) {
             assertThatSourceContainsAllMessagesSorted(target);
         }

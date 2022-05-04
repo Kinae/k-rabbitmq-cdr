@@ -1,7 +1,5 @@
 package eu.kinae.k_rabbitmq_cdr.protocol.file;
 
-import java.util.Collections;
-
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -61,7 +59,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        var options = new KOptions(0, Collections.emptySet(), 1, true);
+        var options = new KOptions(0, 1, true);
         try(var target = new FileReader(tempDir, options)) {
             assertThatSourceContainsAllMessagesSorted(target);
         }

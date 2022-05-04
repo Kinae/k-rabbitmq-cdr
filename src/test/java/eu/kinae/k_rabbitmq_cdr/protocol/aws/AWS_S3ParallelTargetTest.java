@@ -13,7 +13,6 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
@@ -57,7 +56,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
         var bucket = UUID.randomUUID().toString();
-        s3.createBucket(CreateBucketRequest.builder().bucket(bucket).build());
+        s3.createBucket(it -> it.bucket(bucket));
 
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
