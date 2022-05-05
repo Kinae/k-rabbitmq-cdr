@@ -14,7 +14,6 @@ mainClassName = 'eu.kinae.k_rabbitmq_cdr.Application'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 test {
@@ -37,6 +36,8 @@ repositories {
     mavenCentral()
 }
 
+def ch_qos_logback_version = '1.2.11'
+def com_amazonaws_version = '1.12.210'
 def com_beust_jcommander_version = '1.82'
 def com_fasterxml_jackson_version = '2.13.2.1'
 def com_rabbitmq_version= '5.14.2'
@@ -45,13 +46,14 @@ def org_junit_version = '5.8.2'
 def org_mockito_version = '4.4.0'
 def org_slf4j_version = '1.7.36'
 def org_testcontainers_version = '1.16.3'
+def software_amazon_awssdk_version = '2.17.179'
 
 dependencies {
-    implementation group: 'software.amazon.awssdk', name: 'aws-core', version: '2.17.179'
-    implementation group: 'software.amazon.awssdk', name: 'auth', version: '2.17.179'
-    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.17.179'
-    implementation group: 'ch.qos.logback', name: 'logback-core', version: '1.2.11'
-    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.11'
+    implementation group: 'software.amazon.awssdk', name: 'aws-core', version: software_amazon_awssdk_version
+    implementation group: 'software.amazon.awssdk', name: 'auth', version: software_amazon_awssdk_version
+    implementation group: 'software.amazon.awssdk', name: 's3', version: software_amazon_awssdk_version
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: ch_qos_logback_version
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: ch_qos_logback_version
     implementation group: 'com.beust', name: 'jcommander', version: com_beust_jcommander_version
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: com_fasterxml_jackson_version
     implementation group: 'com.rabbitmq', name: 'amqp-client', version: com_rabbitmq_version
@@ -68,6 +70,6 @@ dependencies {
     testImplementation group: 'org.testcontainers', name: 'testcontainers', version: org_testcontainers_version
 
     // test container still use sdk1  https://github.com/testcontainers/testcontainers-java/issues/1442#issuecomment-694342883
-    testImplementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version :'1.12.210'
+    testImplementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version : com_amazonaws_version
 
 }
