@@ -14,7 +14,7 @@ public class JCommanderParams {
     @Parameter(names = { "--source-type" }, description = "Type of the source", required = true, order = 2)
     public SupportedType sourceType;
 
-    @Parameter(names = { "--source-uri" }, description = "URI of the source for AMQP connector", required = true, password = true, order = 3)
+    @Parameter(names = { "--source-uri" }, description = "URI of the source for AMQP connector", password = true, order = 3)
     public String sourceURI;
 
     @Parameter(names = { "--source-queue" }, description = "Queue of the source for AMQP connector", order = 4)
@@ -23,7 +23,7 @@ public class JCommanderParams {
     @Parameter(names = { "--target-type" }, description = "Type of the target", required = true, order = 5)
     public SupportedType targetType;
 
-    @Parameter(names = { "--to-uri" }, description = "URI of the target for AMQP connector", required = true, password = true, order = 6)
+    @Parameter(names = { "--to-uri" }, description = "URI of the target for AMQP connector", password = true, order = 6)
     public String targetURI;
 
     @Parameter(names = { "--target-queue" }, description = "Queue of the target for AMQP connector", order = 7)

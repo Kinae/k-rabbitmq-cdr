@@ -44,7 +44,7 @@ public abstract class AbstractComponentSourceTest extends AbstractComponentTest 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(options.maxMessage());
-            verify(target, times((int) options.maxMessage())).push(any());
+            verify(target, times(options.maxMessage())).push(any());
         }
     }
 

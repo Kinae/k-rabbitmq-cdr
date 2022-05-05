@@ -1,7 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.params;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class KOptionsTest {
 
@@ -13,7 +14,7 @@ public class KOptionsTest {
         jParams.sorted = true;
 
         var parameters = KOptions.of(jParams);
-        Assertions.assertThat(parameters).usingRecursiveComparison().isEqualTo(jParams);
+        assertThat(parameters).usingRecursiveComparison().isEqualTo(jParams);
     }
 
 }
