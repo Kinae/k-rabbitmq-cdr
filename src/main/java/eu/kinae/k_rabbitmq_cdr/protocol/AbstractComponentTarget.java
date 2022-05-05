@@ -19,7 +19,6 @@ public abstract class AbstractComponentTarget extends AbstractComponent {
         do {
             KMessage message = pop();
             if(message == null) {
-                logger.debug("Waiting for message ...");
                 if(stopConsumingIfResponseIsNull())
                     break;
             } else {

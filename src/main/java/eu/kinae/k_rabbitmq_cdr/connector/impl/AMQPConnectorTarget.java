@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
+import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponents;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
@@ -18,6 +19,11 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 public class AMQPConnectorTarget implements ConnectorTarget {
 
     public AMQPConnectorTarget() {
+    }
+
+    @Override
+    public SupportedType getSupportedType() {
+        return SupportedType.AMQP;
     }
 
     @Override

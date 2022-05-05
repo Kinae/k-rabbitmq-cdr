@@ -34,7 +34,7 @@ public class AWS_S3Reader implements Source {
         this.bucket = bucket;
         this.prefix = prefix;
 
-        logger.info("listing files ...");
+        logger.info("listing files in {} with prefix {}", bucket, prefix);
         ListObjectsV2Request.Builder request = ListObjectsV2Request.builder()
                 .bucket(bucket)
                 .prefix(buildPrefix(prefix))
@@ -48,10 +48,12 @@ public class AWS_S3Reader implements Source {
         } while(response.isTruncated());
 
         logger.info("number of files listed : {}", s3Objects.size());
-        if(options.sorted())
+        if(options.sorted()) {
+            logger.info("sorting AWS_S3 filename by ascending number");
             it = s3Objects.stream().sorted(Comparator.comparing(it -> extractDeliveryTagFromKey(it.key()))).iterator();
-        else
+        } else {
             it = s3Objects.iterator();
+        }
     }
 
     @Override

@@ -3,6 +3,7 @@ package eu.kinae.k_rabbitmq_cdr.connector.impl;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
+import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
@@ -17,6 +18,11 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class AWS_S3ConnectorSource implements ConnectorSource {
 
     public AWS_S3ConnectorSource() {
+    }
+
+    @Override
+    public SupportedType getSupportedType() {
+        return SupportedType.AWS_S3;
     }
 
     @Override

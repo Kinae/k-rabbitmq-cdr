@@ -26,7 +26,6 @@ public class ComponentDirectLinked extends AbstractComponent {
         do {
             KMessage message = pop();
             if(message == null) {
-                logger.debug("no more message to get");
                 break;
             } else {
                 if(count == 0)

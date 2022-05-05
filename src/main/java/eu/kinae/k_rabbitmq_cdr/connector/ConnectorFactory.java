@@ -2,6 +2,7 @@ package eu.kinae.k_rabbitmq_cdr.connector;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import eu.kinae.k_rabbitmq_cdr.connector.impl.AMQPConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.AMQPConnectorTarget;
@@ -10,8 +11,18 @@ import eu.kinae.k_rabbitmq_cdr.connector.impl.AWS_S3ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
+import software.amazon.awssdk.utils.Pair;
 
 public abstract class ConnectorFactory {
+
+    public static final Set<Pair<SupportedType, SupportedType>> connectorsAvailable =
+            Set.of(
+                    Pair.of(SupportedType.AMQP, SupportedType.AMQP),
+                    Pair.of(SupportedType.AMQP, SupportedType.FILE),
+                    Pair.of(SupportedType.AMQP, SupportedType.AWS_S3),
+                    Pair.of(SupportedType.FILE, SupportedType.AMQP),
+                    Pair.of(SupportedType.AWS_S3, SupportedType.AMQP)
+                  );
 
     static final Map<SupportedType, Class<? extends ConnectorSource>> connectorSources =
             Map.of(

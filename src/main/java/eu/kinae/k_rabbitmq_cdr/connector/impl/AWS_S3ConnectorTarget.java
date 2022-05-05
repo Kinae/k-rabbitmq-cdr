@@ -6,6 +6,7 @@ import java.util.stream.IntStream;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
+import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponents;
 import eu.kinae.k_rabbitmq_cdr.protocol.Target;
@@ -20,6 +21,11 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class AWS_S3ConnectorTarget implements ConnectorTarget {
 
     public AWS_S3ConnectorTarget() {
+    }
+
+    @Override
+    public SupportedType getSupportedType() {
+        return SupportedType.AWS_S3;
     }
 
     @Override

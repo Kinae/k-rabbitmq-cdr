@@ -3,6 +3,7 @@ package eu.kinae.k_rabbitmq_cdr.connector.impl;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
+import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponent;
 import eu.kinae.k_rabbitmq_cdr.protocol.Source;
@@ -15,6 +16,11 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 public class AMQPConnectorSource implements ConnectorSource {
 
     public AMQPConnectorSource() {
+    }
+
+    @Override
+    public SupportedType getSupportedType() {
+        return SupportedType.AMQP;
     }
 
     @Override

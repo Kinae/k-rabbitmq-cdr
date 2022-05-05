@@ -21,6 +21,7 @@ public class AWS_S3Writer implements Target {
         this.s3 = s3;
         this.bucket = bucket;
         this.prefix = buildPrefix(prefix);
+        logger.info("writing files in {} with prefix {}", bucket, prefix);
     }
 
     @Override

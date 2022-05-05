@@ -8,7 +8,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public interface ConnectorTarget {
+public interface ConnectorTarget extends ConnectorType {
 
     Target getDirectLinked(KParameters parameters);
 

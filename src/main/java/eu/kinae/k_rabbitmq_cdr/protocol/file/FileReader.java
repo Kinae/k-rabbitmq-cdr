@@ -24,7 +24,7 @@ public class FileReader implements Source {
     private final Iterator<File> it;
 
     public FileReader(Path path, KOptions options) {
-        logger.info("listing files ...");
+        logger.info("listing files in {}", path);
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
         if(files == null) {
@@ -32,10 +32,12 @@ public class FileReader implements Source {
         }
 
         logger.info("number of files listed : {}", files.length);
-        if(options.sorted())
+        if(options.sorted()) {
+            logger.info("sorting filename by ascending number");
             it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
-        else
+        } else {
             it = Arrays.stream(files).iterator();
+        }
 
     }
 

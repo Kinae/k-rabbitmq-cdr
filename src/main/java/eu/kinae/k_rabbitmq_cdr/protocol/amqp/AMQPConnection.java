@@ -21,12 +21,11 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
     private Channel channel;
 
     public AMQPConnection(String uri, String queue) {
+        logger.info("creating AMQP connection on {} targeting queue {}", uri, queue);
         this.queue = queue;
         try {
-            logger.info("validating connection");
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(uri);
-            logger.info("starting connection on {}", factory);
             connection = factory.newConnection();
         } catch(URISyntaxException e) {
             logger.error("Error URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
@@ -45,9 +44,7 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
 
     public void close() {
         try {
-            logger.info("closing channel if open");
             if(channel != null && channel.isOpen()) {
-                logger.info("channel closed");
                 channel.close();
             }
         } catch(Exception e) {
@@ -55,9 +52,7 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
         }
 
         try {
-            logger.info("closing connection if open");
             if(connection.isOpen()) {
-                logger.info("connection closed");
                 connection.close();
             }
         } catch(Exception e) {

@@ -12,14 +12,14 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 
 public class SharedQueue implements Source, Target {
 
-    private final Queue<KMessage> buffer;
+    private final Queue<KMessage> queue;
 
     public SharedQueue(ProcessType processType) {
         this(processType, null);
     }
 
     public SharedQueue(ProcessType processType, Integer capacity) {
-        this.buffer = queueByProcessType(processType, capacity);
+        this.queue = queueByProcessType(processType, capacity);
     }
 
     private static Queue<KMessage> queueByProcessType(ProcessType type, Integer capacity) {
@@ -30,22 +30,22 @@ public class SharedQueue implements Source, Target {
     }
 
     public int size() {
-        return this.buffer.size();
+        return this.queue.size();
     }
 
     public void push(KMessage response) throws Exception {
-        if(buffer instanceof BlockingQueue<KMessage> bq) {
+        if(queue instanceof BlockingQueue<KMessage> bq) {
             bq.put(response);
         } else {
-            buffer.add(response);
+            queue.add(response);
         }
     }
 
     public KMessage pop() throws Exception {
-        if(buffer instanceof BlockingQueue<KMessage> bq) {
+        if(queue instanceof BlockingQueue<KMessage> bq) {
             return bq.poll(500, TimeUnit.MILLISECONDS);
         } else {
-            return buffer.poll();
+            return queue.poll();
         }
     }
 

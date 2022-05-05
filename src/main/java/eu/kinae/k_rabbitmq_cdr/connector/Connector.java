@@ -34,18 +34,21 @@ public class Connector {
     public void start(KParameters parameters, KOptions options) {
         if(parameters.transferType() == TransferType.DIRECT) {
             direct(parameters, options);
-        } else if(parameters.transferType() == TransferType.BUFFER) {
+        } else if(parameters.transferType() == TransferType.BUFFERED) {
             if(parameters.processType() == ProcessType.SEQUENTIAL) {
-                bufferSequential(parameters, options);
+                bufferedSequential(parameters, options);
             } else {
-                bufferParallel(parameters, options);
+                bufferedParallel(parameters, options);
             }
         }
     }
 
     private void direct(KParameters parameters, KOptions options) {
+        logger.info("initiating a direct transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         try(Source source = connectorSource.getDirectLinked(parameters, options); Target target = connectorTarget.getDirectLinked(parameters)) {
             ComponentDirectLinked directTransfer = new ComponentDirectLinked(source, target, options);
+
+            logger.info("starting the direct transfer");
             directTransfer.start();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
@@ -53,12 +56,15 @@ public class Connector {
         }
     }
 
-    private void bufferSequential(KParameters parameters, KOptions options) {
+    private void bufferedSequential(KParameters parameters, KOptions options) {
+        logger.info("initiating a buffered sequential transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options);
             AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters)) {
 
+            logger.info("starting to transfer from source");
             source.start();
+            logger.info("starting to transfer from target");
             target.start();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
@@ -66,7 +72,8 @@ public class Connector {
         }
     }
 
-    private void bufferParallel(KParameters parameters, KOptions options) {
+    private void bufferedParallel(KParameters parameters, KOptions options) {
+        logger.info("initiating a buffered parallel transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         SharedStatus sharedStatus = new SharedStatus();
         SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         try(ParallelComponent source = connectorSource.getParallelComponent(sharedQueue, parameters, options, sharedStatus);
@@ -74,6 +81,8 @@ public class Connector {
 
             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(options.threads() + 1);
             callables.add(source);
+
+            logger.info("starting buffered parallel transfer with {} threads", options.threads() + 1);
             fixedThreadPool.invokeAll(callables);
 
             fixedThreadPool.shutdown();

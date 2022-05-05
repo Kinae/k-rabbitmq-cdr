@@ -8,7 +8,7 @@ import eu.kinae.k_rabbitmq_cdr.protocol.Source;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public interface ConnectorSource {
+public interface ConnectorSource extends ConnectorType {
 
     Source getDirectLinked(KParameters parameters, KOptions options);
 

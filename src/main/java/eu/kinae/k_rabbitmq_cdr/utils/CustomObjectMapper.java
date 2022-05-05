@@ -14,9 +14,9 @@ import com.rabbitmq.client.LongString;
 
 public final class CustomObjectMapper {
 
-    public static final ObjectMapper om = tt();
+    public static final ObjectMapper om = init();
 
-    private static ObjectMapper tt() {
+    private static ObjectMapper init() {
         ObjectMapper om = new ObjectMapper();
         om.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
         om.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);

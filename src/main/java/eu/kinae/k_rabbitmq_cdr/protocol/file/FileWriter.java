@@ -19,6 +19,7 @@ public class FileWriter implements Target {
 
     public FileWriter(Path path) {
         this.path = path;
+        logger.info("writing files in {}", path);
     }
 
     @Override

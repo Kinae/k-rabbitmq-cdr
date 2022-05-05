@@ -23,14 +23,13 @@ public abstract class AbstractComponentSource extends AbstractComponent {
         do {
             KMessage message = pop();
             if(message == null) {
-                logger.debug("no more message to get");
                 break;
             } else {
                 if(count++ == 0)
                     logger.info("estimate total number of messages : {}", (message.messageCount() + 1));
                 push(message);
             }
-        } while(count < options.maxMessage() || options.maxMessage() == 0); // add maximum message from params
+        } while(count < options.maxMessage() || options.maxMessage() == 0);
         return count;
     }
 

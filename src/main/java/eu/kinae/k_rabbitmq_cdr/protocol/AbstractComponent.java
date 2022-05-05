@@ -42,8 +42,8 @@ public abstract class AbstractComponent implements Component, Source, Target {
         try {
             count = consumeNProduce();
         } catch(Exception e) {
-            logger.error("Error : ", e);
-            throw new RuntimeException(e);
+            logger.error("Unknown error, please report it", e);
+            throw new RuntimeException("Unknown error, please report it", e);
         } finally {
             onFinally();
         }
