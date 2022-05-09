@@ -14,6 +14,7 @@ mainClassName = 'eu.kinae.k_rabbitmq_cdr.Application'
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 test {
@@ -30,6 +31,11 @@ jacocoLogTestCoverage {
     counters {
         showClassCoverageOnly()
     }
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    archiveVersion.set('')
 }
 
 repositories {
