@@ -2,16 +2,16 @@ package eu.kinae.k_rabbitmq_cdr.connector.impl;
 
 import java.nio.file.Path;
 
+import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentSource;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponent;
+import eu.kinae.k_rabbitmq_cdr.component.Source;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileParallelSource;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileReader;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
-import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponent;
-import eu.kinae.k_rabbitmq_cdr.protocol.Source;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileParallelSource;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileReader;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileSequentialSource;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 

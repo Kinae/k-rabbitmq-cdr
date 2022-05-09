@@ -4,16 +4,16 @@ import java.nio.file.Path;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
+import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileParallelTarget;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileSequentialTarget;
+import eu.kinae.k_rabbitmq_cdr.component.file.FileWriter;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponents;
-import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileParallelTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileSequentialTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.file.FileWriter;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 

@@ -1,16 +1,16 @@
 package eu.kinae.k_rabbitmq_cdr.connector.impl;
 
+import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentSource;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponent;
+import eu.kinae.k_rabbitmq_cdr.component.Source;
+import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3ClientBuilder;
+import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3ParallelSource;
+import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3Reader;
+import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3SequentialSource;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentSource;
-import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponent;
-import eu.kinae.k_rabbitmq_cdr.protocol.Source;
-import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3ClientBuilder;
-import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3ParallelSource;
-import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3Reader;
-import eu.kinae.k_rabbitmq_cdr.protocol.aws.AWS_S3SequentialSource;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import software.amazon.awssdk.services.s3.S3Client;

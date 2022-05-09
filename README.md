@@ -13,8 +13,7 @@ It satisfies a need to work with data:
 - for integration tests
 - and so more ...
 
-It doesn't affect the source,
-see [Message re-queuing implementation details](https://github.com/Kinae/k-rabbitmq-cdr#Message-re-queuing-implementation-details)
+It does not affect the source, see [Message re-queuing implementation details](https://github.com/Kinae/k-rabbitmq-cdr#Message-re-queuing-implementation-details)
 
 ## Installation
 

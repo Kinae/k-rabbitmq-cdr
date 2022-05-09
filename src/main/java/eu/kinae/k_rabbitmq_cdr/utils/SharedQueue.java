@@ -6,9 +6,9 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import eu.kinae.k_rabbitmq_cdr.component.Source;
+import eu.kinae.k_rabbitmq_cdr.component.Target;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
-import eu.kinae.k_rabbitmq_cdr.protocol.Source;
-import eu.kinae.k_rabbitmq_cdr.protocol.Target;
 
 public class SharedQueue implements Source, Target {
 

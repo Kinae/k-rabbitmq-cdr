@@ -3,16 +3,16 @@ package eu.kinae.k_rabbitmq_cdr.connector.impl;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
+import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnection;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPParallelTarget;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
-import eu.kinae.k_rabbitmq_cdr.protocol.AbstractComponentTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.ParallelComponents;
-import eu.kinae.k_rabbitmq_cdr.protocol.Target;
-import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPConnection;
-import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPParallelTarget;
-import eu.kinae.k_rabbitmq_cdr.protocol.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
