@@ -88,23 +88,23 @@ java -jar ./build/libs/k-rabbitmq-cdr.jar \
 
 ### Options
 
-| Name | Component | Description | Type | Example |
-|---|---|---|---|---|
-| --source-type |  | The type of the source |   SupportedType  | `AMQP / AWS_S3 / FILE`  |
-| --source-uri | AMQP | The URI of the source. |  String | `amqp://admin:admin@localhost:5672/%2F` |
-| --source-queue | AMQP  | The queue of the source.  | String | `cart-update-dlq` |
-| --target-type |  | The type of the target | SupportedType | `AMQP / AWS_S3 / FILE` |  
-| --target-uri | AMQP | The URI of the target. |  String | `amqp://admin:admin@localhost:5672/%2F` |
-| --target-queue | AMQP  | The queue of the target.| String | `cart-update` |
-| --directory | FILE | Path of the directory to use to load/save messages | String | `/tmp/2022_05_10/` | 
-| --region | AWS_S3 | The region of your S3 bucket | Region | `eu-west-1` | 
-| --bucket | AWS_S3 | The name of the bucket to use to load/save messages | String | `mybucket` | 
-| --prefix | AWS_S3 | The prefix of the S3 key to use | String | `cart/update/` | 
-| --transfer-type | ALL | The type of transfer to use. Default is DIRECT | TransferType | `DIRECT / BUFFERED` | 
-| --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) |  | `SEQUENTIAL / PARALLEL` | 
-| --max-messages | ALL | Maximum number of messages (default is 0 for all) | Integer | `12`
-| --thread | PARALLEL | Number of threads for the target when using PARALLEL as --process-type (default is 2) | Integer | `4`
-| --sorted | FILE / AWS_S3 | Sort messages listed before processing. Has no effect if --process-type is PARALLEL with more than 1 thread | boolean | false |
+| Name | Component | Description |  Example |
+|---|---|---|---|
+| --source-type |  | The type of the source | `AMQP / AWS_S3 / FILE`  |
+| --source-uri | AMQP | The URI of the source. | `amqp://admin:admin@localhost:5672/%2F` |
+| --source-queue | AMQP  | The queue of the source. |`cart-update-dlq` |
+| --target-type |  | The type of the target | `AMQP / AWS_S3 / FILE` |  
+| --target-uri | AMQP | The URI of the target. | `amqp://admin:admin@localhost:5672/%2F` |
+| --target-queue | AMQP  | The queue of the target.|`cart-update` |
+| --directory | FILE | Path of the directory to use to load/save messages | `/tmp/2022_05_10/` | 
+| --region | AWS_S3 | The region of your S3 bucket | `eu-west-1` | 
+| --bucket | AWS_S3 | The name of the bucket to use to load/save messages | `mybucket` | 
+| --prefix | AWS_S3 | The prefix of the S3 key to use | `cart/update/` | 
+| --transfer-type | ALL | The type of transfer to use. Default is DIRECT | `DIRECT / BUFFERED` | 
+| --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) | `SEQUENTIAL / PARALLEL` | 
+| --max-messages | ALL | Maximum number of messages (default is 0 for all) | `12`
+| --thread | PARALLEL | Number of threads for the target when using PARALLEL as --process-type (default is 2) | `4`
+| --sorted | FILE / AWS_S3 | Sort messages listed before processing. Has no effect if --process-type is PARALLEL with more than 1 thread | false |
 
 ## Message re-queuing implementation details
 
