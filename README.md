@@ -85,6 +85,11 @@ java -jar ./build/libs/k-rabbitmq-cdr.jar \
 --transfer-type BUFFERED --process-type SEQUENTIAL --max-messages 50 --sorted true
 ```
 
+#### AWS credentials
+
+See [developer guide credentials AWS SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) to
+provide credentials to the AWS S3 client.
+
 ### Options
 
 | Name | Component | Description |  Example |
