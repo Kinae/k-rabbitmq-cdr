@@ -5,10 +5,10 @@ import software.amazon.awssdk.regions.Region;
 
 public class JCommanderParams {
 
-    @Parameter(names = { "-h", "--help" }, description = "Display help", help = true, order = 0)
+    @Parameter(names = { "--help" }, description = "Display help", help = true, order = 0)
     public boolean help;
 
-    @Parameter(names = { "-v", "-verbose" }, description = "Level of verbosity", order = 1)
+    @Parameter(names = { "-verbose" }, description = "Level of verbosity", order = 1)
     public Integer verbose = 1;
 
     @Parameter(names = { "--source-type" }, description = "Type of the source", required = true, order = 2)
@@ -29,7 +29,7 @@ public class JCommanderParams {
     @Parameter(names = { "--target-queue" }, description = "Queue of the target for AMQP connector", order = 7)
     public String targetQueue;
 
-    @Parameter(names = { "-dir", "--directory" }, description = "Files directory for FILE connector", order = 8)
+    @Parameter(names = { "--directory" }, description = "Path of the directory to use to load/save messages for FILE connector", order = 8)
     public String directory;
 
     @Parameter(names = { "--region" }, description = "Region for AWS_S3 connector", order = 9, converter = RegionConverter.class)
@@ -47,11 +47,11 @@ public class JCommanderParams {
     @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFERED as transfer-type", order = 13)
     public ProcessType processType = ProcessType.SEQUENTIAL;
 
-    @Parameter(names = { "-max", "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 14)
+    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 14)
     public int maxMessage = 0;
 
-    @Parameter(names = { "-th", "--thread" }, description = "Number of threads when using PARALLEL as process-type", order = 15)
-    public int threads = 1;
+    @Parameter(names = { "--thread" }, description = "Number of threads when using PARALLEL as process-type", order = 15)
+    public int threads = 2;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
             " Has no effect if process-type is PARALLEL with more than 1 thread", order = 16)
