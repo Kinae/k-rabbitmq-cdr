@@ -41,20 +41,23 @@ public class JCommanderParams {
     @Parameter(names = { "--prefix" }, description = "Key's prefix for AWS_S3 connector", order = 11)
     public String prefix;
 
-    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 12)
+    @Parameter(names = { "--profile" }, description = "Profile for AWS_S3 connector", order = 12)
+    public String profile;
+
+    @Parameter(names = { "--transfer-type" }, description = "Type of transfer", order = 13)
     public TransferType transferType = TransferType.DIRECT;
 
-    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFERED as transfer-type", order = 13)
+    @Parameter(names = { "--process-type" }, description = "Type of process to use when using BUFFERED as transfer-type", order = 14)
     public ProcessType processType = ProcessType.SEQUENTIAL;
 
-    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 14)
+    @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)", order = 15)
     public int maxMessage = 0;
 
-    @Parameter(names = { "--thread" }, description = "Number of threads when using PARALLEL as process-type", order = 15)
+    @Parameter(names = { "--thread" }, description = "Number of threads when using PARALLEL as process-type", order = 16)
     public int threads = 2;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
-            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 16)
+            " Has no effect if process-type is PARALLEL with more than 1 thread", order = 17)
     public boolean sorted;
 
 }

@@ -87,6 +87,8 @@ java -jar ./build/libs/k-rabbitmq-cdr.jar \
 
 #### AWS credentials
 
+You can profile a profile with the option `--profile` for the ProfileCredentialsProvider.
+
 See [developer guide credentials AWS SDK](https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html) to
 provide credentials to the AWS S3 client.
 
@@ -101,9 +103,10 @@ provide credentials to the AWS S3 client.
 | --target-uri | AMQP | The URI of the target. | `amqp://admin:admin@localhost:5672/%2F` |
 | --target-queue | AMQP  | The queue of the target.|`cart-update` |
 | --directory | FILE | Path of the directory to use to load/save messages | `/tmp/2022_05_10/` | 
-| --region | AWS_S3 | The region of your S3 bucket | `eu-west-1` | 
+| --region | AWS_S3 | The region of your bucket | `eu-west-1` | 
 | --bucket | AWS_S3 | The name of the bucket to use to load/save messages | `mybucket` | 
-| --prefix | AWS_S3 | The prefix of the S3 key to use | `cart/update/` | 
+| --prefix | AWS_S3 | The prefix of the key to use | `cart/update/` | 
+| --profile | AWS_S3 | The profile to use | `prod` | 
 | --transfer-type | ALL | The type of transfer to use. Default is DIRECT | `DIRECT / BUFFERED` | 
 | --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) | `SEQUENTIAL / PARALLEL` | 
 | --max-messages | ALL | Maximum number of messages (default is 0 for all) | `12`

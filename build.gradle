@@ -58,6 +58,7 @@ dependencies {
     implementation group: 'software.amazon.awssdk', name: 'aws-core', version: software_amazon_awssdk_version
     implementation group: 'software.amazon.awssdk', name: 'auth', version: software_amazon_awssdk_version
     implementation group: 'software.amazon.awssdk', name: 's3', version: software_amazon_awssdk_version
+    implementation group: 'software.amazon.awssdk', name: 'sts', version: software_amazon_awssdk_version
     implementation group: 'ch.qos.logback', name: 'logback-core', version: ch_qos_logback_version
     implementation group: 'ch.qos.logback', name: 'logback-classic', version: ch_qos_logback_version
     implementation group: 'com.beust', name: 'jcommander', version: com_beust_jcommander_version
