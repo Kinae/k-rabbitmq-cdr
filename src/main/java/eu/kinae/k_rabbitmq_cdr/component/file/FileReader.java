@@ -14,6 +14,7 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +22,16 @@ public class FileReader implements Source {
 
     private static final Logger logger = LoggerFactory.getLogger(FileReader.class);
 
+    private long total;
     private final Iterator<File> it;
+    private final SharedStatus sharedStatus;
 
     public FileReader(Path path, KOptions options) {
+        this(path, options, null);
+    }
+
+    public FileReader(Path path, KOptions options, SharedStatus sharedStatus) {
+        this.sharedStatus = sharedStatus;
         logger.info("listing files in {}", path);
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
@@ -31,24 +39,30 @@ public class FileReader implements Source {
             throw new RuntimeException("pathname does not denote a directory");
         }
 
-        logger.info("number of files listed : {}", files.length);
+        total = files.length;
+        logger.info("number of files listed : {}", total);
+        if(sharedStatus != null)
+            sharedStatus.setTotal(files.length);
         if(options.sorted()) {
             logger.info("sorting filename by ascending number");
-            it = Arrays.stream(files).sorted(Comparator.comparing(it -> Long.valueOf(it.getName().substring(Constant.FILE_PREFIX.length())))).iterator();
+            it = Arrays.stream(files).sorted(Comparator.comparing(it -> Constant.extractDeliveryTagFromKey(it.getName()))).iterator();
         } else {
             it = Arrays.stream(files).iterator();
         }
-
     }
 
     @Override
     public KMessage pop() throws Exception {
         if(!it.hasNext())
             return null;
+        if(sharedStatus != null)
+            sharedStatus.incrementRead();
+
         File file = it.next();
         byte[] body = Files.readAllBytes(file.toPath());
         AMQP.BasicProperties props = CustomObjectMapper.om.readValue(new File(file.getPath() + Constant.FILE_PROPERTIES_SUFFIX), AMQP.BasicProperties.class);
-        return new KMessage(props, body);
+        long deliveryTag = Constant.extractDeliveryTagFromKey(file.getName());
+        return new KMessage(props, body, total--, deliveryTag);
     }
 
     @Override

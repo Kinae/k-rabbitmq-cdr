@@ -37,20 +37,14 @@ public abstract class AbstractComponent implements Component, Source, Target {
     }
 
     public long start() {
-        long count;
-        long start = System.currentTimeMillis();
         try {
-            count = consumeNProduce();
+            return consumeNProduce();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
         } finally {
             onFinally();
         }
-
-        long end = System.currentTimeMillis();
-        logger.info("messages consumed and produced : {} in {}ms", count, (end - start));
-        return count;
     }
 
     public Source getSource() {
@@ -60,4 +54,5 @@ public abstract class AbstractComponent implements Component, Source, Target {
     public Target getTarget() {
         return target;
     }
+
 }

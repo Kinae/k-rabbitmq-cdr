@@ -59,7 +59,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        var options = new KOptions(0, 1, true);
+        var options = new KOptions(0, 1, true, 2000);
         try(var target = new FileReader(tempDir, options)) {
             assertThatSourceContainsAllMessagesSorted(target);
         }

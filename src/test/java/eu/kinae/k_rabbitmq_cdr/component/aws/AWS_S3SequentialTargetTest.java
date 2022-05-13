@@ -5,6 +5,7 @@ import java.util.UUID;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
+import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,14 +40,14 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         for(var message : MESSAGES)
             sharedQueue.push(message);
 
-        try(var component = new AWS_S3SequentialTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX))) {
+        try(var component = new AWS_S3SequentialTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX, mock(SharedStatus.class)))) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT)) {
+        try(var target = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT, mock(SharedStatus.class))) {
             assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }
@@ -67,7 +68,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        var options = new KOptions(0, 1, true);
+        var options = new KOptions(0, 1, true, 2000);
         try(var target = new AWS_S3Reader(s3, bucket, PREFIX, options)) {
             assertThatSourceContainsAllMessagesSorted(target);
         }

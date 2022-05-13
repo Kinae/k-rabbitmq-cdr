@@ -24,19 +24,19 @@ public class AMQPConnectorSource implements ConnectorSource {
     }
 
     @Override
-    public Source getDirectLinked(KParameters parameters, KOptions options) {
-        return new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue());
+    public Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        return new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
     }
 
     @Override
-    public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options) {
-        AMQPConnection sConnection = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue());
+    public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        AMQPConnection sConnection = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
         return new AMQPSequentialSource(sConnection, sharedQueue, options);
     }
 
     @Override
     public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnection connection = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue());
+        AMQPConnection connection = new AMQPConnection(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
         return new AMQPParallelSource(connection, sharedQueue, options, sharedStatus);
     }
 }

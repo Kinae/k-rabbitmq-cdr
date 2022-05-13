@@ -8,4 +8,13 @@ public final class Constant {
 
     private Constant() {
     }
+
+    public static long extractDeliveryTagFromKey(String key) {
+        return Long.parseLong(key.substring(Constant.FILE_PREFIX.length()));
+    }
+
+    public static long extractDeliveryTagFromKey(String prefix, String key) {
+        return Long.parseLong(key.substring(prefix.length() + Constant.FILE_PREFIX.length() + 1));
+    }
+
 }

@@ -27,19 +27,19 @@ public class AMQPConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public Target getDirectLinked(KParameters parameters) {
-        return new AMQPConnection(parameters.targetURI(), parameters.targetQueue());
+    public Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus) {
+        return new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
     }
 
     @Override
-    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters) {
-        AMQPConnection tConnection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue());
+    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, SharedStatus sharedStatus) {
+        AMQPConnection tConnection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
         return new AMQPSequentialTarget(sharedQueue, tConnection);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnection connection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue());
+        AMQPConnection connection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
         return IntStream.range(0, options.threads())
                 .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, connection, sharedStatus))
                 .collect(Collectors.toCollection(ParallelComponents::new));

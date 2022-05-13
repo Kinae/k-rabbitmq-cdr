@@ -1,7 +1,10 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
@@ -14,6 +17,7 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.params.TransferType;
+import eu.kinae.k_rabbitmq_cdr.utils.ProgressDisplayPrinter;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
@@ -21,10 +25,10 @@ import org.slf4j.LoggerFactory;
 
 public class Connector {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
+    private ProgressDisplayPrinter progressPrinter;
     private final ConnectorSource connectorSource;
     private final ConnectorTarget connectorTarget;
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public Connector(ConnectorSource connectorSource, ConnectorTarget connectorTarget) {
         this.connectorSource = connectorSource;
@@ -32,60 +36,81 @@ public class Connector {
     }
 
     public void start(KParameters parameters, KOptions options) {
+        SharedStatus sharedStatus = new SharedStatus();
+        progressPrinter = new ProgressDisplayPrinter(sharedStatus);
+        ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        scheduledExecutorService.scheduleAtFixedRate(progressPrinter, 0, Duration.ofMillis(options.interval()).toMillis(), TimeUnit.MILLISECONDS);
+
         if(parameters.transferType() == TransferType.DIRECT) {
-            direct(parameters, options);
+            direct(parameters, options, sharedStatus);
         } else if(parameters.transferType() == TransferType.BUFFERED) {
             if(parameters.processType() == ProcessType.SEQUENTIAL) {
-                bufferedSequential(parameters, options);
+                bufferedSequential(parameters, options, sharedStatus);
             } else {
-                bufferedParallel(parameters, options);
+                bufferedParallel(parameters, options, sharedStatus);
             }
         }
+
+        scheduledExecutorService.shutdown();
     }
 
-    private void direct(KParameters parameters, KOptions options) {
+    private void direct(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         logger.info("initiating a direct transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
-        try(Source source = connectorSource.getDirectLinked(parameters, options); Target target = connectorTarget.getDirectLinked(parameters)) {
+        try(Source source = connectorSource.getDirectLinked(parameters, options, sharedStatus); Target target = connectorTarget.getDirectLinked(parameters, sharedStatus)) {
             ComponentDirectLinked directTransfer = new ComponentDirectLinked(source, target, options);
 
-            logger.info("starting the direct transfer");
+            progressPrinter.printReadProgress();
+            progressPrinter.printWriteProgress();
+            progressPrinter.printEmptyLine();
+
             directTransfer.start();
+
+            progressPrinter.printLastReadProgress();
+            progressPrinter.printLastWriteProgress();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
         }
     }
 
-    private void bufferedSequential(KParameters parameters, KOptions options) {
+    private void bufferedSequential(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         logger.info("initiating a buffered sequential transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options);
-            AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters)) {
+        try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options, sharedStatus);
+            AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters, sharedStatus)) {
 
-            logger.info("starting to transfer from source");
+            progressPrinter.printReadProgress();
             source.start();
-            logger.info("starting to transfer from target");
+            progressPrinter.printLastReadProgress();
+
+            progressPrinter.printWriteProgress();
             target.start();
+            progressPrinter.printLastWriteProgress();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
         }
     }
 
-    private void bufferedParallel(KParameters parameters, KOptions options) {
-        logger.info("initiating a buffered parallel transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
-        SharedStatus sharedStatus = new SharedStatus();
+    private void bufferedParallel(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        logger.info("initiating a buffered parallel transfer between {} => {} with {} threads",
+                    connectorSource.getSupportedType(), connectorTarget.getSupportedType(), options.threads());
+
         SharedQueue sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         try(ParallelComponent source = connectorSource.getParallelComponent(sharedQueue, parameters, options, sharedStatus);
             ParallelComponents callables = connectorTarget.getParallelComponent(sharedQueue, parameters, options, sharedStatus)) {
 
+            progressPrinter.printReadProgress();
+            progressPrinter.printWriteProgress();
+            progressPrinter.printEmptyLine();
+
             ExecutorService fixedThreadPool = Executors.newFixedThreadPool(options.threads() + 1);
             callables.add(source);
-
-            logger.info("starting buffered parallel transfer with {} threads", options.threads() + 1);
             fixedThreadPool.invokeAll(callables);
-
             fixedThreadPool.shutdown();
+
+            progressPrinter.printLastReadProgress();
+            progressPrinter.printLastWriteProgress();
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);

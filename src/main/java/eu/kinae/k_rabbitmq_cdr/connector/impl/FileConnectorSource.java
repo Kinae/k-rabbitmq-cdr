@@ -26,19 +26,19 @@ public class FileConnectorSource implements ConnectorSource {
     }
 
     @Override
-    public Source getDirectLinked(KParameters parameters, KOptions options) {
-        return new FileReader(Path.of(parameters.directory()), options);
+    public Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        return new FileReader(Path.of(parameters.directory()), options, sharedStatus);
     }
 
     @Override
-    public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options) {
-        FileReader reader = new FileReader(Path.of(parameters.directory()), options);
+    public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        FileReader reader = new FileReader(Path.of(parameters.directory()), options, sharedStatus);
         return new FileSequentialSource(reader, sharedQueue, options);
     }
 
     @Override
     public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        FileReader reader = new FileReader(Path.of(parameters.directory()), options);
+        FileReader reader = new FileReader(Path.of(parameters.directory()), options, sharedStatus);
         return new FileParallelSource(reader, sharedQueue, options, sharedStatus);
     }
 }

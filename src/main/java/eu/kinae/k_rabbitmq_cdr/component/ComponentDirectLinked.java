@@ -28,8 +28,6 @@ public class ComponentDirectLinked extends AbstractComponent {
             if(message == null) {
                 break;
             } else {
-                if(count == 0)
-                    logger.info("estimate total number of messages : {}", (message.messageCount() + 1));
                 push(message);
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0);

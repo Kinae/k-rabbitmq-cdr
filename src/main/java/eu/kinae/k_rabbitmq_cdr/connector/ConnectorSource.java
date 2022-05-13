@@ -10,9 +10,9 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public interface ConnectorSource extends ConnectorType {
 
-    Source getDirectLinked(KParameters parameters, KOptions options);
+    Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus);
 
-    AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options);
+    AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus);
 
     ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus);
 

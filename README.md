@@ -111,7 +111,8 @@ provide credentials to the AWS S3 client.
 | --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) | `SEQUENTIAL / PARALLEL` | 
 | --max-messages | ALL | Maximum number of messages (default is 0 for all) | `12`
 | --thread | PARALLEL | Number of threads for the target when using PARALLEL as --process-type (default is 2) | `4`
-| --sorted | FILE / AWS_S3 | Sort messages listed before processing. Has no effect if --process-type is PARALLEL with more than 1 thread | false |
+| --sorted | FILE / AWS_S3 | Sort messages listed before processing. Has no effect if --process-type is PARALLEL with more than 1 thread | `false` |
+| --interval | | Specify the progression update interval in milliseconds (default 2000) | `1000` |
 
 ## Message re-queuing implementation details
 
