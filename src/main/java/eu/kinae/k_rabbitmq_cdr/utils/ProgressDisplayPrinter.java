@@ -28,17 +28,19 @@ public class ProgressDisplayPrinter implements Runnable {
             long read = sharedStatus.getRead();
 
             if(read != 0 && printRead) {
-                if(read == sharedStatus.getTotal())
+                if(read == sharedStatus.getTotal()) {
                     printLastReadProgress();
-                else
+                } else {
                     printReadProgress(read);
+                }
             }
 
             if(write != 0 && printWrite) {
-                if(write == sharedStatus.getTotal())
+                if(write == sharedStatus.getTotal()) {
                     printLastWriteProgress();
-                else
+                } else {
                     printWriteProgress(write);
+                }
             }
 
             if(read != 0 && write != 0) {

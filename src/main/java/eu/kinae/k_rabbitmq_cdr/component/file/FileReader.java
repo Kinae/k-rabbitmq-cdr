@@ -41,8 +41,9 @@ public class FileReader implements Source {
 
         total = files.length;
         logger.info("number of files listed : {}", total);
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.setTotal(files.length);
+        }
         if(options.sorted()) {
             logger.info("sorting filename by ascending number");
             it = Arrays.stream(files).sorted(Comparator.comparing(it -> Constant.extractDeliveryTagFromKey(it.getName()))).iterator();
@@ -53,10 +54,12 @@ public class FileReader implements Source {
 
     @Override
     public KMessage pop() throws Exception {
-        if(!it.hasNext())
+        if(!it.hasNext()) {
             return null;
-        if(sharedStatus != null)
+        }
+        if(sharedStatus != null) {
             sharedStatus.incrementRead();
+        }
 
         File file = it.next();
         byte[] body = Files.readAllBytes(file.toPath());

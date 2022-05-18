@@ -57,8 +57,9 @@ public class AWS_S3Reader implements Source {
 
         total = s3Objects.size();
         logger.info("number of files listed : {}", total);
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.setTotal(total);
+        }
         if(options.sorted()) {
             logger.info("sorting AWS_S3 filename by ascending number");
             it = s3Objects.stream().sorted(Comparator.comparing(it -> Constant.extractDeliveryTagFromKey(prefix, it.key()))).iterator();
@@ -69,10 +70,12 @@ public class AWS_S3Reader implements Source {
 
     @Override
     public KMessage pop() throws Exception {
-        if(!it.hasNext())
+        if(!it.hasNext()) {
             return null;
-        if(sharedStatus != null)
+        }
+        if(sharedStatus != null) {
             sharedStatus.incrementRead();
+        }
 
         S3Object s3Object = it.next();
         byte[] body = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key())).asByteArray();
@@ -87,8 +90,9 @@ public class AWS_S3Reader implements Source {
     }
 
     public String buildPrefix(String key2) {
-        if(key2.endsWith("/"))
+        if(key2.endsWith("/")) {
             return key2;
+        }
         return key2 + "/";
     }
 

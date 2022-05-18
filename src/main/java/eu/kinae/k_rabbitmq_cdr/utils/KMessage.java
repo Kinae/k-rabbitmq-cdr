@@ -22,10 +22,12 @@ public record KMessage(AMQP.BasicProperties properties, byte[] body, long messag
 
     @Override
     public boolean equals(Object o) {
-        if(this == o)
+        if(this == o) {
             return true;
-        if(o == null || getClass() != o.getClass())
+        }
+        if(o == null || getClass() != o.getClass()) {
             return false;
+        }
         KMessage message = (KMessage) o;
         return Objects.equals(properties, message.properties) && Arrays.equals(body, message.body);
     }

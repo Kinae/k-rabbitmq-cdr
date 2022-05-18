@@ -37,8 +37,9 @@ public class AWS_S3Writer implements Target {
         s3.putObject(it -> it.bucket(bucket).key(prefix + filename), RequestBody.fromBytes(message.body()));
         RequestBody props = RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties()));
         s3.putObject(it -> it.bucket(bucket).key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX), props);
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.incrementWrite();
+        }
     }
 
     @Override
@@ -47,8 +48,9 @@ public class AWS_S3Writer implements Target {
     }
 
     public String buildPrefix(String key2) {
-        if(key2.endsWith("/"))
+        if(key2.endsWith("/")) {
             return key2;
+        }
         return key2 + "/";
     }
 

@@ -19,8 +19,9 @@ public abstract class AbstractComponentTarget extends AbstractComponent {
         do {
             KMessage message = pop();
             if(message == null) {
-                if(stopConsumingIfResponseIsNull())
+                if(stopConsumingIfResponseIsNull()) {
                     break;
+                }
             } else {
                 count++;
                 push(message);

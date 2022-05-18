@@ -29,30 +29,39 @@ public class JCommanderParamsValidator {
     }
 
     private static void amqp(SupportedType supportedType, String uri, String queue, String type) {
-        if(supportedType != SupportedType.AMQP)
+        if(supportedType != SupportedType.AMQP) {
             return;
-        if(uri == null)
+        }
+        if(uri == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, String.format("--%s-uri", type), type, SupportedType.AMQP));
-        if(queue == null)
+        }
+        if(queue == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, String.format("--%s-queue", type), type, SupportedType.AMQP));
+        }
     }
 
     private static void file(SupportedType supportedType, String dir, String type) {
-        if(supportedType != SupportedType.FILE)
+        if(supportedType != SupportedType.FILE) {
             return;
-        if(dir == null)
+        }
+        if(dir == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, "-dir/--directory", type, SupportedType.FILE));
+        }
     }
 
     private static void awsS3(SupportedType supportedType, Region region, String bucket, String prefix, String type) {
-        if(supportedType != SupportedType.AWS_S3)
+        if(supportedType != SupportedType.AWS_S3) {
             return;
-        if(region == null)
+        }
+        if(region == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, "--region", type, SupportedType.AWS_S3));
-        if(bucket == null)
+        }
+        if(bucket == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, "--bucket", type, SupportedType.AWS_S3));
-        if(prefix == null)
+        }
+        if(prefix == null) {
             throw new IllegalArgumentException(String.format(ERROR_MESSAGE, "--prefix", type, SupportedType.AWS_S3));
+        }
     }
 
 }

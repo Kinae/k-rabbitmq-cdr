@@ -15,8 +15,9 @@ public abstract class AbstractComponentParallelSource extends AbstractComponentS
 
     @Override
     protected void onFinally() {
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.notifySourceConsumerIsDone();
+        }
     }
 
     @Override

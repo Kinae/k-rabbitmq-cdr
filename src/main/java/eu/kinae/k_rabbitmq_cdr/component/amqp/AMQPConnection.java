@@ -73,28 +73,34 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
 
     @Override
     public KMessage pop() throws IOException {
-        if(channel == null)
+        if(channel == null) {
             channel = createChannel();
+        }
         GetResponse response = channel.basicGet(queue, false);
-        if(response == null)
+        if(response == null) {
             return null;
-        if(sharedStatus != null)
+        }
+        if(sharedStatus != null) {
             sharedStatus.incrementRead();
+        }
         return new KMessage(response.getProps(), response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
     }
 
     @Override
     public void push(KMessage message) throws IOException {
-        if(channel == null)
+        if(channel == null) {
             channel = createChannel();
-        if(sharedStatus != null)
+        }
+        if(sharedStatus != null) {
             sharedStatus.incrementWrite();
+        }
         channel.basicPublish("", queue, false, false, message.properties(), message.body());
     }
 
     protected void push(KMessage message, Channel channel) throws IOException {
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.incrementWrite();
+        }
         channel.basicPublish("", queue, false, false, message.properties(), message.body());
     }
 

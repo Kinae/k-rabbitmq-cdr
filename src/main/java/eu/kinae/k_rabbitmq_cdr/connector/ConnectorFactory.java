@@ -44,8 +44,9 @@ public abstract class ConnectorFactory {
     public static Optional<Connector> newConnector(SupportedType sType, SupportedType tType) throws Exception {
         Class<? extends ConnectorSource> source = connectorSources.get(sType);
         Class<? extends ConnectorTarget> target = connectorTargets.get(tType);
-        if(source == null || target == null)
+        if(source == null || target == null) {
             return Optional.empty();
+        }
 
         ConnectorSource connectorSource = source.getConstructor().newInstance();
         ConnectorTarget connectorTarget = target.getConstructor().newInstance();

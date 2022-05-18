@@ -35,8 +35,9 @@ public class FileWriter implements Target {
         Path fileCreatedPath = Files.createFile(Path.of(path.toString(), filename));
         Files.writeString(fileCreatedPath, new String(message.body()), StandardOpenOption.TRUNCATE_EXISTING);
         CustomObjectMapper.om.writeValue((Path.of(fileCreatedPath + Constant.FILE_PROPERTIES_SUFFIX)).toFile(), message.properties());
-        if(sharedStatus != null)
+        if(sharedStatus != null) {
             sharedStatus.incrementWrite();
+        }
     }
 
     @Override

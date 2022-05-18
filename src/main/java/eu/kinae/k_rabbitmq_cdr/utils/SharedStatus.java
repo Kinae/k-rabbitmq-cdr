@@ -22,8 +22,9 @@ public class SharedStatus {
     }
 
     public void setTotal(long total) {
-        if(this.total == 0)
+        if(this.total == 0) {
             this.total = total;
+        }
     }
 
     public long getTotal() {
