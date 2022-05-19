@@ -120,3 +120,35 @@ k-rabbitmq-cdr use the standard [`basic.get` from the AMQP API](https://www.rabb
 without the auto acknowledgment and does not manually acknowledge either. This means during the process time messages won't be
 available to any other process. As soon as the connection is closed, RabbitMQ will return all un-acknowledged messages back to
 the original queue.
+
+## Additional information about the project
+
+I started this small project from a need at my work: we have nothing to copy messages from one RabbitMQ to another. We have
+multiple needs and currently we have found nothing that exist to fulfill them.
+
+The projet can integrate three differents sources and targets (AMQP, AWS S3, File system). What you can do:
+
+- copy all RabbitMQ messages from a queue into a bucket S3
+- transfer from one RabbitMQ queue in production env to RabbitMQ queue in debug env
+- restore previous messages from AWS S3 into a RabbitMQ queue to test with thousands of messages.
+- dump messages from a RabbitMQ queue to your file system (to restore them later, to analyse and use all shell commands, and
+  more)
+- and more...
+
+It has multiple parameters to let you control how you want to do it. You currently have three modes:
+
+- Direct: the consumer is the producer, one thread is used to consume and produce messages.
+- Buffered sequential: one consumer consumes all messages first and push them in a FIFO java.util.Queue then consume this Queue
+  to push into the target
+- Buffered parallel: same as the sequential but multiple producers consume the Queue at the same time.
+
+It really depends on your source and target but for example, if you consume from a RabbitMQ queue and you want to push in an AWS
+S3 Bucket, you should use the Buffered parallel mode. Since loading from RabbitMQ is really fast, you want more threads to push
+into the bucket as fast as possible.
+
+We are also using it for integration testing by creating a test case (i.e: a message) that will be dynamically loaded.
+
+Since we can not afford to use all new technologies instantly, I wanted to try and learn by myself. If you find mistakes or bad
+practices, feel free to point them so I can learn.
+
+New technologies used for me are Gradle (instead of the good Maven), testcontainer (just awesome !) and AssertJ.
