@@ -15,6 +15,29 @@ It satisfies a need to work with data:
 
 It does not affect the source, see [Message re-queuing implementation details](https://github.com/Kinae/k-rabbitmq-cdr#Message-re-queuing-implementation-details)
 
+```java
+2022-05-20 13:42:10.773 | main             | initiating a direct transfer between AMQP => AMQP
+2022-05-20 13:42:10.776 | main             | creating AMQP connection on amqp://admin:admin@192.168.0.1:5672/%2F targeting queue cart-update-dlq
+2022-05-20 13:42:10.959 | main             | creating AMQP connection on amqp://admin:admin@localhost:5672/%2F targeting queue cart-update-dlq
+2022-05-20 13:42:11.011 | main             | reading [.........................] 0/100000 (0.00%)
+2022-05-20 13:42:11.011 | main             | writing [.........................] 0/100000 (0.00%)
+2022-05-20 13:42:11.011 | main             | 
+2022-05-20 13:42:30.777 | pool-1-thread-1  | reading [#####....................] 22096/100000 (22.10%)
+2022-05-20 13:42:30.778 | pool-1-thread-1  | writing [#####....................] 22096/100000 (22.10%)
+2022-05-20 13:42:30.778 | pool-1-thread-1  | 
+2022-05-20 13:42:50.772 | pool-1-thread-1  | reading [###########..............] 47445/100000 (47.45%)
+2022-05-20 13:42:50.773 | pool-1-thread-1  | writing [###########..............] 47445/100000 (47.45%)
+2022-05-20 13:42:50.773 | pool-1-thread-1  | 
+2022-05-20 13:43:10.776 | pool-1-thread-1  | reading [##################.......] 72528/100000 (72.53%)
+2022-05-20 13:43:10.776 | pool-1-thread-1  | writing [##################.......] 72528/100000 (72.53%)
+2022-05-20 13:43:10.776 | pool-1-thread-1  | 
+2022-05-20 13:43:30.776 | pool-1-thread-1  | reading [########################.] 98387/100000 (98.39%)
+2022-05-20 13:43:30.777 | pool-1-thread-1  | writing [########################.] 98387/100000 (98.39%)
+2022-05-20 13:43:30.777 | pool-1-thread-1  | 
+2022-05-20 13:43:32.057 | main             | reading [#########################] 100000/100000 (100.00%)
+2022-05-20 13:43:32.058 | main             | writing [#########################] 100000/100000 (100.00%)
+```
+
 ## Installation
 
 ### Download a release
@@ -123,32 +146,29 @@ the original queue.
 
 ## Additional information about the project
 
-I started this small project from a need at my work: we have nothing to copy messages from one RabbitMQ to another. We have
-multiple needs and currently we have found nothing that exist to fulfill them.
+I started this small project from a need at my work: I can not copy message from one RabbitMQ to another.
+I have multiple needs and currently I have found nothing that exist to fulfill them.
 
-The projet can integrate three differents sources and targets (AMQP, AWS S3, File system). What you can do:
-
+The projet can integrate three differents sources and targets (AMQP, AWS S3, File system).
+What you can do:
 - copy all RabbitMQ messages from a queue into a bucket S3
 - transfer from one RabbitMQ queue in production env to RabbitMQ queue in debug env
 - restore previous messages from AWS S3 into a RabbitMQ queue to test with thousands of messages.
-- dump messages from a RabbitMQ queue to your file system (to restore them later, to analyse and use all shell commands, and
-  more)
+- dump messages from a RabbitMQ queue to your file system (to restore them later, to analyse and use all shell commands, and more)
 - and more...
 
 It has multiple parameters to let you control how you want to do it. You currently have three modes:
-
 - Direct: the consumer is the producer, one thread is used to consume and produce messages.
-- Buffered sequential: one consumer consumes all messages first and push them in a FIFO java.util.Queue then consume this Queue
-  to push into the target
+- Buffered sequential: one consumer consumes all messages first and push them in a FIFO java.util.Queue then consume this Queue to push into the target
 - Buffered parallel: same as the sequential but multiple producers consume the Queue at the same time.
 
-It really depends on your source and target but for example, if you consume from a RabbitMQ queue and you want to push in an AWS
-S3 Bucket, you should use the Buffered parallel mode. Since loading from RabbitMQ is really fast, you want more threads to push
-into the bucket as fast as possible.
+It really depends of your source and target but for exemple, if you consume from a RabbitMQ queue and you want to push in a AWS S3 Bucket, you should use the Buffered parallel mode.
+Since loading from RabbitMQ is really fast, you want more threads to push into the bucket as fast as possible.
 
-We are also using it for integration testing by creating a test case (i.e: a message) that will be dynamically loaded.
 
-Since we can not afford to use all new technologies instantly, I wanted to try and learn by myself. If you find mistakes or bad
-practices, feel free to point them so I can learn.
+I am also using it for integration testing by creating a test case (ie: a message) that will be dynamically loaded.
+
+Since we can not afford to use all new technologies instantly, I wanted to try and learn by myself.
+If you find mistakes or bad practices, feel free to point them so I can learn.
 
 New technologies used for me are Gradle (instead of the good Maven), testcontainer (just awesome !) and AssertJ.
