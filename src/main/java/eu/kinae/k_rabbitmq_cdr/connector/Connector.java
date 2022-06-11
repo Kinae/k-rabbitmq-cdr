@@ -41,20 +41,25 @@ public class Connector {
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(progressPrinter, 0, Duration.ofMillis(options.interval()).toMillis(), TimeUnit.MILLISECONDS);
 
-        if(parameters.transferType() == TransferType.DIRECT) {
-            direct(parameters, options, sharedStatus);
-        } else if(parameters.transferType() == TransferType.BUFFERED) {
-            if(parameters.processType() == ProcessType.SEQUENTIAL) {
-                bufferedSequential(parameters, options, sharedStatus);
-            } else {
-                bufferedParallel(parameters, options, sharedStatus);
+        try {
+            if(parameters.transferType() == TransferType.DIRECT) {
+                direct(parameters, options, sharedStatus);
+            } else if(parameters.transferType() == TransferType.BUFFERED) {
+                if(parameters.processType() == ProcessType.SEQUENTIAL) {
+                    bufferedSequential(parameters, options, sharedStatus);
+                } else {
+                    bufferedParallel(parameters, options, sharedStatus);
+                }
             }
+        } catch(Exception e) {
+            logger.error("Unknown error, please report it", e);
+            throw new RuntimeException("Unknown error, please report it", e);
+        } finally {
+            scheduledExecutorService.shutdown();
         }
-
-        scheduledExecutorService.shutdown();
     }
 
-    private void direct(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    private void direct(KParameters parameters, KOptions options, SharedStatus sharedStatus) throws Exception {
         logger.info("initiating a direct transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         try(Source source = connectorSource.getDirectLinked(parameters, options, sharedStatus); Target target = connectorTarget.getDirectLinked(parameters, sharedStatus)) {
             ComponentDirectLinked directTransfer = new ComponentDirectLinked(source, target, options);
@@ -67,13 +72,10 @@ public class Connector {
 
             progressPrinter.printLastReadProgress();
             progressPrinter.printLastWriteProgress();
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
         }
     }
 
-    private void bufferedSequential(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    private void bufferedSequential(KParameters parameters, KOptions options, SharedStatus sharedStatus) throws Exception {
         logger.info("initiating a buffered sequential transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options, sharedStatus);
@@ -86,13 +88,10 @@ public class Connector {
             progressPrinter.printWriteProgress();
             target.start();
             progressPrinter.printLastWriteProgress();
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
         }
     }
 
-    private void bufferedParallel(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    private void bufferedParallel(KParameters parameters, KOptions options, SharedStatus sharedStatus) throws Exception {
         logger.info("initiating a buffered parallel transfer between {} => {} with {} threads",
                     connectorSource.getSupportedType(), connectorTarget.getSupportedType(), options.threads());
 
@@ -111,9 +110,6 @@ public class Connector {
 
             progressPrinter.printLastReadProgress();
             progressPrinter.printLastWriteProgress();
-        } catch(Exception e) {
-            logger.error("Unknown error, please report it", e);
-            throw new RuntimeException("Unknown error, please report it", e);
         }
     }
 }
