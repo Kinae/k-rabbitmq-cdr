@@ -9,7 +9,7 @@ apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 archivesBaseName = 'k-rabbitmq-cdr'
-version = '1.0.0'
+version = '1.1.0-SNAPSHOT'
 mainClassName = 'eu.kinae.k_rabbitmq_cdr.Application'
 
 java {
