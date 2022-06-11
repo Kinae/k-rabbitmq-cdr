@@ -27,12 +27,12 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
     }
 
     public AMQPConnection(String uri, String queue, SharedStatus sharedStatus) {
-        logger.info("creating AMQP connection on {} targeting queue {}", uri, queue);
         this.queue = queue;
         this.sharedStatus = sharedStatus;
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(uri);
+            logger.info("creating AMQP connection on {} targeting queue {}", buildSafeURI(factory), queue);
             connection = factory.newConnection();
 
             if(sharedStatus != null) {
@@ -47,6 +47,10 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
         }
+    }
+
+    private String buildSafeURI(ConnectionFactory factory) {
+        return String.format("[host=%s, port=%s, vhost=%s]", factory.getHost(), factory.getPort(), factory.getVirtualHost());
     }
 
     Channel createChannel() throws IOException {
