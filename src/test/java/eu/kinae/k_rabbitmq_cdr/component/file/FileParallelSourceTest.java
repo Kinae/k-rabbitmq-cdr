@@ -23,7 +23,7 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new FileParallelSource((FileReader) source, (SharedQueue) target, options, new SharedStatus());
+        return new FileParallelSource((FileReader) source, (SharedQueue) target, options, new SharedStatus(options));
     }
 
     @Override

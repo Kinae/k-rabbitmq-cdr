@@ -2,6 +2,8 @@ package eu.kinae.k_rabbitmq_cdr.utils;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
+
 public class SharedStatus {
 
     private long total;
@@ -10,6 +12,10 @@ public class SharedStatus {
     private volatile boolean consumerAlive = true;
 
     public SharedStatus() {
+    }
+
+    public SharedStatus(KOptions options) {
+        this.total = options.maxMessage();
     }
 
     // name if bad, can not find better for now
@@ -22,7 +28,7 @@ public class SharedStatus {
     }
 
     public void setTotal(long total) {
-        if(this.total == 0) {
+        if(this.total == 0 || this.total > total) {
             this.total = total;
         }
     }

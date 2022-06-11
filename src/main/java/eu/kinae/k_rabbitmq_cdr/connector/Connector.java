@@ -36,7 +36,7 @@ public class Connector {
     }
 
     public void start(KParameters parameters, KOptions options) {
-        SharedStatus sharedStatus = new SharedStatus();
+        SharedStatus sharedStatus = new SharedStatus(options);
         progressPrinter = new ProgressDisplayPrinter(sharedStatus);
         ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
         scheduledExecutorService.scheduleAtFixedRate(progressPrinter, 0, Duration.ofMillis(options.interval()).toMillis(), TimeUnit.MILLISECONDS);

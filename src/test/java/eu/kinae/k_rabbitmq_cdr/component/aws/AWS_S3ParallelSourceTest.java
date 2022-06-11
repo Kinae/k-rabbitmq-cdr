@@ -23,7 +23,7 @@ public class AWS_S3ParallelSourceTest extends AWS_S3AbstractComponentSourceTest 
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new AWS_S3ParallelSource((AWS_S3Reader) source, (SharedQueue) target, options, new SharedStatus());
+        return new AWS_S3ParallelSource((AWS_S3Reader) source, (SharedQueue) target, options, new SharedStatus(options));
     }
 
     @Override
