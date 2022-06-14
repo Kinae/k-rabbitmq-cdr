@@ -23,7 +23,7 @@ public class JCommanderParams {
     @Parameter(names = { "--target-type" }, description = "Type of the target", required = true)
     public SupportedType targetType;
 
-    @Parameter(names = { "--to-uri" }, description = "URI of the target for AMQP connector", password = true)
+    @Parameter(names = { "--target-uri" }, description = "URI of the target for AMQP connector", password = true)
     public String targetURI;
 
     @Parameter(names = { "--target-queue" }, description = "Queue of the target for AMQP connector")
