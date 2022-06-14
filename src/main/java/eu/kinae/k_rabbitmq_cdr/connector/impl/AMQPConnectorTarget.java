@@ -6,7 +6,7 @@ import java.util.stream.IntStream;
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
-import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnection;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnectionWriter;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
@@ -28,20 +28,20 @@ public class AMQPConnectorTarget implements ConnectorTarget {
 
     @Override
     public Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus) {
-        return new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
+        return new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
     }
 
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, SharedStatus sharedStatus) {
-        AMQPConnection tConnection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
-        return new AMQPSequentialTarget(sharedQueue, tConnection);
+        AMQPConnectionWriter target = new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
+        return new AMQPSequentialTarget(sharedQueue, target);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnection connection = new AMQPConnection(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
+        AMQPConnectionWriter target = new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, connection, sharedStatus))
+                .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, target, sharedStatus))
                 .collect(Collectors.toCollection(ParallelComponents::new));
     }
 }

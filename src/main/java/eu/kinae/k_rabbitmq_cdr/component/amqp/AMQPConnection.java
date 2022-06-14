@@ -1,26 +1,21 @@
 package eu.kinae.k_rabbitmq_cdr.component.amqp;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.GetResponse;
-import eu.kinae.k_rabbitmq_cdr.component.Source;
-import eu.kinae.k_rabbitmq_cdr.component.Target;
-import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AMQPConnection implements AutoCloseable, Source, Target {
+public abstract class AMQPConnection implements AutoCloseable {
 
-    private final Connection connection;
-    private final String queue;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-    private Channel channel;
-    private final SharedStatus sharedStatus;
+    protected final Connection connection;
+    protected Channel channel;
+    protected final String queue;
+    protected final SharedStatus sharedStatus;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     public AMQPConnection(String uri, String queue) {
         this(uri, queue, null);
@@ -34,12 +29,6 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
             factory.setUri(uri);
             logger.info("creating AMQP connection on {} targeting queue {}", buildSafeURI(factory), queue);
             connection = factory.newConnection();
-
-            if(sharedStatus != null) {
-                Channel channel = connection.createChannel();
-                sharedStatus.setTotal(channel.messageCount(queue));
-                channel.close();
-            }
         } catch(URISyntaxException e) {
             logger.error("Error URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
             throw new RuntimeException("Error AMQP URI syntax (e.g. amqp://admin:admin@localhost:5672/%2F)", e);
@@ -51,10 +40,6 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
 
     private String buildSafeURI(ConnectionFactory factory) {
         return String.format("[host=%s, port=%s, vhost=%s]", factory.getHost(), factory.getPort(), factory.getVirtualHost());
-    }
-
-    Channel createChannel() throws IOException {
-        return connection.createChannel();
     }
 
     public void close() {
@@ -74,38 +59,4 @@ public class AMQPConnection implements AutoCloseable, Source, Target {
             logger.warn("Cannot close connection");
         }
     }
-
-    @Override
-    public KMessage pop() throws IOException {
-        if(channel == null) {
-            channel = createChannel();
-        }
-        GetResponse response = channel.basicGet(queue, false);
-        if(response == null) {
-            return null;
-        }
-        if(sharedStatus != null) {
-            sharedStatus.incrementRead();
-        }
-        return new KMessage(response.getProps(), response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
-    }
-
-    @Override
-    public void push(KMessage message) throws IOException {
-        if(channel == null) {
-            channel = createChannel();
-        }
-        if(sharedStatus != null) {
-            sharedStatus.incrementWrite();
-        }
-        channel.basicPublish("", queue, false, false, message.properties(), message.body());
-    }
-
-    protected void push(KMessage message, Channel channel) throws IOException {
-        if(sharedStatus != null) {
-            sharedStatus.incrementWrite();
-        }
-        channel.basicPublish("", queue, false, false, message.properties(), message.body());
-    }
-
 }

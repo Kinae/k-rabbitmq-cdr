@@ -16,13 +16,12 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
     @Test
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
         var emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        try(var target = mock(AMQPConnection.class);
+        try(var target = mock(AMQPConnectionWriter.class);
             var component = new AMQPSequentialTarget(emptyQueue, target)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(0);
-            assertThat(target.pop()).isNull();
             verify(target, times(0)).push(any());
         }
     }
@@ -33,15 +32,15 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message);
 
-        try(var component = new AMQPSequentialTarget(sharedQueue, new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q))) {
+        try(var component = new AMQPSequentialTarget(sharedQueue, new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q))) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            assertThatSourceContainsAllMessagesSorted(target);
+        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            assertThatSourceContainsAllMessagesSorted(source);
         }
     }
 }

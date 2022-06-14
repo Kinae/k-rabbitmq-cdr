@@ -28,7 +28,7 @@ public class AMQPParallelSourceTest extends AMQPAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponentSource getComponent(Source source, Target target, KOptions options) {
-        return new AMQPParallelSource((AMQPConnection) source, (SharedQueue) target, options, new SharedStatus(options));
+        return new AMQPParallelSource((AMQPConnectionReader) source, (SharedQueue) target, options, new SharedStatus(options));
     }
 
     @Test

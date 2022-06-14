@@ -24,21 +24,21 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeAll
     public static void beforeAll() throws Exception {
-        try(var sourceConnection = new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q)) {
+        try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), SOURCE_Q)) {
             for(var message : MESSAGES) {
-                sourceConnection.push(message);
+                target.push(message);
             }
         }
     }
 
     @Override
-    protected AMQPConnection getEmptySource() {
-        return new AMQPConnection(buildAMQPURI(rabbitmq), EMPTY_SOURCE_Q);
+    protected AMQPConnectionReader getEmptySource() {
+        return new AMQPConnectionReader(buildAMQPURI(rabbitmq), EMPTY_SOURCE_Q);
     }
 
     @Override
-    protected AMQPConnection getSource() {
-        return new AMQPConnection(buildAMQPURI(rabbitmq), SOURCE_Q);
+    protected AMQPConnectionReader getSource() {
+        return new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
     }
 
 }

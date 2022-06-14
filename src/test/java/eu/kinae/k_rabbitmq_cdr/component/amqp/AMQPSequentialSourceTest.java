@@ -20,7 +20,7 @@ public class AMQPSequentialSourceTest extends AMQPAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponentSource getComponent(Source source, Target target, KOptions options) {
-        return new AMQPSequentialSource((AMQPConnection) source, (SharedQueue) target, options);
+        return new AMQPSequentialSource((AMQPConnectionReader) source, (SharedQueue) target, options);
     }
 
     @Test

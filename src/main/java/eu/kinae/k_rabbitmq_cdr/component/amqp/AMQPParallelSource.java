@@ -7,7 +7,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPParallelSource extends AbstractComponentParallelSource {
 
-    public AMQPParallelSource(AMQPConnection source, SharedQueue target, KOptions options, SharedStatus sharedStatus) {
+    public AMQPParallelSource(AMQPConnectionReader source, SharedQueue target, KOptions options, SharedStatus sharedStatus) {
         super(source, target, options, sharedStatus);
     }
 

@@ -5,7 +5,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 
 public class AMQPSequentialTarget extends AbstractComponentTarget {
 
-    public AMQPSequentialTarget(SharedQueue source, AMQPConnection target) {
+    public AMQPSequentialTarget(SharedQueue source, AMQPConnectionWriter target) {
         super(source, target);
     }
 

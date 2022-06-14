@@ -10,13 +10,13 @@ public class AMQPParallelTarget extends AbstractComponentParallelTarget {
 
     private Channel channel;
 
-    public AMQPParallelTarget(SharedQueue source, AMQPConnection target, SharedStatus sharedStatus) {
+    public AMQPParallelTarget(SharedQueue source, AMQPConnectionWriter target, SharedStatus sharedStatus) {
         super(source, target, sharedStatus);
     }
 
     @Override
     public Long call() throws Exception {
-        try(var channel = ((AMQPConnection) target).createChannel()) {
+        try(var channel = ((AMQPConnectionWriter) target).createChannel()) {
             this.channel = channel;
             return start();
         }
@@ -24,7 +24,7 @@ public class AMQPParallelTarget extends AbstractComponentParallelTarget {
 
     @Override
     public void push(KMessage message) throws Exception {
-        if(target instanceof AMQPConnection connection) {
+        if(target instanceof AMQPConnectionWriter connection) {
             connection.push(message, channel);
         } else {
             super.push(message);

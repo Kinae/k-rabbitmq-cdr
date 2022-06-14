@@ -31,7 +31,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         when(status.isConsumerAlive()).thenReturn(false);
 
         var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
-        try(var target = mock(AMQPConnection.class)) {
+        try(var target = mock(AMQPConnectionWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
                     .mapToObj(integer -> new AMQPParallelTarget(emptyQueue, target, status))
@@ -47,7 +47,6 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            assertThat(target.pop()).isNull();
             verify(target, times(0)).push(any());
         }
     }
@@ -62,7 +61,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message);
 
-        try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
                     .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, target, status))
@@ -80,8 +79,8 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AMQPConnection(buildAMQPURI(rabbitmq), TARGET_Q)) {
-            assertThatSourceContainsAllMessagesUnsorted(target);
+        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            assertThatSourceContainsAllMessagesUnsorted(source);
         }
     }
 }
