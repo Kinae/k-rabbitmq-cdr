@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -31,7 +32,7 @@ public abstract class AbstractComponentSourceTest extends AbstractComponentTest 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(options.maxMessage());
-            verify(target, times(1)).push(any());
+            verify(target, times(1)).push(any(), eq(options));
         }
     }
 
@@ -44,31 +45,33 @@ public abstract class AbstractComponentSourceTest extends AbstractComponentTest 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(options.maxMessage());
-            verify(target, times(options.maxMessage())).push(any());
+            verify(target, times(options.maxMessage())).push(any(), eq(options));
         }
     }
 
     @Test
     public void Use_default_options_to_consume_and_produce_all_messages() throws Exception {
+        var options = KOptions.DEFAULT;
         try(var target = getMockTarget();
             var component = getComponent(getSource(), target)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            verify(target, times(MESSAGES.size())).push(any());
+            verify(target, times(MESSAGES.size())).push(any(), eq(options));
         }
     }
 
     @Test
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
+        var options = KOptions.DEFAULT;
         try(var target = getMockTarget();
             var component = getComponent(getEmptySource(), target)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(0);
-            verify(target, times(0)).push(any());
+            verify(target, times(0)).push(any(), eq(options));
         }
     }
 

@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr.component.amqp;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentSourceTest;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -26,7 +27,7 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
     public static void beforeAll() throws Exception {
         try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), SOURCE_Q)) {
             for(var message : MESSAGES) {
-                target.push(message);
+                target.push(message, KOptions.DEFAULT);
             }
         }
     }

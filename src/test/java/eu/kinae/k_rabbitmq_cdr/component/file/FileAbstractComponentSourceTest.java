@@ -22,9 +22,10 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeEach
     public void beforeEach() throws Exception {
+        var options = KOptions.DEFAULT;
         var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            writer.push(message);
+            writer.push(message, options);
         }
     }
 

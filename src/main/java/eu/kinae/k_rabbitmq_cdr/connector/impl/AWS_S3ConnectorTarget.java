@@ -35,10 +35,10 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, SharedStatus sharedStatus) {
+    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
-        return new AWS_S3SequentialTarget(sharedQueue, writer);
+        return new AWS_S3SequentialTarget(sharedQueue, writer, options);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
         S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, writer, sharedStatus))
+                .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, writer, options, sharedStatus))
                 .collect(Collectors.toCollection(ParallelComponents::new));
     }
 }

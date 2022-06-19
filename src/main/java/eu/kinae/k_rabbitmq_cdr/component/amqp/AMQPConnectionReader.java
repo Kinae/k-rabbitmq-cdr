@@ -2,9 +2,11 @@ package eu.kinae.k_rabbitmq_cdr.component.amqp;
 
 import java.io.IOException;
 
+import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.GetResponse;
 import eu.kinae.k_rabbitmq_cdr.component.Source;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
@@ -33,7 +35,7 @@ public class AMQPConnectionReader extends AMQPConnection implements Source {
     }
 
     @Override
-    public KMessage pop() throws IOException {
+    public KMessage pop(KOptions options) throws IOException {
         if(channel == null) {
             channel = createChannel();
         }
@@ -44,7 +46,8 @@ public class AMQPConnectionReader extends AMQPConnection implements Source {
         if(sharedStatus != null) {
             sharedStatus.incrementRead();
         }
-        return new KMessage(response.getProps(), response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
+        AMQP.BasicProperties props = options.bodyOnly() ? null : response.getProps();
+        return new KMessage(props, response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
     }
 
 }

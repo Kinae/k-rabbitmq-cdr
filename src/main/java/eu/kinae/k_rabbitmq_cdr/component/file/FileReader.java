@@ -32,6 +32,7 @@ public class FileReader implements Source {
 
     public FileReader(Path path, KOptions options, SharedStatus sharedStatus) {
         this.sharedStatus = sharedStatus;
+
         logger.info("listing files in {}", path);
         Pattern p = Pattern.compile(".*[^.json]$");
         File[] files = path.toFile().listFiles(it -> p.matcher(it.getName()).matches());
@@ -53,7 +54,7 @@ public class FileReader implements Source {
     }
 
     @Override
-    public KMessage pop() throws Exception {
+    public KMessage pop(KOptions options) throws Exception {
         if(!it.hasNext()) {
             return null;
         }
@@ -63,7 +64,10 @@ public class FileReader implements Source {
 
         File file = it.next();
         byte[] body = Files.readAllBytes(file.toPath());
-        AMQP.BasicProperties props = CustomObjectMapper.om.readValue(new File(file.getPath() + Constant.FILE_PROPERTIES_SUFFIX), AMQP.BasicProperties.class);
+        AMQP.BasicProperties props = null;
+        if(!options.bodyOnly()) {
+            props = CustomObjectMapper.om.readValue(new File(file.getPath() + Constant.FILE_PROPERTIES_SUFFIX), AMQP.BasicProperties.class);
+        }
         long deliveryTag = Constant.extractDeliveryTagFromKey(file.getName());
         return new KMessage(props, body, total--, deliveryTag);
     }

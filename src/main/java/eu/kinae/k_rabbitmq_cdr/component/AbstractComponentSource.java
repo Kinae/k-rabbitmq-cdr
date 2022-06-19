@@ -21,11 +21,11 @@ public abstract class AbstractComponentSource extends AbstractComponent {
     public long consumeNProduce() throws Exception {
         long count = 0;
         do {
-            KMessage message = pop();
+            KMessage message = pop(options);
             if(message == null) {
                 break;
             } else {
-                push(message);
+                push(message, options);
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0);
         return count;

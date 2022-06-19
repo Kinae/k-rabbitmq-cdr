@@ -33,16 +33,16 @@ public class FileConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, SharedStatus sharedStatus) {
+    public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         FileWriter writer = new FileWriter(Path.of(parameters.directory()), sharedStatus);
-        return new FileSequentialTarget(sharedQueue, writer);
+        return new FileSequentialTarget(sharedQueue, writer, options);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         FileWriter writer = new FileWriter(Path.of(parameters.directory()), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new FileParallelTarget(sharedQueue, writer, sharedStatus))
+                .mapToObj(ignored -> new FileParallelTarget(sharedQueue, writer, options, sharedStatus))
                 .collect(Collectors.toCollection(ParallelComponents::new));
     }
 }

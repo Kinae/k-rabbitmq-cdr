@@ -15,6 +15,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
     @Test
     @Override
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
+        var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
@@ -35,7 +37,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         try(var target = mock(AWS_S3Writer.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AWS_S3ParallelTarget(emptyQueue, target, status))
+                    .mapToObj(integer -> new AWS_S3ParallelTarget(emptyQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -48,13 +50,14 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            verify(target, times(0)).push(any());
+            verify(target, times(0)).push(any(), eq(options));
         }
     }
 
     @Test
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
+        var options = KOptions.DEFAULT;
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(it -> it.bucket(bucket));
 
@@ -63,12 +66,12 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
 
         var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         for(var message : MESSAGES)
-            sharedQueue.push(message);
+            sharedQueue.push(message, options);
 
         try(var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, target, status))
+                    .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -83,7 +86,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT)) {
+        try(var target = new AWS_S3Reader(s3, bucket, PREFIX, options)) {
             assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }

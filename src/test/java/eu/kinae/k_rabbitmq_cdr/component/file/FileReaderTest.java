@@ -14,12 +14,13 @@ public class FileReaderTest extends AbstractComponentTest {
 
     @Test
     public void Read_messages_are_equal_to_original() throws Exception {
+        var options = KOptions.DEFAULT;
         var target = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            target.push(message);
+            target.push(message, options);
         }
 
-        var reader = new FileReader(tempDir, KOptions.DEFAULT);
+        var reader = new FileReader(tempDir, options);
 
         assertThatSourceContainsAllMessagesUnsorted(reader);
     }

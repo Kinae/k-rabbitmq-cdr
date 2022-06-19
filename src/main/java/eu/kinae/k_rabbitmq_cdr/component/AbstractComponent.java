@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.component;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +22,13 @@ public abstract class AbstractComponent implements Component, Source, Target {
     protected abstract void onFinally();
 
     @Override
-    public KMessage pop() throws Exception {
-        return source.pop();
+    public KMessage pop(KOptions options) throws Exception {
+        return source.pop(options);
     }
 
     @Override
-    public void push(KMessage message) throws Exception {
-        target.push(message);
+    public void push(KMessage message, KOptions options) throws Exception {
+        target.push(message, options);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.rabbitmq.client.Channel;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
@@ -22,7 +23,7 @@ public class AMQPConnectionWriter extends AMQPConnection implements Target {
     }
 
     @Override
-    public void push(KMessage message) throws IOException {
+    public void push(KMessage message, KOptions options) throws IOException {
         if(channel == null) {
             channel = createChannel();
         }
@@ -32,7 +33,7 @@ public class AMQPConnectionWriter extends AMQPConnection implements Target {
         channel.basicPublish("", queue, false, false, message.properties(), message.body());
     }
 
-    protected void push(KMessage message, Channel channel) throws IOException {
+    protected void push(KMessage message, Channel channel, KOptions options) throws IOException {
         if(sharedStatus != null) {
             sharedStatus.incrementWrite();
         }

@@ -12,7 +12,7 @@ public interface ConnectorTarget extends ConnectorType {
 
     Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus);
 
-    AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, SharedStatus sharedStatus);
+    AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus);
 
     ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus);
 

@@ -42,15 +42,16 @@ public abstract class AWS_S3AbstractComponentSourceTest extends AbstractComponen
 
     @Override
     protected AWS_S3Reader getSource() throws Exception {
+        var options = KOptions.DEFAULT;
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(it -> it.bucket(bucket));
 
         var target = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            target.push(message);
+            target.push(message, options);
         }
 
-        return new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);
+        return new AWS_S3Reader(s3, bucket, PREFIX, options);
     }
 
     protected SharedQueue getMockTarget() {

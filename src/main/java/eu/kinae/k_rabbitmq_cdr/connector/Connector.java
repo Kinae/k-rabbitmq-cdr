@@ -79,7 +79,7 @@ public class Connector {
         logger.info("initiating a buffered sequential transfer between {} => {}", connectorSource.getSupportedType(), connectorTarget.getSupportedType());
         SharedQueue sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(AbstractComponentSource source = connectorSource.getSequentialComponent(sharedQueue, parameters, options, sharedStatus);
-            AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters, sharedStatus)) {
+            AbstractComponentTarget target = connectorTarget.getSequentialComponent(sharedQueue, parameters, options, sharedStatus)) {
 
             progressPrinter.printReadProgress();
             source.start();

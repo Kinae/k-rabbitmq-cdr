@@ -7,10 +7,6 @@ public class ComponentDirectLinked extends AbstractComponent {
 
     private final KOptions options;
 
-    public ComponentDirectLinked(Source source, Target target) {
-        this(source, target, KOptions.DEFAULT);
-    }
-
     public ComponentDirectLinked(Source source, Target target, KOptions options) {
         super(source, target);
         this.options = options;
@@ -24,11 +20,11 @@ public class ComponentDirectLinked extends AbstractComponent {
     public long consumeNProduce() throws Exception {
         long count = 0;
         do {
-            KMessage message = pop();
+            KMessage message = pop(options);
             if(message == null) {
                 break;
             } else {
-                push(message);
+                push(message, options);
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0);
         return count;

@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.component;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
@@ -7,8 +8,8 @@ public abstract class AbstractComponentParallelTarget extends AbstractComponentT
 
     private final SharedStatus sharedStatus;
 
-    protected AbstractComponentParallelTarget(SharedQueue source, Target target, SharedStatus sharedStatus) {
-        super(source, target);
+    protected AbstractComponentParallelTarget(SharedQueue source, Target target, KOptions options, SharedStatus sharedStatus) {
+        super(source, target, options);
         this.sharedStatus = sharedStatus;
     }
 

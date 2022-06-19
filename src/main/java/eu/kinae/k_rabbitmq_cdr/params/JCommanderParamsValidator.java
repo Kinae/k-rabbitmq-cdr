@@ -23,7 +23,7 @@ public class JCommanderParamsValidator {
         awsS3(jParams.sourceType, jParams.region, jParams.bucket, jParams.prefix, SOURCE);
         awsS3(jParams.targetType, jParams.region, jParams.bucket, jParams.prefix, TARGET);
 
-        if(jParams.processType == ProcessType.PARALLEL && jParams.threads > 1) {
+        if(jParams.transferType == TransferType.BUFFERED && jParams.processType == ProcessType.PARALLEL && jParams.threads > 1) {
             jParams.sorted = false;
         }
     }

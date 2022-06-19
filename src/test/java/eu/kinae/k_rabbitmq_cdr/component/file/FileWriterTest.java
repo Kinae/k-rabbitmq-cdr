@@ -16,12 +16,13 @@ public class FileWriterTest extends AbstractComponentTest {
 
     @Test
     public void Pushed_messages_are_equal_to_original() throws Exception {
+        var options = KOptions.DEFAULT;
         var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            writer.push(message);
+            writer.push(message, options);
         }
 
-        var reader = new FileReader(tempDir, KOptions.DEFAULT);
+        var reader = new FileReader(tempDir, options);
         assertThatSourceContainsAllMessagesUnsorted(reader);
     }
 }

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.rabbitmq.client.AMQP;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,16 +21,30 @@ public abstract class AbstractComponentTest {
     public static final Set<KMessage> MESSAGES_SET = new HashSet<>(MESSAGES);
 
     protected void assertThatSourceContainsAllMessagesSorted(Source source) throws Exception {
+        assertThatSourceContainsAllMessagesSorted(source, KOptions.DEFAULT);
+    }
+
+    protected void assertThatSourceContainsAllMessagesSorted(Source source, KOptions options) throws Exception {
         for(var message : MESSAGES) {
-            assertThat(source.pop()).isEqualTo(message);
+            var actualMessage = source.pop(options);
+            if(options.bodyOnly()) {
+                assertThat(actualMessage.properties()).isNull();
+                assertThat(actualMessage.body()).isEqualTo(message.body());
+            } else {
+                assertThat(actualMessage).isEqualTo(message);
+            }
         }
     }
 
     protected void assertThatSourceContainsAllMessagesUnsorted(Source source) throws Exception {
-        var kMessage = source.pop();
+        assertThatSourceContainsAllMessagesUnsorted(source, KOptions.DEFAULT);
+    }
+
+    protected void assertThatSourceContainsAllMessagesUnsorted(Source source, KOptions options) throws Exception {
+        var kMessage = source.pop(options);
         while(kMessage != null) {
             assertThat(MESSAGES_SET.contains(kMessage)).isTrue();
-            kMessage = source.pop();
+            kMessage = source.pop(options);
         }
     }
 }

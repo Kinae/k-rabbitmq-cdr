@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import eu.kinae.k_rabbitmq_cdr.component.Source;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 
 public class SharedQueue implements Source, Target {
@@ -33,7 +34,7 @@ public class SharedQueue implements Source, Target {
         return this.queue.size();
     }
 
-    public void push(KMessage response) throws Exception {
+    public void push(KMessage response, KOptions options) throws Exception {
         if(queue instanceof BlockingQueue<KMessage> bq) {
             bq.put(response);
         } else {
@@ -41,7 +42,7 @@ public class SharedQueue implements Source, Target {
         }
     }
 
-    public KMessage pop() throws Exception {
+    public KMessage pop(KOptions options) throws Exception {
         if(queue instanceof BlockingQueue<KMessage> bq) {
             return bq.poll(500, TimeUnit.MILLISECONDS);
         } else {

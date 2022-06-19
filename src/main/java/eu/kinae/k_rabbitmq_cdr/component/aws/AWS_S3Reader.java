@@ -69,7 +69,7 @@ public class AWS_S3Reader implements Source {
     }
 
     @Override
-    public KMessage pop() throws Exception {
+    public KMessage pop(KOptions options) throws Exception {
         if(!it.hasNext()) {
             return null;
         }
@@ -79,8 +79,11 @@ public class AWS_S3Reader implements Source {
 
         S3Object s3Object = it.next();
         byte[] body = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key())).asByteArray();
-        byte[] properties = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key() + Constant.FILE_PROPERTIES_SUFFIX).build()).asByteArray();
-        AMQP.BasicProperties props = CustomObjectMapper.om.readValue(new ByteArrayInputStream(properties), AMQP.BasicProperties.class);
+        AMQP.BasicProperties props = null;
+        if(!options.bodyOnly()) {
+            byte[] properties = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key() + Constant.FILE_PROPERTIES_SUFFIX).build()).asByteArray();
+            props = CustomObjectMapper.om.readValue(new ByteArrayInputStream(properties), AMQP.BasicProperties.class);
+        }
         long deliveryTag = Constant.extractDeliveryTagFromKey(prefix, s3Object.key());
         return new KMessage(props, body, total--, deliveryTag);
     }

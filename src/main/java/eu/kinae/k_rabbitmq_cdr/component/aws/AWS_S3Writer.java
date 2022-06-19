@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr.component.aws;
 
 import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -32,11 +33,13 @@ public class AWS_S3Writer implements Target {
     }
 
     @Override
-    public void push(KMessage message) throws Exception {
+    public void push(KMessage message, KOptions options) throws Exception {
         String filename = Constant.FILE_PREFIX + message.deliveryTag();
         s3.putObject(it -> it.bucket(bucket).key(prefix + filename), RequestBody.fromBytes(message.body()));
-        RequestBody props = RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties()));
-        s3.putObject(it -> it.bucket(bucket).key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX), props);
+        if(message.properties() != null) {
+            RequestBody props = RequestBody.fromBytes(CustomObjectMapper.om.writeValueAsBytes(message.properties()));
+            s3.putObject(it -> it.bucket(bucket).key(prefix + filename + Constant.FILE_PROPERTIES_SUFFIX), props);
+        }
         if(sharedStatus != null) {
             sharedStatus.incrementWrite();
         }

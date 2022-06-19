@@ -14,6 +14,7 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -27,6 +28,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
     @Test
     @Override
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
+        var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
@@ -34,7 +36,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         try(var target = mock(FileWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new FileParallelTarget(emptyQueue, target, status))
+                    .mapToObj(integer -> new FileParallelTarget(emptyQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -47,24 +49,25 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            verify(target, times(0)).push(any());
+            verify(target, times(0)).push(any(), eq(options));
         }
     }
 
     @Test
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
+        var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
         var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         for(var message : MESSAGES)
-            sharedQueue.push(message);
+            sharedQueue.push(message, options);
 
         try(var target = new FileWriter(tempDir)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new FileParallelTarget(sharedQueue, target, status))
+                    .mapToObj(integer -> new FileParallelTarget(sharedQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -79,7 +82,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new FileReader(tempDir, KOptions.DEFAULT)) {
+        try(var target = new FileReader(tempDir, options)) {
             assertThatSourceContainsAllMessagesUnsorted(target);
         }
     }

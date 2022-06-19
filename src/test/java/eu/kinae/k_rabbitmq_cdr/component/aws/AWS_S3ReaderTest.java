@@ -32,14 +32,15 @@ public class AWS_S3ReaderTest extends AbstractComponentTest {
 
     @Test
     public void Read_messages_are_equal_to_original() throws Exception {
+        var options = KOptions.DEFAULT;
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(it -> it.bucket(bucket));
         var target = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            target.push(message);
+            target.push(message, options);
         }
 
-        var reader = new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);
+        var reader = new AWS_S3Reader(s3, bucket, PREFIX, options);
 
         assertThatSourceContainsAllMessagesUnsorted(reader);
     }

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPURI;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -27,6 +29,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
     @Test
     @Override
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
+        var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
@@ -34,7 +37,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         try(var target = mock(AMQPConnectionWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AMQPParallelTarget(emptyQueue, target, status))
+                    .mapToObj(integer -> new AMQPParallelTarget(emptyQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -47,24 +50,25 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            verify(target, times(0)).push(any());
+            verify(target, times(0)).push(any(), eq(options));
         }
     }
 
     @Test
     @Override
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
+        var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
         var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
         for(var message : MESSAGES)
-            sharedQueue.push(message);
+            sharedQueue.push(message, options);
 
         try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, target, status))
+                    .mapToObj(integer -> new AMQPParallelTarget(sharedQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 

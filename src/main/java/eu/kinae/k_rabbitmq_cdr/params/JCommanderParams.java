@@ -11,6 +11,9 @@ public class JCommanderParams {
     @Parameter(names = { "--interval" }, description = "Specify the progression update interval in milliseconds (default 2000)")
     public int interval = 2000;
 
+    @Parameter(names = { "--body-only" }, description = "Only use the body and discard the headers and properties of the messages")
+    public boolean bodyOnly;
+
     @Parameter(names = { "--source-type" }, description = "Type of the source", required = true)
     public SupportedType sourceType;
 

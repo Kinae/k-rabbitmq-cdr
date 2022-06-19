@@ -24,6 +24,7 @@ public abstract class AMQPConnection implements AutoCloseable {
     public AMQPConnection(String uri, String queue, SharedStatus sharedStatus) {
         this.queue = queue;
         this.sharedStatus = sharedStatus;
+
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(uri);
