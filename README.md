@@ -148,9 +148,9 @@ the original queue.
 ## Additional information about the project
 
 I started this small project from a need at my work: I can not copy message from one RabbitMQ to another.
-I have multiple needs and currently I have found nothing that exist to fulfill them.
+I have multiple needs, and currently I have found nothing that exist to fulfill them.
 
-The projet can integrate three differents sources and targets (AMQP, AWS S3, File system).
+The project can integrate three different sources and targets (AMQP, AWS S3, File system).
 What you can do:
 - copy all RabbitMQ messages from a queue into a bucket S3
 - transfer from one RabbitMQ queue in production env to RabbitMQ queue in debug env
@@ -163,13 +163,13 @@ It has multiple parameters to let you control how you want to do it. You current
 - Buffered sequential: one consumer consumes all messages first and push them in a FIFO java.util.Queue then consume this Queue to push into the target
 - Buffered parallel: same as the sequential but multiple producers consume the Queue at the same time.
 
-It really depends of your source and target but for exemple, if you consume from a RabbitMQ queue and you want to push in a AWS S3 Bucket, you should use the Buffered parallel mode.
+It really depends on your source and target but for example, if you consume from a RabbitMQ queue and you want to push in a AWS S3 Bucket, you should use the Buffered parallel mode.
 Since loading from RabbitMQ is really fast, you want more threads to push into the bucket as fast as possible.
 
 
 I am also using it for integration testing by creating a test case (ie: a message) that will be dynamically loaded.
 
 Since we can not afford to use all new technologies instantly, I wanted to try and learn by myself.
-If you find mistakes or bad practices, feel free to point them so I can learn.
+If you find mistakes or bad practices, feel free to point them, so I can learn.
 
 New technologies used for me are Gradle (instead of the good Maven), testcontainer (just awesome !) and AssertJ.
