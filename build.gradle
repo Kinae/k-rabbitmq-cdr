@@ -51,7 +51,7 @@ def org_assertj_version = '3.22.0'
 def org_junit_version = '5.8.2'
 def org_mockito_version = '4.4.0'
 def org_slf4j_version = '1.7.36'
-def org_testcontainers_version = '1.16.3'
+def org_testcontainers_version = '1.17.3'
 def software_amazon_awssdk_version = '2.17.179'
 
 dependencies {
