@@ -20,7 +20,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 public class AWS_S3ConnectorTarget implements ConnectorTarget {
 
-    public AWS_S3ConnectorTarget() {
+    private final S3Client s3Client;
+
+    public AWS_S3ConnectorTarget(KParameters parameters) {
+        s3Client = AWS_S3ClientBuilder.build(parameters);
     }
 
     @Override
@@ -30,23 +33,25 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
 
     @Override
     public Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         return new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
     }
 
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
         return new SequentialComponentTarget(sharedQueue, writer, options);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
-                .collect(Collectors.toCollection(ParallelComponents::new));
+            .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
+            .collect(Collectors.toCollection(ParallelComponents::new));
+    }
+
+    @Override
+    public void close() throws Exception {
+        s3Client.close();
     }
 }

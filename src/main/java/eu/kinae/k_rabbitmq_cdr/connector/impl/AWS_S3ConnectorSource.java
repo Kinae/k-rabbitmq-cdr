@@ -17,7 +17,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 public class AWS_S3ConnectorSource implements ConnectorSource {
 
-    public AWS_S3ConnectorSource() {
+    private final S3Client s3Client;
+
+    public AWS_S3ConnectorSource(KParameters parameters) {
+        s3Client = AWS_S3ClientBuilder.build(parameters);
     }
 
     @Override
@@ -27,21 +30,24 @@ public class AWS_S3ConnectorSource implements ConnectorSource {
 
     @Override
     public Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         return new AWS_S3Reader(s3Client, parameters.bucket(), parameters.prefix(), options, sharedStatus);
     }
 
     @Override
     public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Reader reader = new AWS_S3Reader(s3Client, parameters.bucket(), parameters.prefix(), options, sharedStatus);
         return new SequentialComponentSource(reader, sharedQueue, options);
     }
 
     @Override
     public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Reader reader = new AWS_S3Reader(s3Client, parameters.bucket(), parameters.prefix(), options, sharedStatus);
         return new ParallelComponentSource(reader, sharedQueue, options, sharedStatus);
     }
+
+    @Override
+    public void close() {
+        s3Client.close();
+    }
+
 }

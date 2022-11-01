@@ -23,7 +23,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
-import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPURI;
+import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPConnection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
@@ -47,7 +47,7 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
 
     @BeforeAll
     public static void beforeAll() throws Exception {
-        try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), SOURCE_Q)) {
+        try(var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), SOURCE_Q)) {
             for(var message : MESSAGES) {
                 target.push(message, KOptions.DEFAULT);
             }
@@ -64,15 +64,15 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
     @Test
     public void Produced_messages_are_equal_to_consumed_messages_AMQP_to_AMQP() throws Exception {
         var options = KOptions.SORTED;
-        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
-            var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
+            var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), TARGET_Q)) {
 
             var component = new ComponentDirectLinked(source, target, options);
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
                 assertThatSourceContainsAllMessagesSorted(sourceAMQPConnection, options);
             }
         }
@@ -81,15 +81,15 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
     @Test
     public void Produced_messages_are_equal_to_consumed_messages_AMQP_to_AMQP_body_only() throws Exception {
         var options = KOptions.SORTED_BODY_ONLY;
-        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
-            var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
+            var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), TARGET_Q)) {
 
             var component = new ComponentDirectLinked(source, target, options);
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
                 assertThatSourceContainsAllMessagesSorted(sourceAMQPConnection, options);
             }
         }
@@ -98,7 +98,7 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
     @Test
     public void Produced_messages_are_equal_to_consumed_messages_AMQP_to_File() throws Exception {
         var options = KOptions.DEFAULT;
-        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
+        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
             var target = new FileWriter(tempDir)) {
 
             var component = new ComponentDirectLinked(source, target, options);
@@ -116,7 +116,7 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
         s3.createBucket(it -> it.bucket(bucket));
 
         var options = KOptions.DEFAULT;
-        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
+        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
             var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
 
             var component = new ComponentDirectLinked(source, target, options);
@@ -138,14 +138,14 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
         }
 
         try(var source = new FileReader(tempDir, options);
-            var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), TARGET_Q)) {
 
             var component = new ComponentDirectLinked(source, target, options);
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
                 assertThatSourceContainsAllMessagesSorted(sourceAMQPConnection, options);
             }
         }
@@ -163,14 +163,14 @@ public class ComponentDirectLinkedTest extends AbstractComponentTest {
         }
 
         try(var source = new AWS_S3Reader(s3, bucket, PREFIX, options);
-            var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), TARGET_Q)) {
 
             var component = new ComponentDirectLinked(source, target, options);
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+            try(var sourceAMQPConnection = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
                 assertThatSourceContainsAllMessagesSorted(sourceAMQPConnection, options);
             }
         }

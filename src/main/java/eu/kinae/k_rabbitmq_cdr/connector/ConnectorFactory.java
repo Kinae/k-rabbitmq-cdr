@@ -1,7 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import eu.kinae.k_rabbitmq_cdr.connector.impl.AMQPConnectorSource;
@@ -10,6 +9,7 @@ import eu.kinae.k_rabbitmq_cdr.connector.impl.AWS_S3ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.AWS_S3ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorTarget;
+import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import software.amazon.awssdk.utils.Pair;
 
@@ -41,16 +41,16 @@ public abstract class ConnectorFactory {
     private ConnectorFactory() {
     }
 
-    public static Optional<Connector> newConnector(SupportedType sType, SupportedType tType) throws Exception {
-        Class<? extends ConnectorSource> source = connectorSources.get(sType);
-        Class<? extends ConnectorTarget> target = connectorTargets.get(tType);
+    public static Connector newConnector(KParameters parameters) throws Exception {
+        Class<? extends ConnectorSource> source = connectorSources.get(parameters.sourceType());
+        Class<? extends ConnectorTarget> target = connectorTargets.get(parameters.targetType());
         if(source == null || target == null) {
-            return Optional.empty();
+            return null;
         }
 
-        ConnectorSource connectorSource = source.getConstructor().newInstance();
-        ConnectorTarget connectorTarget = target.getConstructor().newInstance();
-        return Optional.of(new Connector(connectorSource, connectorTarget));
+        ConnectorSource connectorSource = source.getConstructor(KParameters.class).newInstance(parameters);
+        ConnectorTarget connectorTarget = target.getConstructor(KParameters.class).newInstance(parameters);
+        return new Connector(connectorSource, connectorTarget);
     }
 
 }

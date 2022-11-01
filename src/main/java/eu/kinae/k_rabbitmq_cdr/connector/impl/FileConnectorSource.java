@@ -17,8 +17,13 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class FileConnectorSource implements ConnectorSource {
 
-    public FileConnectorSource() {
+    private final Path path;
+
+    public FileConnectorSource(KParameters parameters) {
+        path = Path.of(parameters.directory());
     }
+
+
 
     @Override
     public SupportedType getSupportedType() {
@@ -27,18 +32,22 @@ public class FileConnectorSource implements ConnectorSource {
 
     @Override
     public Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        return new FileReader(Path.of(parameters.directory()), options, sharedStatus);
+        return new FileReader(path, options, sharedStatus);
     }
 
     @Override
     public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        FileReader reader = new FileReader(Path.of(parameters.directory()), options, sharedStatus);
+        FileReader reader = new FileReader(path, options, sharedStatus);
         return new SequentialComponentSource(reader, sharedQueue, options);
     }
 
     @Override
     public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        FileReader reader = new FileReader(Path.of(parameters.directory()), options, sharedStatus);
+        FileReader reader = new FileReader(path, options, sharedStatus);
         return new ParallelComponentSource(reader, sharedQueue, options, sharedStatus);
+    }
+
+    @Override
+    public void close() {
     }
 }

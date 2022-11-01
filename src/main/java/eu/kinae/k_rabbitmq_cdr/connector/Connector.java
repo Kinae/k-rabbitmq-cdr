@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.connector;
 
+import java.io.Closeable;
 import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,12 +24,12 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Connector {
+public class Connector implements Closeable {
 
-    private ProgressDisplayPrinter progressPrinter;
     private final ConnectorSource connectorSource;
     private final ConnectorTarget connectorTarget;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private ProgressDisplayPrinter progressPrinter;
 
     public Connector(ConnectorSource connectorSource, ConnectorTarget connectorTarget) {
         this.connectorSource = connectorSource;
@@ -111,5 +112,21 @@ public class Connector {
             progressPrinter.printLastReadProgress();
             progressPrinter.printLastWriteProgress();
         }
+    }
+
+    @Override
+    public void close() {
+        try {
+            connectorSource.close();
+        } catch(Exception e) {
+            logger.warn("Cannot close ConnectorSource");
+        }
+
+        try {
+            connectorTarget.close();
+        } catch(Exception e) {
+            logger.warn("Cannot close ConnectorTarget");
+        }
+
     }
 }

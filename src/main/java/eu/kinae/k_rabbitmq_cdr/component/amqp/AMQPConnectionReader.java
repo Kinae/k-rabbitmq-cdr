@@ -9,20 +9,28 @@ import eu.kinae.k_rabbitmq_cdr.component.Source;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class AMQPConnectionReader extends AMQPConnection implements Source {
+public class AMQPConnectionReader implements Source {
 
-    public AMQPConnectionReader(String uri, String queue) {
-        super(uri, queue);
+    private final Channel channel;
+    private final String queue;
+    private final SharedStatus sharedStatus;
+    private final Logger logger = LoggerFactory.getLogger(AMQPConnectionReader.class);
+
+    public AMQPConnectionReader(AMQPConnection connection, String queue) {
+        this(connection, queue, null);
     }
 
-    public AMQPConnectionReader(String uri, String queue, SharedStatus sharedStatus) {
-        super(uri, queue, sharedStatus);
+    public AMQPConnectionReader(AMQPConnection connection, String queue, SharedStatus sharedStatus) {
+        this.queue = queue;
+        this.sharedStatus = sharedStatus;
+
         try {
+            this.channel = connection.createChannel();
             if(sharedStatus != null) {
-                Channel channel = connection.createChannel();
                 sharedStatus.setTotal(channel.messageCount(queue));
-                channel.close();
             }
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
@@ -30,15 +38,8 @@ public class AMQPConnectionReader extends AMQPConnection implements Source {
         }
     }
 
-    Channel createChannel() throws IOException {
-        return connection.createChannel();
-    }
-
     @Override
     public KMessage pop(KOptions options) throws IOException {
-        if(channel == null) {
-            channel = createChannel();
-        }
         GetResponse response = channel.basicGet(queue, false);
         if(response == null) {
             return null;
@@ -50,4 +51,14 @@ public class AMQPConnectionReader extends AMQPConnection implements Source {
         return new KMessage(props, response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
     }
 
+    @Override
+    public void close() throws Exception {
+        try {
+            if(channel.isOpen()) {
+                channel.close();
+            }
+        } catch(Exception e) {
+            logger.warn("Cannot close channel");
+        }
+    }
 }

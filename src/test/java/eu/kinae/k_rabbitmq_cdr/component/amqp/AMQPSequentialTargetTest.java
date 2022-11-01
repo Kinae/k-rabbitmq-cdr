@@ -6,7 +6,7 @@ import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import org.junit.jupiter.api.Test;
 
-import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPURI;
+import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPConnection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
@@ -37,14 +37,15 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q), options)) {
+        try(var cc = buildAMQPConnection(rabbitmq);
+            var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(cc, TARGET_Q), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var source = new AMQPConnectionReader(buildAMQPURI(rabbitmq), TARGET_Q)) {
+        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
             assertThatSourceContainsAllMessagesSorted(source);
         }
     }

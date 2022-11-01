@@ -5,6 +5,7 @@ import eu.kinae.k_rabbitmq_cdr.component.ParallelComponent;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.Source;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnection;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnectionReader;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
@@ -15,7 +16,10 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPConnectorSource implements ConnectorSource {
 
-    public AMQPConnectorSource() {
+    private final AMQPConnection connection;
+
+    public AMQPConnectorSource(KParameters parameters) {
+        connection = new AMQPConnection(parameters.sourceURI());
     }
 
     @Override
@@ -25,18 +29,23 @@ public class AMQPConnectorSource implements ConnectorSource {
 
     @Override
     public Source getDirectLinked(KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        return new AMQPConnectionReader(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
+        return new AMQPConnectionReader(connection, parameters.sourceQueue(), sharedStatus);
     }
 
     @Override
     public AbstractComponentSource getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnectionReader source = new AMQPConnectionReader(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
+        AMQPConnectionReader source = new AMQPConnectionReader(connection, parameters.sourceQueue(), sharedStatus);
         return new SequentialComponentSource(source, sharedQueue, options);
     }
 
     @Override
     public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnectionReader source = new AMQPConnectionReader(parameters.sourceURI(), parameters.sourceQueue(), sharedStatus);
+        AMQPConnectionReader source = new AMQPConnectionReader(connection, parameters.sourceQueue(), sharedStatus);
         return new ParallelComponentSource(source, sharedQueue, options, sharedStatus);
+    }
+
+    @Override
+    public void close() {
+        connection.close();
     }
 }

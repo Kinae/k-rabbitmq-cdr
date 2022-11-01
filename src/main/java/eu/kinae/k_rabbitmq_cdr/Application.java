@@ -1,6 +1,7 @@
 package eu.kinae.k_rabbitmq_cdr;
 
 import com.beust.jcommander.JCommander;
+import eu.kinae.k_rabbitmq_cdr.connector.Connector;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParams;
 import eu.kinae.k_rabbitmq_cdr.params.JCommanderParamsValidator;
@@ -30,9 +31,10 @@ public final class Application {
 
         KOptions options = KOptions.of(jParams);
         KParameters params = KParameters.of(jParams);
-        ConnectorFactory.newConnector(params.sourceType(), params.targetType())
-                .ifPresentOrElse(it -> it.start(params, options),
-                                 () -> logger.error("No connector found for {} => {}", params.sourceType(), params.targetType()));
-    }
 
+        try(Connector connector = ConnectorFactory.newConnector(params)) {
+            if(connector != null) connector.start(params, options);
+            else logger.error("No connector found for {} => {}", params.sourceType(), params.targetType());
+        }
+    }
 }

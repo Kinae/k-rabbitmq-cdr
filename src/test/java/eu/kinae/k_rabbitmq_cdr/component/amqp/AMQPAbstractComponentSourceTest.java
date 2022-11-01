@@ -8,7 +8,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPURI;
+import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPConnection;
 
 @Testcontainers
 public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentSourceTest {
@@ -25,7 +25,7 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeAll
     public static void beforeAll() throws Exception {
-        try(var target = new AMQPConnectionWriter(buildAMQPURI(rabbitmq), SOURCE_Q)) {
+        try(var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), SOURCE_Q)) {
             for(var message : MESSAGES) {
                 target.push(message, KOptions.DEFAULT);
             }
@@ -34,12 +34,12 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
 
     @Override
     protected AMQPConnectionReader getEmptySource() {
-        return new AMQPConnectionReader(buildAMQPURI(rabbitmq), EMPTY_SOURCE_Q);
+        return new AMQPConnectionReader(buildAMQPConnection(rabbitmq), EMPTY_SOURCE_Q);
     }
 
     @Override
     protected AMQPConnectionReader getSource() {
-        return new AMQPConnectionReader(buildAMQPURI(rabbitmq), SOURCE_Q);
+        return new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
     }
 
 }

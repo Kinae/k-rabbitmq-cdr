@@ -73,12 +73,12 @@ public class AWS_S3Reader implements Source {
         if(!it.hasNext()) {
             return null;
         }
-        if(sharedStatus != null) {
-            sharedStatus.incrementRead();
-        }
 
         S3Object s3Object = it.next();
         byte[] body = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key())).asByteArray();
+        if(sharedStatus != null) {
+            sharedStatus.incrementRead();
+        }
         AMQP.BasicProperties props = null;
         if(!options.bodyOnly()) {
             byte[] properties = s3.getObjectAsBytes(it -> it.bucket(bucket).key(s3Object.key() + Constant.FILE_PROPERTIES_SUFFIX).build()).asByteArray();

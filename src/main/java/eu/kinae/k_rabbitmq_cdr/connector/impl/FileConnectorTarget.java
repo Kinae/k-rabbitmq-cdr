@@ -19,7 +19,10 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class FileConnectorTarget implements ConnectorTarget {
 
-    public FileConnectorTarget() {
+    private final Path path;
+
+    public FileConnectorTarget(KParameters parameters) {
+        path = Path.of(parameters.directory());
     }
 
     @Override
@@ -29,20 +32,25 @@ public class FileConnectorTarget implements ConnectorTarget {
 
     @Override
     public Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus) {
-        return new FileWriter(Path.of(parameters.directory()), sharedStatus);
+        return new FileWriter(path, sharedStatus);
     }
 
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        FileWriter writer = new FileWriter(Path.of(parameters.directory()), sharedStatus);
+        FileWriter writer = new FileWriter(path, sharedStatus);
         return new SequentialComponentTarget(sharedQueue, writer, options);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        FileWriter writer = new FileWriter(Path.of(parameters.directory()), sharedStatus);
+        FileWriter writer = new FileWriter(path, sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
-                .collect(Collectors.toCollection(ParallelComponents::new));
+            .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
+            .collect(Collectors.toCollection(ParallelComponents::new));
+    }
+
+    @Override
+    public void close() throws Exception {
+
     }
 }

@@ -4,11 +4,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponent;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
 import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
+import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnection;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnectionWriter;
-import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPParallelTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
@@ -18,7 +20,10 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
 public class AMQPConnectorTarget implements ConnectorTarget {
 
-    public AMQPConnectorTarget() {
+    private final AMQPConnection connection;
+
+    public AMQPConnectorTarget(KParameters parameters) {
+        connection = new AMQPConnection(parameters.targetURI());
     }
 
     @Override
@@ -28,20 +33,29 @@ public class AMQPConnectorTarget implements ConnectorTarget {
 
     @Override
     public Target getDirectLinked(KParameters parameters, SharedStatus sharedStatus) {
-        return new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
+        return new AMQPConnectionWriter(connection, parameters.targetQueue(), sharedStatus);
     }
 
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnectionWriter target = new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
+        AMQPConnectionWriter target = new AMQPConnectionWriter(connection, parameters.targetQueue(), sharedStatus);
         return new SequentialComponentTarget(sharedQueue, target, options);
     }
 
     @Override
     public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        AMQPConnectionWriter target = new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new AMQPParallelTarget(sharedQueue, target, options, sharedStatus))
-                .collect(Collectors.toCollection(ParallelComponents::new));
+            .mapToObj(ignored -> createParallelComponent(connection, sharedQueue, parameters, options, sharedStatus))
+            .collect(Collectors.toCollection(ParallelComponents::new));
     }
+
+    private ParallelComponent createParallelComponent(AMQPConnection connection, SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        return new ParallelComponentTarget(sharedQueue, new AMQPConnectionWriter(connection, parameters.targetQueue(), sharedStatus), options, sharedStatus);
+    }
+
+    @Override
+    public void close() throws Exception {
+        connection.close();
+    }
+
 }
