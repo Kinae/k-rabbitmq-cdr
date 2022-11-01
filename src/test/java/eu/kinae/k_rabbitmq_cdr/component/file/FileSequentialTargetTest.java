@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.component.file;
 
+import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -20,7 +21,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         var options = KOptions.DEFAULT;
         SharedQueue emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(var target = mock(FileWriter.class);
-            var component = new FileSequentialTarget(emptyQueue, target, options)) {
+            var component = new SequentialComponentTarget(emptyQueue, target, options)) {
 
             long actual = component.consumeNProduce();
 
@@ -37,7 +38,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new FileSequentialTarget(sharedQueue, new FileWriter(tempDir), options)) {
+        try(var component = new SequentialComponentTarget(sharedQueue, new FileWriter(tempDir), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
@@ -56,7 +57,7 @@ public class FileSequentialTargetTest extends FileAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new FileSequentialTarget(sharedQueue, new FileWriter(tempDir), options)) {
+        try(var component = new SequentialComponentTarget(sharedQueue, new FileWriter(tempDir), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());

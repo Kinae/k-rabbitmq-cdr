@@ -5,10 +5,10 @@ import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
+import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnectionWriter;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPParallelTarget;
-import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPSequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
@@ -34,7 +34,7 @@ public class AMQPConnectorTarget implements ConnectorTarget {
     @Override
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         AMQPConnectionWriter target = new AMQPConnectionWriter(parameters.targetURI(), parameters.targetQueue(), sharedStatus);
-        return new AMQPSequentialTarget(sharedQueue, target, options);
+        return new SequentialComponentTarget(sharedQueue, target, options);
     }
 
     @Override

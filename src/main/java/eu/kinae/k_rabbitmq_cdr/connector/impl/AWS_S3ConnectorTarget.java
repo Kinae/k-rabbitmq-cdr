@@ -4,11 +4,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentTarget;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
+import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
 import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3ClientBuilder;
-import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3ParallelTarget;
-import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3SequentialTarget;
 import eu.kinae.k_rabbitmq_cdr.component.aws.AWS_S3Writer;
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
@@ -38,7 +38,7 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
     public AbstractComponentTarget getSequentialComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
-        return new AWS_S3SequentialTarget(sharedQueue, writer, options);
+        return new SequentialComponentTarget(sharedQueue, writer, options);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
         S3Client s3Client = AWS_S3ClientBuilder.build(parameters);
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
         return IntStream.range(0, options.threads())
-                .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, writer, options, sharedStatus))
+                .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
                 .collect(Collectors.toCollection(ParallelComponents::new));
     }
 }

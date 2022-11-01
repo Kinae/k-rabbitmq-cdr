@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -37,7 +38,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         try(var target = mock(AWS_S3Writer.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new AWS_S3ParallelTarget(emptyQueue, target, options, status))
+                    .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -71,7 +72,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         try(var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(ignored -> new AWS_S3ParallelTarget(sharedQueue, target, options, status))
+                    .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 

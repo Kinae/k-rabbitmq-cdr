@@ -5,6 +5,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponent;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.Source;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
@@ -23,7 +24,7 @@ public class AWS_S3ParallelSourceTest extends AWS_S3AbstractComponentSourceTest 
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new AWS_S3ParallelSource((AWS_S3Reader) source, (SharedQueue) target, options, new SharedStatus(options));
+        return new ParallelComponentSource(source, (SharedQueue) target, options, new SharedStatus(options));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class AWS_S3ParallelSourceTest extends AWS_S3AbstractComponentSourceTest 
         var options = KOptions.DEFAULT;
         var status = mock(SharedStatus.class);
         try(var target = getSharedQueue();
-            var component = new AWS_S3ParallelSource(getSource(), target, options, status)) {
+            var component = new ParallelComponentSource(getSource(), target, options, status)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
             Awaitility.await().atMost(60, TimeUnit.SECONDS).until(future::isDone);

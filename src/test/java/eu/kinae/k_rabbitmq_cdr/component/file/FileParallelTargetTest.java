@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -36,7 +37,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         try(var target = mock(FileWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new FileParallelTarget(emptyQueue, target, options, status))
+                    .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
@@ -67,7 +68,7 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         try(var target = new FileWriter(tempDir)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new FileParallelTarget(sharedQueue, target, options, status))
+                    .mapToObj(integer -> new ParallelComponentTarget(sharedQueue, target, options, status))
                     .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 

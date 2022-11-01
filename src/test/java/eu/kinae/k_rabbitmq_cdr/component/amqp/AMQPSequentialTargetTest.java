@@ -1,5 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.component.amqp;
 
+import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -20,7 +21,7 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         var options = KOptions.DEFAULT;
         var emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(var target = mock(AMQPConnectionWriter.class);
-            var component = new AMQPSequentialTarget(emptyQueue, target, options)) {
+            var component = new SequentialComponentTarget(emptyQueue, target, options)) {
 
             long actual = component.consumeNProduce();
 
@@ -36,7 +37,7 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new AMQPSequentialTarget(sharedQueue, new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q), options)) {
+        try(var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(buildAMQPURI(rabbitmq), TARGET_Q), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());

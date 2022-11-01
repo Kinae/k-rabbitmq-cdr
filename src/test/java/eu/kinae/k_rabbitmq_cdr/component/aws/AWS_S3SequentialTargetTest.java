@@ -2,6 +2,7 @@ package eu.kinae.k_rabbitmq_cdr.component.aws;
 
 import java.util.UUID;
 
+import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentTarget;
 import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.ProcessType;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
@@ -23,7 +24,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         var options = KOptions.DEFAULT;
         var emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
         try(var target = mock(AWS_S3Writer.class);
-            var component = new AWS_S3SequentialTarget(emptyQueue, target, options)) {
+            var component = new SequentialComponentTarget(emptyQueue, target, options)) {
 
             long actual = component.consumeNProduce();
 
@@ -43,7 +44,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new AWS_S3SequentialTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX, mock(SharedStatus.class)), options)) {
+        try(var component = new SequentialComponentTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX, mock(SharedStatus.class)), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
@@ -65,7 +66,7 @@ public class AWS_S3SequentialTargetTest extends AWS_S3AbstractComponentTargetTes
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var component = new AWS_S3SequentialTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX), options)) {
+        try(var component = new SequentialComponentTarget(sharedQueue, new AWS_S3Writer(s3, bucket, PREFIX), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());

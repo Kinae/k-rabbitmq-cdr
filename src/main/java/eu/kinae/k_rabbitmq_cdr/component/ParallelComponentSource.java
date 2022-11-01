@@ -4,11 +4,11 @@ import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedQueue;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 
-public abstract class AbstractComponentParallelSource extends AbstractComponentSource implements ParallelComponent {
+public class ParallelComponentSource extends AbstractComponentSource implements ParallelComponent {
 
     private final SharedStatus sharedStatus;
 
-    protected AbstractComponentParallelSource(Source source, SharedQueue target, KOptions options, SharedStatus sharedStatus) {
+    public ParallelComponentSource(Source source, SharedQueue target, KOptions options, SharedStatus sharedStatus) {
         super(source, target, options);
         this.sharedStatus = sharedStatus;
     }
