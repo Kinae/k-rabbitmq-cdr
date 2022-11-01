@@ -37,8 +37,8 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         try(var target = mock(FileWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
@@ -68,8 +68,8 @@ public class FileParallelTargetTest extends FileAbstractComponentTargetTest {
         try(var target = new FileWriter(tempDir)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new ParallelComponentTarget(sharedQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(integer -> new ParallelComponentTarget(sharedQueue, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);

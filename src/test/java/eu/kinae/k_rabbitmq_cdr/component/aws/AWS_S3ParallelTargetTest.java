@@ -38,8 +38,8 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         try(var target = mock(AWS_S3Writer.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
@@ -72,8 +72,8 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         try(var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);

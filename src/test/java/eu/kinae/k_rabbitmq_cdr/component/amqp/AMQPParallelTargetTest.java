@@ -38,8 +38,8 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         try(var target = mock(AMQPConnectionWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(integer -> new ParallelComponentTarget(emptyQueue, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);
@@ -66,11 +66,11 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), TARGET_Q)) {
+        try(var connection = buildAMQPConnection(rabbitmq)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
-                    .mapToObj(integer -> new ParallelComponentTarget(sharedQueue, target, options, status))
-                    .collect(Collectors.toCollection(ArrayList::new));
+                .mapToObj(integer -> new ParallelComponentTarget(sharedQueue, new AMQPConnectionWriter(connection, TARGET_Q), options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
             var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
 
             assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(CONSUMERS);

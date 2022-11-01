@@ -37,8 +37,8 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         for(var message : MESSAGES)
             sharedQueue.push(message, options);
 
-        try(var cc = buildAMQPConnection(rabbitmq);
-            var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(cc, TARGET_Q), options)) {
+        try(var connection = buildAMQPConnection(rabbitmq);
+            var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(connection, TARGET_Q), options)) {
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
