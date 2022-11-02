@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPConnection;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -25,7 +24,10 @@ import static org.mockito.Mockito.when;
 
 public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
 
-    private static final int CONSUMERS = 3;
+    @Override
+    protected SharedQueue getSharedQueue() {
+        return new SharedQueue(ProcessType.PARALLEL);
+    }
 
     @Test
     @Override
@@ -34,7 +36,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
+        var emptyQueue = getSharedQueue();
         try(var target = mock(AMQPConnectionWriter.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
@@ -51,7 +53,7 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            verify(target, times(0)).push(any(), eq(options));
+            verify(target, times(0)).push(any());
         }
     }
 
@@ -62,9 +64,9 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
+        var sharedQueue = getSharedQueue();
         for(var message : MESSAGES)
-            sharedQueue.push(message, options);
+            sharedQueue.push(message);
 
         try(var connection = buildAMQPConnection(rabbitmq)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
@@ -85,7 +87,8 @@ public class AMQPParallelTargetTest extends AMQPAbstractComponentTargetTest {
 
         assertThat(sharedQueue.size()).isEqualTo(0);
         try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
-            assertThatSourceContainsAllMessagesUnsorted(source);
+            assertThatContainsAllMessages(source, options);
         }
     }
+
 }

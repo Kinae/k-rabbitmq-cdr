@@ -27,8 +27,8 @@ public abstract class AbstractComponent implements Component, Source, Target {
     }
 
     @Override
-    public void push(KMessage message, KOptions options) throws Exception {
-        target.push(message, options);
+    public void push(KMessage message) throws Exception {
+        target.push(message);
     }
 
     @Override

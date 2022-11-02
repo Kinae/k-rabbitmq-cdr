@@ -22,21 +22,20 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @BeforeEach
     public void beforeEach() throws Exception {
-        var options = KOptions.DEFAULT;
         var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            writer.push(message, options);
+            writer.push(message);
         }
     }
 
     @Override
     protected FileReader getEmptySource() {
-        return new FileReader(tempEmptyDir, KOptions.DEFAULT);
+        return new FileReader(new FileReaderInfo(tempEmptyDir, KOptions.DEFAULT));
     }
 
     @Override
-    protected FileReader getSource() {
-        return new FileReader(tempDir, KOptions.DEFAULT);
+    protected FileReader getSource(KOptions options) {
+        return new FileReader(new FileReaderInfo(tempDir, options));
     }
 
     protected SharedQueue getMockTarget() {
@@ -47,13 +46,14 @@ public abstract class FileAbstractComponentSourceTest extends AbstractComponentS
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-        try(var target = getSharedQueue();
-            var component = getComponent(getSource(), target)) {
+        var options = KOptions.DEFAULT;
+        var target = getSharedQueue();
+        try(var component = getComponent(getSource(options), target)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            assertThatSourceContainsAllMessagesUnsorted(target);
+            assertThatContainsAllMessages(target, options);
         }
     }
 

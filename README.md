@@ -77,14 +77,14 @@ java -jar ./build/libs/k-rabbitmq-cdr.jar \
 ```
 
 If the target is slower than the source, you can use multiple threads to produce messages much faster. Do not overuse thread if
-your CPU can not handle it. It would have the opposite effect. You can only use the `thread` parameter with `BUFFERED` and
+your CPU can not handle it. It would have the opposite effect. You can only use `thread` parameters with `BUFFERED` and
 `PARALLEL` options
 
 ```sh
 java -jar ./build/libs/k-rabbitmq-cdr.jar \
 --source-type AMQP --source-uri amqp://admin:admin@localhost:5672/%2F --source-queue cart-update-dlq \
 --target-type AWS_S3 --region eu-west-1 --bucket mybucket --prefix cart/update/
---transfer-type BUFFERED --process-type PARALLEL --thread 3
+--transfer-type BUFFERED --process-type PARALLEL --source-thread 2 --target-thread 4
 ```
 
 To restore message from AWS S3 to RabbitMQ queue __with the original order__ use the `sorted` parameter. It sorts messages
@@ -133,7 +133,8 @@ provide credentials to the AWS S3 client.
 | --transfer-type | ALL | The type of transfer to use. Default is DIRECT | `DIRECT / BUFFERED` | 
 | --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) | `SEQUENTIAL / PARALLEL` | 
 | --max-messages | ALL | Maximum number of messages (default is 0 for all) | `12`
-| --thread | PARALLEL | Number of threads for the target when using PARALLEL as --process-type (default is 2) | `4`
+| --source-thread | PARALLEL | Number of threads to read data when using PARALLEL as --process-type (default is 2) | `2`
+| --target-thread | PARALLEL | Number of threads to write data when using PARALLEL as --process-type (default is 2) | `2`
 | --sorted | FILE / AWS_S3 | Sort messages listed before processing. Has no effect if --process-type is PARALLEL with more than 1 thread (default is false) | `false` |
 | --interval | | Specify the progression update interval in milliseconds (default is 2000) | `1000` |
 | --body-only | | Only use the body and discard the headers and properties of messages (default is false) | `false` |

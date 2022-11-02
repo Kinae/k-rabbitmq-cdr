@@ -28,7 +28,7 @@ public abstract class AbstractComponentTarget extends AbstractComponent {
                 }
             } else {
                 count++;
-                push(message, options);
+                push(message);
             }
         } while(true);
         return count;

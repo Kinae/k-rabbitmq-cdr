@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import com.rabbitmq.client.Channel;
 import eu.kinae.k_rabbitmq_cdr.component.Target;
-import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
 import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.slf4j.Logger;
@@ -33,7 +32,7 @@ public class AMQPConnectionWriter implements Target {
     }
 
     @Override
-    public void push(KMessage message, KOptions options) throws IOException {
+    public void push(KMessage message) throws IOException {
         channel.basicPublish("", queue, false, false, message.properties(), message.body());
         if(sharedStatus != null) {
             sharedStatus.incrementWrite();
@@ -47,7 +46,7 @@ public class AMQPConnectionWriter implements Target {
                 channel.close();
             }
         } catch(Exception e) {
-            logger.warn("Cannot close channel");
+            logger.warn("Cannot close channel", e);
         }
     }
 }

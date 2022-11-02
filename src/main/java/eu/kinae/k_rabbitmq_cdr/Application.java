@@ -32,8 +32,8 @@ public final class Application {
         KOptions options = KOptions.of(jParams);
         KParameters params = KParameters.of(jParams);
 
-        try(Connector connector = ConnectorFactory.newConnector(params)) {
-            if(connector != null) connector.start(params, options);
+        try(Connector connector = ConnectorFactory.newConnector(params, options)) {
+            if(connector != null) connector.init(params, options).start(params, options);
             else logger.error("No connector found for {} => {}", params.sourceType(), params.targetType());
         }
     }

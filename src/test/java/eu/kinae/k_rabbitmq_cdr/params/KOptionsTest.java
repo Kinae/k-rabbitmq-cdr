@@ -10,7 +10,8 @@ public class KOptionsTest {
     public void Check_constructor() {
         var jParams = new JCommanderParams();
         jParams.maxMessage = 33;
-        jParams.threads = 6;
+        jParams.sourceThread = 3;
+        jParams.targetThread = 4;
         jParams.sorted = true;
 
         var parameters = KOptions.of(jParams);

@@ -14,10 +14,11 @@ import org.slf4j.LoggerFactory;
 
 public class AMQPConnectionReader implements Source {
 
+    private final static Logger logger = LoggerFactory.getLogger(AMQPConnectionReader.class);
+
     private final Channel channel;
     private final String queue;
     private final SharedStatus sharedStatus;
-    private final Logger logger = LoggerFactory.getLogger(AMQPConnectionReader.class);
 
     public AMQPConnectionReader(AMQPConnection connection, String queue) {
         this(connection, queue, null);
@@ -26,12 +27,8 @@ public class AMQPConnectionReader implements Source {
     public AMQPConnectionReader(AMQPConnection connection, String queue, SharedStatus sharedStatus) {
         this.queue = queue;
         this.sharedStatus = sharedStatus;
-
         try {
             this.channel = connection.createChannel();
-            if(sharedStatus != null) {
-                sharedStatus.setTotal(channel.messageCount(queue));
-            }
         } catch(Exception e) {
             logger.error("Unknown error, please report it", e);
             throw new RuntimeException("Unknown error, please report it", e);
@@ -48,7 +45,7 @@ public class AMQPConnectionReader implements Source {
             sharedStatus.incrementRead();
         }
         AMQP.BasicProperties props = options.bodyOnly() ? null : response.getProps();
-        return new KMessage(props, response.getBody(), response.getMessageCount(), response.getEnvelope().getDeliveryTag());
+        return new KMessage(props, response.getBody(), response.getEnvelope().getDeliveryTag());
     }
 
     @Override
@@ -58,7 +55,7 @@ public class AMQPConnectionReader implements Source {
                 channel.close();
             }
         } catch(Exception e) {
-            logger.warn("Cannot close channel");
+            logger.warn("Cannot close channel", e);
         }
     }
 }

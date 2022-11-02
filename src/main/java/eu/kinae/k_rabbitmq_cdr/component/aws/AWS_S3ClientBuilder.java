@@ -24,4 +24,11 @@ public class AWS_S3ClientBuilder {
                 .build();
     }
 
+    public static String buildPrefix(String key) {
+        if(key.endsWith("/")) {
+            return key;
+        }
+        return key + "/";
+    }
+
 }

@@ -15,7 +15,7 @@ public class SharedQueueTest {
         var messages = List.of(wrapResponse(2), wrapResponse(1), wrapResponse(0));
         var queue = new SharedQueue(ProcessType.SEQUENTIAL);
         for(var message : messages) {
-            queue.push(message, options);
+            queue.push(message);
         }
         Assertions.assertThat(queue.size()).isEqualTo(messages.size());
         for(int i = 0; i < messages.size(); ++i) {
@@ -32,7 +32,7 @@ public class SharedQueueTest {
         var messages = List.of(wrapResponse(2), wrapResponse(1), wrapResponse(0));
         var queue = new SharedQueue(ProcessType.PARALLEL);
         for(var message : messages) {
-            queue.push(message, options);
+            queue.push(message);
         }
         Assertions.assertThat(queue.size()).isEqualTo(messages.size());
         for(int i = 0; i < messages.size(); ++i) {
@@ -44,7 +44,7 @@ public class SharedQueueTest {
     }
 
     private KMessage wrapResponse(int i) {
-        return new KMessage(null, null, i, i);
+        return new KMessage(null, "", i);
     }
 
 }

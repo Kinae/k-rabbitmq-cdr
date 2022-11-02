@@ -1,8 +1,12 @@
 package eu.kinae.k_rabbitmq_cdr.connector.impl;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponent;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentSource;
+import eu.kinae.k_rabbitmq_cdr.component.ParallelComponents;
 import eu.kinae.k_rabbitmq_cdr.component.SequentialComponentSource;
 import eu.kinae.k_rabbitmq_cdr.component.Source;
 import eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPConnection;
@@ -18,13 +22,18 @@ public class AMQPConnectorSource implements ConnectorSource {
 
     private final AMQPConnection connection;
 
-    public AMQPConnectorSource(KParameters parameters) {
+    public AMQPConnectorSource(KParameters parameters,  KOptions options) {
         connection = new AMQPConnection(parameters.sourceURI());
     }
 
     @Override
     public SupportedType getSupportedType() {
         return SupportedType.AMQP;
+    }
+
+    @Override
+    public long countMessages(KParameters parameters) {
+       return connection.countMessages(parameters.sourceQueue());
     }
 
     @Override
@@ -39,7 +48,13 @@ public class AMQPConnectorSource implements ConnectorSource {
     }
 
     @Override
-    public ParallelComponent getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    public ParallelComponents getParallelComponents(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        return IntStream.range(0, options.sourceThread())
+            .mapToObj(ignored -> createParallelComponent(sharedQueue, parameters, options, sharedStatus))
+            .collect(Collectors.toCollection(ParallelComponents::new));
+    }
+
+    private ParallelComponent createParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         AMQPConnectionReader source = new AMQPConnectionReader(connection, parameters.sourceQueue(), sharedStatus);
         return new ParallelComponentSource(source, sharedQueue, options, sharedStatus);
     }

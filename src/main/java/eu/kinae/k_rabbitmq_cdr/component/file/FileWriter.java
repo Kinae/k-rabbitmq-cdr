@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import eu.kinae.k_rabbitmq_cdr.component.Target;
-import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -31,7 +30,7 @@ public class FileWriter implements Target {
     }
 
     @Override
-    public void push(KMessage message, KOptions options) throws Exception {
+    public void push(KMessage message) throws Exception {
         String filename = Constant.FILE_PREFIX + message.deliveryTag();
         Path fileCreatedPath = Files.createFile(Path.of(path.toString(), filename));
         Files.writeString(fileCreatedPath, new String(message.body()), StandardOpenOption.TRUNCATE_EXISTING);
@@ -45,6 +44,5 @@ public class FileWriter implements Target {
 
     @Override
     public void close() throws Exception {
-
     }
 }

@@ -37,11 +37,10 @@ public class AWS_S3ReaderTest extends AbstractComponentTest {
         s3.createBucket(it -> it.bucket(bucket));
         var target = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            target.push(message, options);
+            target.push(message);
         }
 
-        var reader = new AWS_S3Reader(s3, bucket, PREFIX, options);
-
-        assertThatSourceContainsAllMessagesUnsorted(reader);
+        var reader = new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, options));
+        assertThatContainsAllMessages(reader, options);
     }
 }

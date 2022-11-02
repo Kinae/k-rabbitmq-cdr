@@ -56,8 +56,11 @@ public class JCommanderParams {
     @Parameter(names = { "--max-messages" }, description = "Maximum number of messages (0 for all)")
     public int maxMessage = 0;
 
-    @Parameter(names = { "--thread" }, description = "Number of threads when using PARALLEL as process-type")
-    public int threads = 4;
+    @Parameter(names = { "--source-thread" }, description = "Number of threads to read data when using PARALLEL as process-type")
+    public int sourceThread = 2;
+
+    @Parameter(names = { "--target-thread" }, description = "Number of threads to write data when using PARALLEL as process-type")
+    public int targetThread = 2;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
             " Has no effect if process-type is PARALLEL with more than 1 thread")

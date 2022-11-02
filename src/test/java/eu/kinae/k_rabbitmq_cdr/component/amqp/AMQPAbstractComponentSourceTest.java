@@ -27,7 +27,7 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
     public static void beforeAll() throws Exception {
         try(var target = new AMQPConnectionWriter(buildAMQPConnection(rabbitmq), SOURCE_Q)) {
             for(var message : MESSAGES) {
-                target.push(message, KOptions.DEFAULT);
+                target.push(message);
             }
         }
     }
@@ -38,7 +38,7 @@ public abstract class AMQPAbstractComponentSourceTest extends AbstractComponentS
     }
 
     @Override
-    protected AMQPConnectionReader getSource() {
+    protected AMQPConnectionReader getSource(KOptions options) {
         return new AMQPConnectionReader(buildAMQPConnection(rabbitmq), SOURCE_Q);
     }
 

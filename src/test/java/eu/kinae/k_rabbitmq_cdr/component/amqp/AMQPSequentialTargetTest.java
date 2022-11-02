@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import static eu.kinae.k_rabbitmq_cdr.component.amqp.AMQPUtils.buildAMQPConnection;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -16,26 +15,32 @@ import static org.mockito.Mockito.verify;
 
 public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
 
+    @Override
+    protected SharedQueue getSharedQueue() {
+        return new SharedQueue(ProcessType.SEQUENTIAL);
+    }
+
     @Test
     public void Consume_from_empty_queue_produce_nothing() throws Exception {
         var options = KOptions.DEFAULT;
-        var emptyQueue = new SharedQueue(ProcessType.SEQUENTIAL);
+        var emptyQueue = getSharedQueue();
         try(var target = mock(AMQPConnectionWriter.class);
             var component = new SequentialComponentTarget(emptyQueue, target, options)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(0);
-            verify(target, times(0)).push(any(), eq(options));
+            verify(target, times(0)).push(any());
         }
     }
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
         var options = KOptions.DEFAULT;
-        var sharedQueue = new SharedQueue(ProcessType.SEQUENTIAL);
-        for(var message : MESSAGES)
-            sharedQueue.push(message, options);
+        var sharedQueue = getSharedQueue();
+        for(var message : MESSAGES) {
+            sharedQueue.push(message);
+        }
 
         try(var connection = buildAMQPConnection(rabbitmq);
             var component = new SequentialComponentTarget(sharedQueue, new AMQPConnectionWriter(connection, TARGET_Q), options)) {
@@ -45,8 +50,8 @@ public class AMQPSequentialTargetTest extends AMQPAbstractComponentTargetTest {
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var source = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
-            assertThatSourceContainsAllMessagesSorted(source);
+        try(var target = new AMQPConnectionReader(buildAMQPConnection(rabbitmq), TARGET_Q)) {
+            assertThatContainsAllMessages(target, options);
         }
     }
 }

@@ -12,7 +12,7 @@ public class AWS_S3SequentialSourceTest extends AWS_S3AbstractComponentSourceTes
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new SequentialComponentSource((AWS_S3Reader) source, (SharedQueue) target, options);
+        return new SequentialComponentSource(source, (SharedQueue) target, options);
     }
 
     @Override

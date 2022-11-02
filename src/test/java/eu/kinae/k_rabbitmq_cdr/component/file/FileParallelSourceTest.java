@@ -1,8 +1,11 @@
 package eu.kinae.k_rabbitmq_cdr.component.file;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import eu.kinae.k_rabbitmq_cdr.component.AbstractComponent;
 import eu.kinae.k_rabbitmq_cdr.component.ParallelComponentSource;
@@ -33,10 +36,11 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
     }
 
     @Test
-    public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
+    public void Start_source_in_single_thread_and_wait_at_most_60sec_to_consume_all_sorted_messages() throws Exception {
+        var options = KOptions.SORTED;
         var status = mock(SharedStatus.class);
-        try(var target = getSharedQueue();
-            var component = new ParallelComponentSource(getSource(), target, KOptions.DEFAULT, status)) {
+        var target = getSharedQueue();
+        try(var component = new ParallelComponentSource(getSource(options), target, options, status)) {
 
             Future<?> future = Executors.newSingleThreadExecutor().submit(component);
             Awaitility.await().atMost(60, TimeUnit.SECONDS).until(future::isDone);
@@ -44,7 +48,36 @@ public class FileParallelSourceTest extends FileAbstractComponentSourceTest {
             assertThat(target.size()).isEqualTo(MESSAGES.size());
             assertThat(status.isConsumerAlive()).isFalse();
             verify(status, times(1)).notifySourceConsumerIsDone();
-            assertThatSourceContainsAllMessagesUnsorted(target);
+            assertThatContainsAllMessages(target, options);
+        }
+    }
+
+    @Test
+    public void Start_source_in_multi_thread_and_wait_at_most_60sec_to_consume_all_messages() throws Exception {
+        var options = KOptions.DEFAULT;
+        var status = mock(SharedStatus.class);
+        var target = getSharedQueue();
+        try(var source = getSource(options)) {
+
+            var executor = Executors.newFixedThreadPool(CONSUMERS);
+            var callables = IntStream.range(0, CONSUMERS)
+                .mapToObj(ignored -> new ParallelComponentSource(source, target, options, status))
+                .collect(Collectors.toCollection(ArrayList::new));
+            var futures = executor.invokeAll(callables, 60, TimeUnit.SECONDS);
+
+            assertThat(futures.stream().filter(Future::isDone).count()).isEqualTo(3);
+            assertThat(futures.stream().mapToLong(it -> {
+                try {
+                    return it.get();
+                } catch(Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }).sum()).isEqualTo(MESSAGES.size());
+
+            assertThat(target.size()).isEqualTo(MESSAGES.size());
+            assertThat(status.isConsumerAlive()).isFalse();
+            verify(status, times(CONSUMERS)).notifySourceConsumerIsDone();
+            assertThatContainsAllMessages(target, options);
         }
     }
 }

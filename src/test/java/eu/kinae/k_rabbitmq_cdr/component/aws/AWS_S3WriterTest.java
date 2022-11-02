@@ -38,10 +38,10 @@ public class AWS_S3WriterTest extends AbstractComponentTest {
 
         var writer = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            writer.push(message, options);
+            writer.push(message);
         }
 
-        var reader = new AWS_S3Reader(s3, bucket, PREFIX, options);
-        assertThatSourceContainsAllMessagesUnsorted(reader);
+        var reader = new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, options));
+        assertThatContainsAllMessages(reader, options);
     }
 }

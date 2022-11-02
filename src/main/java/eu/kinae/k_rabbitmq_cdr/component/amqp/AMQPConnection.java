@@ -29,6 +29,15 @@ public class AMQPConnection implements AutoCloseable {
         }
     }
 
+    public long countMessages(String queue) {
+        try (Channel channel = createChannel()) {
+            return channel.messageCount(queue);
+        } catch(Exception e) {
+            logger.error("Unknown error, please report it", e);
+            throw new RuntimeException("Unknown error, please report it", e);
+        }
+    }
+
     public Channel createChannel() throws IOException {
         return connection.createChannel();
     }
@@ -44,7 +53,7 @@ public class AMQPConnection implements AutoCloseable {
                 connection.close();
             }
         } catch(Exception e) {
-            logger.warn("Cannot close connection");
+            logger.warn("Cannot close connection", e);
         }
     }
 }

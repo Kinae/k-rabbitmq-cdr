@@ -43,14 +43,15 @@ public class AMQPConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        return IntStream.range(0, options.threads())
-            .mapToObj(ignored -> createParallelComponent(connection, sharedQueue, parameters, options, sharedStatus))
+    public ParallelComponents getParallelComponents(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        return IntStream.range(0, options.targetThread())
+            .mapToObj(ignored -> createParallelComponent(sharedQueue, parameters, options, sharedStatus))
             .collect(Collectors.toCollection(ParallelComponents::new));
     }
 
-    private ParallelComponent createParallelComponent(AMQPConnection connection, SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
-        return new ParallelComponentTarget(sharedQueue, new AMQPConnectionWriter(connection, parameters.targetQueue(), sharedStatus), options, sharedStatus);
+    private ParallelComponent createParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+        AMQPConnectionWriter writer = new AMQPConnectionWriter(connection, parameters.targetQueue(), sharedStatus);
+        return new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus);
     }
 
     @Override

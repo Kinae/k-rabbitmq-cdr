@@ -34,7 +34,7 @@ public class SharedQueue implements Source, Target {
         return this.queue.size();
     }
 
-    public void push(KMessage response, KOptions options) throws Exception {
+    public void push(KMessage response) throws Exception {
         if(queue instanceof BlockingQueue<KMessage> bq) {
             bq.put(response);
         } else {

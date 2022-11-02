@@ -12,7 +12,7 @@ public class FileSequentialSourceTest extends FileAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponent getComponent(Source source, Target target, KOptions options) {
-        return new SequentialComponentSource((FileReader) source, (SharedQueue) target, options);
+        return new SequentialComponentSource(source, (SharedQueue) target, options);
     }
 
     @Override

@@ -9,6 +9,7 @@ import eu.kinae.k_rabbitmq_cdr.connector.impl.AWS_S3ConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.AWS_S3ConnectorTarget;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorSource;
 import eu.kinae.k_rabbitmq_cdr.connector.impl.FileConnectorTarget;
+import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.params.KParameters;
 import eu.kinae.k_rabbitmq_cdr.params.SupportedType;
 import software.amazon.awssdk.utils.Pair;
@@ -41,14 +42,14 @@ public abstract class ConnectorFactory {
     private ConnectorFactory() {
     }
 
-    public static Connector newConnector(KParameters parameters) throws Exception {
+    public static Connector newConnector(KParameters parameters, KOptions options) throws Exception {
         Class<? extends ConnectorSource> source = connectorSources.get(parameters.sourceType());
         Class<? extends ConnectorTarget> target = connectorTargets.get(parameters.targetType());
         if(source == null || target == null) {
             return null;
         }
 
-        ConnectorSource connectorSource = source.getConstructor(KParameters.class).newInstance(parameters);
+        ConnectorSource connectorSource = source.getConstructor(KParameters.class, KOptions.class).newInstance(parameters, options);
         ConnectorTarget connectorTarget = target.getConstructor(KParameters.class).newInstance(parameters);
         return new Connector(connectorSource, connectorTarget);
     }

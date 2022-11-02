@@ -21,19 +21,24 @@ public class AMQPSequentialSourceTest extends AMQPAbstractComponentSourceTest {
 
     @Override
     protected AbstractComponentSource getComponent(Source source, Target target, KOptions options) {
-        return new SequentialComponentSource((AMQPConnectionReader) source, (SharedQueue) target, options);
+        return new SequentialComponentSource(source, (SharedQueue) target, options);
+    }
+
+    @Override
+    protected SharedQueue getSharedQueue() {
+        return new SharedQueue(ProcessType.SEQUENTIAL);
     }
 
     @Test
     public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
-        try(var target = new SharedQueue(ProcessType.SEQUENTIAL);
-            var component = getComponent(getSource(), target)) {
+        var options = KOptions.SORTED;
+        var target = getSharedQueue();
+        try(var component = getComponent(getSource(options), target)) {
 
             long actual = component.consumeNProduce();
 
             assertThat(actual).isEqualTo(MESSAGES.size());
-            assertThatSourceContainsAllMessagesSorted(target);
+            assertThatContainsAllMessages(target, options);
         }
     }
-
 }

@@ -37,27 +37,24 @@ public abstract class AWS_S3AbstractComponentSourceTest extends AbstractComponen
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(it -> it.bucket(bucket));
 
-        return new AWS_S3Reader(s3, bucket, PREFIX, KOptions.DEFAULT);
+        return new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, KOptions.DEFAULT));
     }
 
     @Override
-    protected AWS_S3Reader getSource() throws Exception {
-        var options = KOptions.DEFAULT;
+    protected AWS_S3Reader getSource(KOptions options) throws Exception {
         var bucket = UUID.randomUUID().toString();
         s3.createBucket(it -> it.bucket(bucket));
 
         var target = new AWS_S3Writer(s3, bucket, PREFIX);
         for(var message : MESSAGES) {
-            target.push(message, options);
+            target.push(message);
         }
 
-        return new AWS_S3Reader(s3, bucket, PREFIX, options);
+        return new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, options));
     }
 
     protected SharedQueue getMockTarget() {
         return mock(SharedQueue.class);
     }
-
-    protected abstract SharedQueue getSharedQueue();
 
 }

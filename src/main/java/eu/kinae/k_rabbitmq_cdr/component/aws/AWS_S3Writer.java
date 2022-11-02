@@ -1,7 +1,6 @@
 package eu.kinae.k_rabbitmq_cdr.component.aws;
 
 import eu.kinae.k_rabbitmq_cdr.component.Target;
-import eu.kinae.k_rabbitmq_cdr.params.KOptions;
 import eu.kinae.k_rabbitmq_cdr.utils.Constant;
 import eu.kinae.k_rabbitmq_cdr.utils.CustomObjectMapper;
 import eu.kinae.k_rabbitmq_cdr.utils.KMessage;
@@ -27,13 +26,13 @@ public class AWS_S3Writer implements Target {
     public AWS_S3Writer(S3Client s3, String bucket, String prefix, SharedStatus progressStatus) {
         this.s3 = s3;
         this.bucket = bucket;
-        this.prefix = buildPrefix(prefix);
+        this.prefix = AWS_S3ClientBuilder.buildPrefix(prefix);
         this.sharedStatus = progressStatus;
         logger.info("writing files in {} with prefix {}", bucket, prefix);
     }
 
     @Override
-    public void push(KMessage message, KOptions options) throws Exception {
+    public void push(KMessage message) throws Exception {
         String filename = Constant.FILE_PREFIX + message.deliveryTag();
         s3.putObject(it -> it.bucket(bucket).key(prefix + filename), RequestBody.fromBytes(message.body()));
         if(message.properties() != null) {
@@ -47,14 +46,6 @@ public class AWS_S3Writer implements Target {
 
     @Override
     public void close() {
-
-    }
-
-    public String buildPrefix(String key2) {
-        if(key2.endsWith("/")) {
-            return key2;
-        }
-        return key2 + "/";
     }
 
 }

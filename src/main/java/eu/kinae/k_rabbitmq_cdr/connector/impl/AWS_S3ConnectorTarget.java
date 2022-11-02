@@ -43,9 +43,9 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    public ParallelComponents getParallelComponents(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         AWS_S3Writer writer = new AWS_S3Writer(s3Client, parameters.bucket(), parameters.prefix(), sharedStatus);
-        return IntStream.range(0, options.threads())
+        return IntStream.range(0, options.targetThread())
             .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
             .collect(Collectors.toCollection(ParallelComponents::new));
     }

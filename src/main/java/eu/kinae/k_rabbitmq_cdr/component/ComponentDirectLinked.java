@@ -24,7 +24,7 @@ public class ComponentDirectLinked extends AbstractComponent {
             if(message == null) {
                 break;
             } else {
-                push(message, options);
+                push(message);
             }
         } while(++count < options.maxMessage() || options.maxMessage() == 0);
         return count;

@@ -19,10 +19,10 @@ public class FileWriterTest extends AbstractComponentTest {
         var options = KOptions.DEFAULT;
         var writer = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            writer.push(message, options);
+            writer.push(message);
         }
 
-        var reader = new FileReader(tempDir, options);
-        assertThatSourceContainsAllMessagesUnsorted(reader);
+        var reader = new FileReader(new FileReaderInfo(tempDir, options));
+        assertThatContainsAllMessages(reader, options);
     }
 }

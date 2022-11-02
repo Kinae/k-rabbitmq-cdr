@@ -18,7 +18,7 @@ public class SharedStatus {
         this.total = options.maxMessage();
     }
 
-    // name if bad, can not find better for now
+    // name if bad, cannot find better for now
     public void notifySourceConsumerIsDone() {
         this.consumerAlive = false;
     }
@@ -27,7 +27,7 @@ public class SharedStatus {
         return consumerAlive;
     }
 
-    public void setTotal(long total) {
+    public void updateTotal(long total) {
         if(this.total == 0 || this.total > total) {
             this.total = total;
         }

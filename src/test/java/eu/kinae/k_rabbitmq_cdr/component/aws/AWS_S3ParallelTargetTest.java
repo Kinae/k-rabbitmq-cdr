@@ -16,7 +16,6 @@ import eu.kinae.k_rabbitmq_cdr.utils.SharedStatus;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -25,7 +24,10 @@ import static org.mockito.Mockito.when;
 
 public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest {
 
-    private static final int CONSUMERS = 3;
+    @Override
+    protected SharedQueue getSharedQueue() {
+        return new SharedQueue(ProcessType.PARALLEL);
+    }
 
     @Test
     @Override
@@ -34,7 +36,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        var emptyQueue = new SharedQueue(ProcessType.PARALLEL);
+        var emptyQueue = getSharedQueue();
         try(var target = mock(AWS_S3Writer.class)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
             var callables = IntStream.range(0, CONSUMERS)
@@ -51,7 +53,7 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
                 }
             }).sum()).isEqualTo(emptyQueue.size());
 
-            verify(target, times(0)).push(any(), eq(options));
+            verify(target, times(0)).push(any());
         }
     }
 
@@ -65,9 +67,9 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         var status = mock(SharedStatus.class);
         when(status.isConsumerAlive()).thenReturn(false);
 
-        var sharedQueue = new SharedQueue(ProcessType.PARALLEL);
+        var sharedQueue = getSharedQueue();
         for(var message : MESSAGES)
-            sharedQueue.push(message, options);
+            sharedQueue.push(message);
 
         try(var target = new AWS_S3Writer(s3, bucket, PREFIX)) {
             var executor = Executors.newFixedThreadPool(CONSUMERS);
@@ -87,8 +89,8 @@ public class AWS_S3ParallelTargetTest extends AWS_S3AbstractComponentTargetTest 
         }
 
         assertThat(sharedQueue.size()).isEqualTo(0);
-        try(var target = new AWS_S3Reader(s3, bucket, PREFIX, options)) {
-            assertThatSourceContainsAllMessagesUnsorted(target);
+        try(var target = new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, options))) {
+            assertThatContainsAllMessages(target, options);
         }
     }
 }

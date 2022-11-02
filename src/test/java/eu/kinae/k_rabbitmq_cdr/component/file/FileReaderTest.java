@@ -17,11 +17,10 @@ public class FileReaderTest extends AbstractComponentTest {
         var options = KOptions.DEFAULT;
         var target = new FileWriter(tempDir);
         for(var message : MESSAGES) {
-            target.push(message, options);
+            target.push(message);
         }
 
-        var reader = new FileReader(tempDir, options);
-
-        assertThatSourceContainsAllMessagesUnsorted(reader);
+        var reader = new FileReader(new FileReaderInfo(tempDir, options));
+        assertThatContainsAllMessages(reader, options);
     }
 }

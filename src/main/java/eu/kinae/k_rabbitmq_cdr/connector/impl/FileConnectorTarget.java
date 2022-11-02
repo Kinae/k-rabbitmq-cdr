@@ -42,9 +42,9 @@ public class FileConnectorTarget implements ConnectorTarget {
     }
 
     @Override
-    public ParallelComponents getParallelComponent(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
+    public ParallelComponents getParallelComponents(SharedQueue sharedQueue, KParameters parameters, KOptions options, SharedStatus sharedStatus) {
         FileWriter writer = new FileWriter(path, sharedStatus);
-        return IntStream.range(0, options.threads())
+        return IntStream.range(0, options.targetThread())
             .mapToObj(ignored -> new ParallelComponentTarget(sharedQueue, writer, options, sharedStatus))
             .collect(Collectors.toCollection(ParallelComponents::new));
     }
