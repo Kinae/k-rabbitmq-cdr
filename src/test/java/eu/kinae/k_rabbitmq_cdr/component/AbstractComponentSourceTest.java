@@ -76,4 +76,18 @@ public abstract class AbstractComponentSourceTest extends AbstractComponentTest 
         }
     }
 
+    @Test
+    public void Produced_messages_are_equal_to_consumed_messages() throws Exception {
+        var options = KOptions.DEFAULT;
+        var target = getSharedQueue();
+        try(var component = getComponent(getSource(options), target)) {
+
+            long actual = component.consumeNProduce();
+
+            assertThat(actual).isEqualTo(MESSAGES.size());
+            assertThatContainsAllMessages(target, options);
+        }
+    }
+
+
 }

@@ -32,6 +32,10 @@ public abstract class AWS_S3AbstractComponentSourceTest extends AbstractComponen
             .region(Region.of(localstack.getRegion()))
             .build();
 
+    protected SharedQueue getMockTarget() {
+        return mock(SharedQueue.class);
+    }
+
     @Override
     protected AWS_S3Reader getEmptySource() {
         var bucket = UUID.randomUUID().toString();
@@ -51,10 +55,6 @@ public abstract class AWS_S3AbstractComponentSourceTest extends AbstractComponen
         }
 
         return new AWS_S3Reader(new AWS_S3ReaderInfo(s3, bucket, PREFIX, options));
-    }
-
-    protected SharedQueue getMockTarget() {
-        return mock(SharedQueue.class);
     }
 
 }

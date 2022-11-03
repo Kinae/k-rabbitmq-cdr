@@ -26,6 +26,10 @@ public class AWS_S3ConnectorTarget implements ConnectorTarget {
         s3Client = AWS_S3ClientBuilder.build(parameters);
     }
 
+    public AWS_S3ConnectorTarget(S3Client s3Client) {
+        this.s3Client = s3Client;
+    }
+
     @Override
     public SupportedType getSupportedType() {
         return SupportedType.AWS_S3;

@@ -3,6 +3,8 @@ package eu.kinae.k_rabbitmq_cdr.params;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.regions.Region;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class JCommanderParamsValidatorTest {
@@ -16,7 +18,27 @@ public class JCommanderParamsValidatorTest {
         jParams.targetType = SupportedType.FILE;
         jParams.directory = "directory";
 
-        JCommanderParamsValidator.validate(jParams);
+        assertThatNoException().isThrownBy(() -> JCommanderParamsValidator.validate(jParams));
+    }
+
+    @Test
+    public void Check_threads_are_forced_to_one_for_sorted() {
+
+        var jParams = new JCommanderParams();
+        jParams.sourceType = SupportedType.AMQP;
+        jParams.sourceURI = "sourceURI";
+        jParams.sourceQueue = "sourceQueue";
+        jParams.targetType = SupportedType.FILE;
+        jParams.directory = "directory";
+        jParams.sorted = true;
+        jParams.transferType = TransferType.BUFFERED;
+        jParams.processType = ProcessType.PARALLEL;
+        jParams.sourceThread = 5;
+        jParams.targetThread = 10;
+
+        assertThatNoException().isThrownBy(() -> JCommanderParamsValidator.validate(jParams));
+        assertThat(jParams.sourceThread).isEqualTo(1);
+        assertThat(jParams.targetThread).isEqualTo(1);
     }
 
     @Test
@@ -32,7 +54,7 @@ public class JCommanderParamsValidatorTest {
         assertThatThrownBy(() -> JCommanderParamsValidator.validate(jParams)).isInstanceOf(IllegalArgumentException.class);
         jParams.targetURI = "targetURI";
         jParams.targetQueue = "targetQueue";
-        JCommanderParamsValidator.validate(jParams);
+        assertThatNoException().isThrownBy(() -> JCommanderParamsValidator.validate(jParams));
     }
 
     @Test
@@ -45,7 +67,7 @@ public class JCommanderParamsValidatorTest {
 
         assertThatThrownBy(() -> JCommanderParamsValidator.validate(jParams)).isInstanceOf(IllegalArgumentException.class);
         jParams.directory = "directory";
-        JCommanderParamsValidator.validate(jParams);
+        assertThatNoException().isThrownBy(() -> JCommanderParamsValidator.validate(jParams));
     }
 
     @Test
@@ -62,7 +84,7 @@ public class JCommanderParamsValidatorTest {
         jParams.bucket = "bucket";
         assertThatThrownBy(() -> JCommanderParamsValidator.validate(jParams)).isInstanceOf(IllegalArgumentException.class);
         jParams.prefix = "prefix";
-        JCommanderParamsValidator.validate(jParams);
+        assertThatNoException().isThrownBy(() -> JCommanderParamsValidator.validate(jParams));
     }
 
     @Test
@@ -74,9 +96,9 @@ public class JCommanderParamsValidatorTest {
         checkImpossibleConnector(jParams, SupportedType.AWS_S3, SupportedType.FILE);
     }
 
-    private void checkImpossibleConnector(JCommanderParams jParams, SupportedType file, SupportedType file2) {
-        jParams.sourceType = file;
-        jParams.targetType = file2;
+    private void checkImpossibleConnector(JCommanderParams jParams, SupportedType sType, SupportedType tType) {
+        jParams.sourceType = sType;
+        jParams.targetType = tType;
         assertThatThrownBy(() -> JCommanderParamsValidator.validate(jParams)).isInstanceOf(IllegalArgumentException.class);
     }
 
