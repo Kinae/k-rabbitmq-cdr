@@ -1,6 +1,8 @@
 package eu.kinae.k_rabbitmq_cdr.params;
 
 import eu.kinae.k_rabbitmq_cdr.connector.ConnectorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.utils.Pair;
 
@@ -9,6 +11,7 @@ public class JCommanderParamsValidator {
     private static final String SOURCE = "source";
     private static final String TARGET = "target";
     private static final String ERROR_MESSAGE = "%s must be specified when using --%s-type %s";
+    private static final Logger logger = LoggerFactory.getLogger(JCommanderParamsValidator.class);
 
     public static void validate(JCommanderParams jParams) {
         Pair<SupportedType, SupportedType> pair = Pair.of(jParams.sourceType, jParams.targetType);
@@ -23,8 +26,10 @@ public class JCommanderParamsValidator {
         awsS3(jParams.sourceType, jParams.region, jParams.bucket, jParams.prefix, SOURCE);
         awsS3(jParams.targetType, jParams.region, jParams.bucket, jParams.prefix, TARGET);
 
-        if(jParams.transferType == TransferType.BUFFERED && jParams.processType == ProcessType.PARALLEL && (jParams.sourceThread > 1 || jParams.targetThread > 1)) {
-            jParams.sorted = false;
+        if(jParams.sorted && jParams.transferType == TransferType.BUFFERED && jParams.processType == ProcessType.PARALLEL) {
+            logger.info("Sorted parameter detected. Force to only use 1 source thread and 1 target thread");
+            jParams.sourceThread = 1;
+            jParams.targetThread = 1;
         }
     }
 

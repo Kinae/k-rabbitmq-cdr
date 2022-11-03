@@ -27,6 +27,10 @@ public class FileConnectorSource implements ConnectorSource {
         fileReaderInfo = new FileReaderInfo(Path.of(parameters.directory()), options);
     }
 
+    public FileConnectorSource(FileReaderInfo fileReaderInfo) {
+        this.fileReaderInfo = fileReaderInfo;
+    }
+
     @Override
     public long countMessages(KParameters parameters) {
         return fileReaderInfo.countMessages();

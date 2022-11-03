@@ -22,7 +22,7 @@ public class AMQPConnectorSource implements ConnectorSource {
 
     private final AMQPConnection connection;
 
-    public AMQPConnectorSource(KParameters parameters,  KOptions options) {
+    public AMQPConnectorSource(KParameters parameters, KOptions options) {
         connection = new AMQPConnection(parameters.sourceURI());
     }
 

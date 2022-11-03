@@ -63,7 +63,7 @@ public class JCommanderParams {
     public int targetThread = 2;
 
     @Parameter(names = { "--sorted" }, description = "Sort messages listed before processing. Used for source-type FILE/AWS_S3." +
-            " Has no effect if process-type is PARALLEL with more than 1 thread")
+            " Force to use one source thread and one target thread")
     public boolean sorted;
 
 }

@@ -25,6 +25,10 @@ public class FileConnectorTarget implements ConnectorTarget {
         path = Path.of(parameters.directory());
     }
 
+    public FileConnectorTarget(Path path) {
+        this.path = path;
+    }
+
     @Override
     public SupportedType getSupportedType() {
         return SupportedType.FILE;

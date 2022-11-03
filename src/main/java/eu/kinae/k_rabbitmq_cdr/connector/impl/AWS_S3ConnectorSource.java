@@ -26,6 +26,10 @@ public class AWS_S3ConnectorSource implements ConnectorSource {
         awsS3ReaderInfo = new AWS_S3ReaderInfo(parameters, options);
     }
 
+    public AWS_S3ConnectorSource(AWS_S3ReaderInfo awsS3ReaderInfo) {
+        this.awsS3ReaderInfo = awsS3ReaderInfo;
+    }
+
     @Override
     public SupportedType getSupportedType() {
         return SupportedType.AWS_S3;
@@ -59,7 +63,6 @@ public class AWS_S3ConnectorSource implements ConnectorSource {
         AWS_S3Reader reader = new AWS_S3Reader(awsS3ReaderInfo, sharedStatus);
         return new ParallelComponentSource(reader, sharedQueue, options, sharedStatus);
     }
-
 
     @Override
     public void close() {
