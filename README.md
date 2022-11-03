@@ -130,8 +130,8 @@ provide credentials to the AWS S3 client.
 | --bucket | AWS_S3 | The name of the bucket to use to load/save messages | `mybucket` | 
 | --prefix | AWS_S3 | The prefix of the key to use | `cart/update/` | 
 | --profile | AWS_S3 | The profile to use | `prod` | 
-| --transfer-type | ALL | The type of transfer to use. Default is DIRECT | `DIRECT / BUFFERED` | 
-| --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is SEQUENTIAL) | `SEQUENTIAL / PARALLEL` | 
+| --transfer-type | ALL | The type of transfer to use. Default is BUFFERED | `DIRECT / BUFFERED` | 
+| --process-type | BUFFERED | Type of process to use when using BUFFERED as --transfer-type (default is PARALLEL) | `SEQUENTIAL / PARALLEL` | 
 | --max-messages | ALL | Maximum number of messages (default is 0 for all) | `12`
 | --source-thread | PARALLEL | Number of threads to read data when using PARALLEL as --process-type (default is 2) | `2`
 | --target-thread | PARALLEL | Number of threads to write data when using PARALLEL as --process-type (default is 2) | `2`
